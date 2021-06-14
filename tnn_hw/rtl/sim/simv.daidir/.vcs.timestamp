@@ -1,0 +1,96 @@
+0 
+24
+-Mamsrun=
+-Masflags=
+-Mcc=gcc
+-Mcfl= -pipe -fPIC -O -I/usr/local/synopsys/vcs-mx_vK-2015.09/include
+-Mcplusplus=g++
+-Mcrt0=
+-Mcrtn=
+-Mcsrc=
+-Mexternalobj=
+-Mldflags= -rdynamic
+-Mobjects= /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libvirsim.so /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/liberrorinf.so /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libsnpsmalloc.so
+-Mout=simv
+-Msaverestoreobj=/usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/vcs_save_restore_new.o
+-Msyslibs=-ldl
+-Mvcsaceobjs=
+-Mxcflags= -pipe -fPIC -I/usr/local/synopsys/vcs-mx_vK-2015.09/include
+-gen_obj
+-picarchive
+-sverilog
+../src/tie_breaker.sv
+../src/wta.sv
+../src_original/less_equal.sv
+../src_original/pulse2edge.sv
+/usr/local/synopsys/vcs-mx_vK-2015.09/linux64/bin/vcs1
+57
+sysc_uni_pwd=/afs/ece.cmu.edu/usr/pvellais/Private/RA_work/7nm_optimizations/final_set/MASTER/rtl/sim
+no_proxy=localhost,127.0.0.1,.cmu.edu,.cmu.local
+https_proxy=http://proximus.ece.cmu.edu:3128/
+http_proxy=http://proximus.ece.cmu.edu:3128/
+ftp_proxy=http://proximus.ece.cmu.edu:3128/
+XDG_SESSION_ID=13360
+XDG_RUNTIME_DIR=/run/user/2667434
+XDG_DATA_DIRS=/afs/ece.cmu.edu/usr/pvellais/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
+VMR_MODE_FLAG=32
+VCS_VERSION=vcs-mx_vK-2015.09
+VCS_TARGET_ARCH=amd64
+VCS_MX_HOME_INTERNAL=1
+VCS_MODE_FLAG=64
+VCS_LIC_EXPIRE_WARNING=0
+VCS_HOME=/usr/local/synopsys/vcs-mx_vK-2015.09
+VCS_DEPTH=0
+VCS_ARG_ADDED_FOR_TMP=1
+VCS_ARCH_OVERRIDE=linux
+VCS_ARCH=linux64
+UNAME=/bin/uname
+TOOL_HOME=/usr/local/synopsys/vcs-mx_vK-2015.09/linux64
+SYNOPSYS_LICENSE=/afs/ece.cmu.edu/support/synopsys/license.dat
+SYNOPSYS_HOME=/usr/local/synopsys
+SSH_TTY=/dev/pts/63
+SSH_CONNECTION=172.31.76.134 61084 172.19.136.218 22
+SSH_CLIENT=172.31.76.134 61084 22
+SSH_ASKPASS=/usr/libexec/openssh/gnome-ssh-askpass
+SELINUX_USE_CURRENT_RANGE=
+SELINUX_ROLE_REQUESTED=
+SELINUX_LEVEL_REQUESTED=
+SCRNAME=vcs
+SCRIPT_NAME=vcs
+QT_PLUGIN_PATH=/usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
+QT_GRAPHICSSYSTEM_CHECKED=1
+QTLIB=/usr/lib64/qt-3.3/lib
+QTINC=/usr/lib64/qt-3.3/include
+QTDIR=/usr/lib64/qt-3.3
+OVA_UUM=0
+NO_PROXY=localhost,127.0.0.1,.cmu.edu,.cmu.local
+MODULESHOME=/usr/share/Modules
+MODULEPATH=/usr/share/Modules/modulefiles:/etc/modulefiles
+LOADEDMODULES=
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LC_ALL=C
+KRB5CCNAME=KEYRING:persistent:2667434
+KDEDIRS=/usr
+HTTP_PROXY=http://proximus.ece.cmu.edu:3128/
+HTTPS_PROXY=http://proximus.ece.cmu.edu:3128/
+HSPICE_VERSION=hspice_vL-2016.06
+HSPICE_HOME=/usr/local/synopsys/hspice_vL-2016.06
+HISTCONTROL=ignoredups
+FTP_PROXY=http://proximus.ece.cmu.edu:3128/
+DC_VERSION=syn-vJ-2014.09-SP4
+DC_HOME=/usr/local/synopsys/syn-vJ-2014.09-SP4
+CVS_RSH=ssh
+BASH_FUNC_module()=() {  eval `/usr/bin/modulecmd bash $*`_}
+AKLOG=/usr/bin/aklog
+0
+4
+1598228127 ../src_original/less_equal.sv
+1598228127 ../src_original/pulse2edge.sv
+1604336758 ../src/tie_breaker.sv
+1604333412 ../src/wta.sv
+4
+0 
+1440563255 /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libvirsim.so
+1440562843 /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/liberrorinf.so
+1440562824 /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libsnpsmalloc.so
+1604337156 simv.daidir

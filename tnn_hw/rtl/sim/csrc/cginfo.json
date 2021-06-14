@@ -1,0 +1,94 @@
+{
+    "NameTable": {
+        "std": [
+            "std",
+            "reYIK",
+            "module"
+        ],
+        "wta": [
+            "wta",
+            "MkwAq",
+            "module"
+        ],
+        "...MASTER...": [
+            "SIM",
+            "amcQw",
+            "module"
+        ]
+    },
+    "PEModules": [],
+    "CompileStrategy": "fullobj",
+    "stat": {
+        "quadSpeed": 29144.55338670504,
+        "nQuads": 324,
+        "ru_self_end": {
+            "ru_minflt": 15305,
+            "ru_utime_sec": 0.057544999999999999,
+            "ru_maxrss_kb": 57764,
+            "ru_stime_sec": 0.060628000000000001,
+            "ru_majflt": 141,
+            "ru_nvcsw": 366,
+            "ru_nivcsw": 3
+        },
+        "ru_self_cgstart": {
+            "ru_minflt": 12680,
+            "ru_utime_sec": 0.046427999999999997,
+            "ru_maxrss_kb": 48672,
+            "ru_stime_sec": 0.039794999999999997,
+            "ru_majflt": 103,
+            "ru_nvcsw": 240,
+            "ru_nivcsw": 3
+        },
+        "ru_childs_cgstart": {
+            "ru_minflt": 0,
+            "ru_utime_sec": 0.0,
+            "ru_maxrss_kb": 0,
+            "ru_stime_sec": 0.0,
+            "ru_majflt": 0,
+            "ru_nvcsw": 0,
+            "ru_nivcsw": 0
+        },
+        "nMops": 917,
+        "mopSpeed": 82486.282270396681,
+        "totalObjSize": 105207,
+        "ru_childs_end": {
+            "ru_minflt": 0,
+            "ru_utime_sec": 0.0,
+            "ru_maxrss_kb": 0,
+            "ru_stime_sec": 0.0,
+            "ru_majflt": 0,
+            "ru_nvcsw": 0,
+            "ru_nivcsw": 0
+        },
+        "mop/quad": 2.8302469135802468,
+        "outputSizePerQuad": 324.0,
+        "Frontend(%)": 80.68120601268572,
+        "CodeGen(%)": 19.31879398731428
+    },
+    "LVLData": [
+        "SIM"
+    ],
+    "CurCompileUdps": {},
+    "SIMBData": {
+        "out": "amcQwB.o",
+        "bytes": 56794
+    },
+    "CurCompileModules": [
+        "...MASTER...",
+        "std",
+        "wta"
+    ],
+    "CompileProcesses": [
+        "cgproc.10329.json"
+    ],
+    "CompileStatus": "Successful",
+    "Misc": {
+        "cwd": "/afs/ece.cmu.edu/usr/pvellais/Private/RA_work/7nm_optimizations/final_set/MASTER/rtl/sim",
+        "csrc_abs": "/afs/ece.cmu.edu/usr/pvellais/Private/RA_work/7nm_optimizations/final_set/MASTER/rtl/sim/csrc",
+        "csrc": "csrc",
+        "default_output_dir": "csrc",
+        "daidir": "simv.daidir",
+        "daidir_abs": "/afs/ece.cmu.edu/usr/pvellais/Private/RA_work/7nm_optimizations/final_set/MASTER/rtl/sim/simv.daidir",
+        "archive_dir": "archive.0"
+    }
+}
