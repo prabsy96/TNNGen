@@ -14,21 +14,22 @@ def mkLessequal(numports=5):
 
     temp1.assign(~data_in & inhibit_in)
 
-    out.assign(data_in & ~temp2)
 
     # target submodule
     pulse = mkPulse2edge()
 
     # copy paras and ports
     #params = m.copy_params(led)
-    ports = m.copy_sim_ports(pulse)
+    ports = m.copy_ports(pulse)
     
-    aclk = ports['aclk']
-    pulse_in = ports['pulse_in']
-    grst = ports['grst']
-    edge_out = ports['edge_out']
+    # aclk = ports['aclk']
+    # pulse_in = ports['pulse_in']
+    # grst = ports['grst']
+    # edge_out = ports['edge_out']
 
-    pulse_inst = m.Instance(pulse, 'pulse_inst', ports = m.connect_ports(pulse))    
+    pulse_inst = m.Instance(mkPulse2edge(numports), 'pulse_inst', params = None,  ports = [aclk, temp1, rst, temp2]) #m.connect_ports(pulse))    
+
+    out.assign(data_in & ~temp2)
 
     return m
 
@@ -108,6 +109,15 @@ def mkWta(numports=4):
     grst = m.Input('grst', 1)
     li_out = m.Output('li_out', Q)
 
+    first_spike = m.Wire('first_spike')
+    first_spike_edge = m.Wire('first_spike_edge')
+    temp = m.Wire('temp', Q)
+
+    # target submodule
+    pulse = mkPulse2edge()
+
+    pulse_inst = m.Instance(pulse, 'wta_pet', params = None, ports = [aclk, first_spike, grst, first_spike_edge])   
+
     
 
 
@@ -124,8 +134,8 @@ if __name__=='__main__':
     edge_v = edge.to_verilog('edge2pulse.v')
     less_v = less.to_verilog('less_equal.v') 
     incdec_v = incdec.to_verilog('incdec.v')
-    print(pulse_v)
-    print(adder_v)
-    print(edge_v)
+    #print(pulse_v)
+    #print(adder_v)
+    #print(edge_v)
     print(less_v)
     print(incdec_v)
