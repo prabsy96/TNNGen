@@ -1,0 +1,20 @@
+language: python
+
+sudo: false
+
+python:
+  - 3.7
+  - 3.8
+  - 3.9
+
+addons:
+  apt:
+    packages:
+    - iverilog
+    - verilator
+
+install:
+  - pip install pytest pytest-pythonpath jinja2 pyverilog numpy
+
+script:
+  - python -m pytest tests examples
