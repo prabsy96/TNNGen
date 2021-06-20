@@ -103,7 +103,8 @@ def mkIncdec(numports=9):
 def mkWta(numports=4):
     
     m = Module('wta')
-    Q = m.Parameter('Q', 10)
+    default_par = 10
+    Q = m.Parameter('Q', default_par)
     ec_spikes = m.Input('ec_spikes', Q)
     aclk = m.Input('aclk', 1)
     grst = m.Input('grst', 1)
@@ -121,10 +122,31 @@ def mkWta(numports=4):
 
     pulse_inst = m.Instance(pulse, 'wta_pet', params = None, ports = [aclk, first_spike, grst, first_spike_edge])   
 
-    less_equal_gen_for = m.GenerateFor(i=0, <'Lessn
-, Q)   
+    for j in range(default_par): m.Instance(less_equal, 'l1_'+str(j), params = None, ports = [ec_spikes[j], first_spike_edge[j], aclk, grst, temp[j]])
 
     return m
+
+def mkFlogic(numports=3):
+    m = Module('flogic')
+    F = m.Input('F', 6)
+    input_weight = m.Input('input_weight', 3)
+    out = m.Output('out', 1)
+
+    #m.Always(Posedge(aclk), Posedge(grst)) (If(grst) (temp(0)).Else (temp(edge_out)))
+
+    m.Always() (If(input_weight==Int(0, width = 3, base = 2)) (out(0))
+        .Elif(input_weight==Int(1, width = 3, base = 2)) (out(F[0]))
+        .Elif(input_weight==Int(2, width = 3, base = 2)) (out(F[1]))
+        .Elif(input_weight==Int(3, width = 3, base = 2)) (out(F[2]))
+        .Elif(input_weight==Int(4, width = 3, base = 2)) (out(F[3]))
+        .Elif(input_weight==Int(5, width = 3, base = 2)) (out(F[4]))
+        .Elif(input_weight==Int(6, width = 3, base = 2)) (out(F[5]))
+        .Elif(input_weight==Int(7, width = 3, base = 2)) (out(1))
+        )
+
+
+    return m
+
 
 
 
@@ -136,15 +158,18 @@ if __name__=='__main__':
     less = mkLessequal()
     incdec = mkIncdec()
     wta = mkWta()
+    flogic = mkFlogic()
     pulse_v = pulse.to_verilog('pulse2edge.v')
     adder_v = adder.to_verilog('adder.v')
     edge_v = edge.to_verilog('edge2pulse.v')
     less_v = less.to_verilog('less_equal.v') 
     incdec_v = incdec.to_verilog('incdec.v')
     wta_v = wta.to_verilog('wta.v')
+    flogic_v = flogic.to_verilog('flogic.v')
     #print(pulse_v)
     #print(adder_v)
     #print(edge_v)
-    print(less_v)
-    print(incdec_v)
+    #print(less_v)
+    #print(incdec_v)
     print(wta_v)
+    print(flogic_v)
