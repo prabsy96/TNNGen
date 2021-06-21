@@ -147,8 +147,189 @@ def mkFlogic(numports=3):
 
     return m
 
+def mkFsm_simple(numports=4):
+    m = Module('fsm_simple')
+    aclk = m.Input('aclk', 1)
+    rst = m.Input('rst', 1)
+    in_v = m.Input('in', 1)
+    out_v = m.Output('out', 1)
+
+    temp = m.Wire('temp', 1)
+
+    fsm = FSM(m, 'fsm', aclk, rst)
+    fsm_v = fsm.state
+    fsm.goto_next(out_v==1)
+    fsm.goto_next()
+    fsm.goto_next()
+    fsm.goto_next()
+    fsm.goto_next()
+    fsm.goto_next()
+    fsm.goto_next()
+    fsm.goto_next()
+
+    out_v.assign((~temp) | (temp & in_v))
+    
+    temp.assign(~ fsm_v[2] | fsm_v[1] | fsm_v[0])
+    
+
+    return m
+
+def mkFsm_synapse(numports=9):
+    m = Module('fsm_synapse')
+    weight_update_en = m.Input('weight_update_en', 1)
+    aclk = m.Input('aclk', 1)
+    gclk = m.Input('gclk', 1)
+    rst = m.Input('rst', 1)
+    input_spike = m.Input('input_spike', 1)
+    inc = m.Input('inc', 1) 
+    dec = m.Input('dec', 1)
+    out_v = m.Output('out', 1)
+    weight = m.Output('weight', 3)
+
+    state = m.Reg('state', 3)
+    S0 = m.Localparam('S0', 0, 3)
+    S1 = m.Localparam('S1', 1, 3)
+    S2 = m.Localparam('S2', 2, 3)
+    S3 = m.Localparam('S3', 3, 3)
+    S4 = m.Localparam('S4', 4, 3)
+    S5 = m.Localparam('S5', 5, 3)
+    S6 = m.Localparam('S6', 6, 3)
+    S7 = m.Localparam('S7', 7, 3)
 
 
+
+    dout = m.Reg('dout', 1)
+    din = m.Wire('din', 1)
+    tclk = m.Wire('tclk', 1)
+    tinc = m.Wire('tinc', 1)
+    tdec = m.Wire('tdec', 1)
+
+    tinc.assign(inc & ~ input_spike)
+    tdec.assign(dec & ~ input_spike)
+    tclk.assign(aclk & input_spike)
+
+    m.Always(Posedge(aclk), Posedge(gclk)) ( 
+        If(tclk) (
+            If(rst) (
+                state(S0))
+            .Else(
+                If(state==S0) (
+                    If(tclk) (
+                        state(S7)) 
+                    .Else (
+                        state(S0)) 
+                    ) 
+                .Elif(state==S1) (
+                    If(tclk == 1) (
+                        state(S0)) 
+                    .Else (
+                        state(S1)) ) 
+                .Elif(state==S2) (
+                    If(tclk) (
+                        state(S1)) 
+                    .Else (
+                        state(S2)) )
+                .Elif(state==S3) (
+                    If(tclk) (
+                        state(S2)) 
+                    .Else (
+                        state(S3)) )
+                .Elif(state==S4) (
+                    If(tclk) (
+                        state(S3)) 
+                    .Else (
+                        state(S4)) )
+                .Elif(state==S5) (
+                    If(tclk) (
+                        state(S4)) 
+                    .Else (
+                        state(S5)) )
+                .Elif(state==S6) (
+                    If(tclk) (
+                        state(S5)) 
+                    .Else (
+                        state(S6)) )
+                .Elif(state==S7) (
+                    If(tclk) (
+                        state(S6)) 
+                    .Else (
+                        state(S7)) )
+                )) 
+        .Else(
+            If(rst) (
+                state(S0)) 
+            .Else (
+                If(state==S0) (
+                    If(tinc & weight_update_en) (
+                        state(S1)) 
+                    .Else (
+                        state(S0)) )
+                .Elif(state==S1) (
+                    If(tdec & weight_update_en) (
+                        state(S0)) 
+                    .Elif(tinc & weight_update_en) (
+                        state(S2)) 
+                    .Else (
+                        state(S1))
+                    )
+                .Elif(state==S2) (
+                    If(tdec & weight_update_en) (
+                        state(S1)) 
+                    .Elif(tinc & weight_update_en) (
+                        state(S3)) 
+                    .Else (
+                        state(S2))
+                    )
+                .Elif(state==S3) (
+                    If(tdec & weight_update_en) (
+                        state(S2)) 
+                    .Elif(tinc & weight_update_en) (
+                        state(S4)) 
+                    .Else (
+                        state(S3))
+                    )
+                .Elif(state==S4) (
+                    If(tdec & weight_update_en) (
+                        state(S3)) 
+                    .Elif(tinc & weight_update_en) (
+                        state(S5)) 
+                    .Else (
+                        state(S4))
+                    )
+                .Elif(state==S5) (
+                    If(tdec & weight_update_en) (
+                        state(S4)) 
+                    .Elif(tinc & weight_update_en) (
+                        state(S6)) 
+                    .Else (
+                        state(S5))
+                    )     
+                .Elif(state==S6) (
+                    If(tdec & weight_update_en) (
+                        state(S5)) 
+                    .Elif(tinc & weight_update_en) (
+                        state(S7)) 
+                    .Else (
+                        state(S6))
+                    )
+                .Elif(state==S7) (
+                    If(tdec & weight_update_en) (
+                        state(S6)) 
+                    .Else (
+                        state(S7))
+                    )
+                ) 
+            )
+        )
+
+    din.assign(state[2] & state[1] & state[0])
+
+    m.Always(Posedge(din), Posedge(gclk)) (If(din) ( If(input_spike) (dout(1)) .Else (dout(0))) .Else (dout(0)))
+
+    out_v.assign(~ dout | input_spike)
+    weight.assign(state)
+
+    return m
 
 
 if __name__=='__main__':
@@ -159,6 +340,9 @@ if __name__=='__main__':
     incdec = mkIncdec()
     wta = mkWta()
     flogic = mkFlogic()
+    simple = mkFsm_simple()
+    synapse = mkFsm_synapse()
+
     pulse_v = pulse.to_verilog('pulse2edge.v')
     adder_v = adder.to_verilog('adder.v')
     edge_v = edge.to_verilog('edge2pulse.v')
@@ -166,10 +350,15 @@ if __name__=='__main__':
     incdec_v = incdec.to_verilog('incdec.v')
     wta_v = wta.to_verilog('wta.v')
     flogic_v = flogic.to_verilog('flogic.v')
+    simple_v = simple.to_verilog('fsm_simple.v')
+    synapse_v = synapse.to_verilog('fsm_synapse.v')
+
     #print(pulse_v)
     #print(adder_v)
     #print(edge_v)
     #print(less_v)
     #print(incdec_v)
-    print(wta_v)
-    print(flogic_v)
+    #print(wta_v)
+    #print(flogic_v)
+    #print(simple_v)
+    print(synapse_v)
