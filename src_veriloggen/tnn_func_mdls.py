@@ -147,6 +147,37 @@ def mkFlogic(numports=3):
 
     return m
 
+def mkStdp_case_gen(numports=5):
+
+    m = Module('stdp_case_gen')
+    ein = m.Input('ein', 1)
+    eout = m.Input('eout', 1)
+    aclk = m.Input('aclk', 1)
+    grst = m.Input('grst', 1)
+
+    stdp_cases = m.Output('stdp_cases', 4)
+
+    temp = m.Wire('temp', 1)
+    tboth = m.Wire('tboth', 1)
+    tone = m.Wire('tone', 1)
+    greater = m.Wire('greater', 1)
+
+    temp.assign(~ ein & eout)
+
+    pulse = mkPulse2edge()
+
+    pulse_inst = m.Instance(pulse, 'pe', params = None,  ports = [aclk, temp, grst, greater]) #m.connect_ports(pulse))    
+
+    tboth.assign(ein & eout)
+    tone.assign(ein ^ eout)
+
+    stdp_cases[0].assign(~ greater & tboth)
+    stdp_cases[1].assign(greater & tboth)
+    stdp_cases[2].assign(~ greater & tone)
+    stdp_cases[3].assign(greater & tone)
+
+    return m
+
 def mkFsm_simple(numports=4):
     m = Module('fsm_simple')
     aclk = m.Input('aclk', 1)
@@ -331,6 +362,39 @@ def mkFsm_synapse(numports=9):
 
     return m
 
+def mkStdp(numports=13):
+    m = Module('stdp.v')
+    ein = m.Input('ein', 1)
+    eout = m.Input('eout', 1)
+    capture = m.Input('capture', 1)
+    minus = m.Input('minus', 1)
+    search = m.Input('search', 1)
+    backoff = m.Input('backoff', 1)
+    min_v = m.Input('min', 1)
+    aclk = m.Input('aclk', 1)
+    grst = m.Input('grst', 1)
+    input_weight = m.Input('input_weight', 3)
+    F = m.Input('F', 6)
+
+    inc = m.Output('inc', 1)
+    dec = m.Output('dec', 1)
+
+    cases = m.Wire('stdp_cases', 4)
+    fout = m.Wire('fout', 1)
+
+    # target submodule
+    stdp_case = mkStdp_case_gen()
+    flogic = mkFlogic()
+    incdec = mkIncdec()
+
+    stdp_case_gen_inst = m.Instance(pulse, 's1', params = None, ports = [ein, eout, aclk, grst, cases])
+    flogic_inst = m.Instance(flogic, 's2', params = None, ports = [F, input_weight, fout])
+    incdec_inst = m.Instance(incdec, 's3', params = None, ports = [cases, capture, minus, search, backoff, min_v, F, inc, dec]) 
+
+
+    return m
+
+
 
 if __name__=='__main__':
     pulse = mkPulse2edge()
@@ -342,6 +406,8 @@ if __name__=='__main__':
     flogic = mkFlogic()
     simple = mkFsm_simple()
     synapse = mkFsm_synapse()
+    stdp_case = mkStdp_case_gen()
+    stdp = mkStdp()
 
     pulse_v = pulse.to_verilog('pulse2edge.v')
     adder_v = adder.to_verilog('adder.v')
@@ -352,6 +418,8 @@ if __name__=='__main__':
     flogic_v = flogic.to_verilog('flogic.v')
     simple_v = simple.to_verilog('fsm_simple.v')
     synapse_v = synapse.to_verilog('fsm_synapse.v')
+    stdp_case_gen_v = stdp_case.to_verilog('stdp_case_gen.v')
+    stdp_v = stdp.to_verilog('stdp.v')
 
     #print(pulse_v)
     #print(adder_v)
@@ -361,4 +429,6 @@ if __name__=='__main__':
     #print(wta_v)
     #print(flogic_v)
     #print(simple_v)
-    print(synapse_v)
+    #print(synapse_v)
+    #print(stdp_case_gen_v)
+    print(stdp_v)
