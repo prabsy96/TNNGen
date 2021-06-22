@@ -1,5 +1,5 @@
 from veriloggen import *
-
+import numpy as np
 
 def mkLessequal(numports=5):
     m = Module('less_equal')
@@ -394,6 +394,74 @@ def mkStdp(numports=13):
 
     return m
 
+def mkPac():
+    m = Module('pac')
+    ip_size = m.Parameter('INPUT_SIZE', 32)
+    thres = m.Parameter('THRESHOLD', 13)
+
+    #clog2_ip_size = ip_size.value.bit_length() - 1
+    clog2_ip_size = np.log2(ip_size.value) 
+    #x = raw_value('$clog2(INPUT_SIZE)')
+    out_res = m.Localparam('OUT_RES', int(clog2_ip_size)) 
+    in_size = m.Localparam('IN_SIZE', out_res.value*2) 
+    stages = m.Localparam('STAGES', in_size.value-1)
+    num = m.Localparam('NUM', 2*in_size.value-out_res.value-2)
+    maxres = m.Localparam('MAXRES', max(out_res.value+1, thres.value+1))    
+
+    in_v = m.Input('in', in_size.value)
+    aclk = m.Input('aclk', 1)
+    grst = m.Input('grst', 1)
+    out_v = m.Output('out', 1)
+
+    tin = m.Wire('tin', in_size.value)
+    temp = m.Wire('temp', num.value)
+    tout = m.Wire('tout', out_res.value)
+    t2out = m.Wire('t2out', maxres.value)
+    fout = m.Reg('fout', maxres.value)
+    maxout = m.Wire('maxout', maxres.value)
+
+    m.EmbeddedCode("assign tin = IN_SIZE\'(in);")
+
+    in_size_val = int((in_size.value)/2)
+
+    #f = For(pre = '0', condition = 'in_size.name/2', post = '1' ) 
+    #f_st= f.set_statement(temp(0))
+    #f = While(condition='in_size.name/2' )
+    #print(f(temp(0)))
+
+    for i_v in range(in_size_val):
+        temp[i_v].assign(tin[i_v])
+
+    adder = mkAdder()
+
+    count = []
+    count.append(0)
+    
+    for i in range(stages.value):
+         
+        j = Div(in_size.value,Sll(1, (i+2)))
+        for j in range(i):
+            m.Instance(adder, 'a1_'+str(i)+str(j), params = count, ports = [Slice(temp, Srl(in_size.value, i)*(Sll(1, i+1)-i-3 + 2*j*(i+1)), (Srl(in_size.value, i))*((Sll(1, i+1))-i-2) + 2*j*(i+1)+i), 
+            Slice(temp, Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + (2*j+1), Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + (2*j+1)*(i+1)+i),
+            tin[Add(in_size_val,(Srl(in_size.value, i+1))*((Sll(1,i)-1))+j)],
+            Slice(temp, Srl(in_size.value, i+1)*(Sll(1, i+2)-i-3 + j*(i+2)), Srl(in_size.value, i+1)*(Sll(1, i+2)-i-3 + j*(i+2)) +(i+1))
+            ])
+
+        count[0] = i+1
+
+    tout.assign(Slice(temp, num.value - out_res.value, num.value-1))
+
+    m.Always(Posedge(aclk)) (fout(maxout))
+
+    out_v.assign(~ t2out[1])
+
+    m.EmbeddedCode("assign muxout = (out | grst) ? -1*THRESHOLD : t2out[1:MAXRES];")
+  
+
+
+    return m
+
+
 
 
 if __name__=='__main__':
@@ -408,6 +476,7 @@ if __name__=='__main__':
     synapse = mkFsm_synapse()
     stdp_case = mkStdp_case_gen()
     stdp = mkStdp()
+    pac = mkPac()
 
     pulse_v = pulse.to_verilog('pulse2edge.v')
     adder_v = adder.to_verilog('adder.v')
@@ -420,6 +489,7 @@ if __name__=='__main__':
     synapse_v = synapse.to_verilog('fsm_synapse.v')
     stdp_case_gen_v = stdp_case.to_verilog('stdp_case_gen.v')
     stdp_v = stdp.to_verilog('stdp.v')
+    pac_v = pac.to_verilog('pac.v')
 
     #print(pulse_v)
     #print(adder_v)
@@ -431,4 +501,5 @@ if __name__=='__main__':
     #print(simple_v)
     #print(synapse_v)
     #print(stdp_case_gen_v)
-    print(stdp_v)
+    #print(stdp_v)
+    print(pac_v)
