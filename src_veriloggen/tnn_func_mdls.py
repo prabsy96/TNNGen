@@ -1,5 +1,11 @@
 from veriloggen import *
 import numpy as np
+import os
+
+# Author = Prabhu Vellaisamy
+# TNN Column Submodule VerilogGen library for Verilog RTL creation
+# Original Verilog files created by Harideep Nair 
+
 
 def mkLessequal(numports=5):
     m = Module('less_equal')
@@ -383,9 +389,12 @@ def mkStdp(numports=13):
     fout = m.Wire('fout', 1)
 
     # target submodule
+    pulse = mkPulse2edge()
     stdp_case = mkStdp_case_gen()
     flogic = mkFlogic()
     incdec = mkIncdec()
+
+    
 
     stdp_case_gen_inst = m.Instance(pulse, 's1', params = None, ports = [ein, eout, aclk, grst, cases])
     flogic_inst = m.Instance(flogic, 's2', params = None, ports = [F, input_weight, fout])
@@ -420,7 +429,7 @@ def mkPac():
     fout = m.Reg('fout', maxres.value)
     maxout = m.Wire('maxout', maxres.value)
 
-    m.EmbeddedCode("assign tin = IN_SIZE\'(in);")
+    insert_code_1 = m.EmbeddedCode("assign tin = IN_SIZE\'(in);")
 
     in_size_val = int((in_size.value)/2)
 
@@ -455,12 +464,63 @@ def mkPac():
 
     out_v.assign(~ t2out[1])
 
-    m.EmbeddedCode("assign muxout = (out | grst) ? -1*THRESHOLD : t2out[1:MAXRES];")
+    insert_code_2 = m.EmbeddedCode("assign muxout = (out | grst) ? -1*THRESHOLD : t2out[1:MAXRES];")
   
+    return m
 
+def mkNeuronbody(numports = 5):
+    m = Module('neuron_body')
+    in_size_v = m.Parameter('INPUT_SIZE', 16)
+    thres_v = m.Parameter('THRESHOLD', 13)
+    acc_in = m.Input('acc_in', in_size_v)
+    aclk = m.Input('aclk', 1)
+    pac_rst = m.Input('pac_rst', 1)
+    rst = m.Input('rst', 1)
+    out_v = m.Output('out_spike', 1)
+
+    temp = m.Wire('temp_spike', 1)
+
+    pac = mkPac()
+    fsm_s = mkFsm_simple()
+
+    par_pac = [in_size_v.value, thres_v.value]
+
+    pac_inst = m.Instance(pac, 'p1', params = par_pac, ports = [acc_in, aclk, pac_rst, temp] )
+
+    fsm_simple_inst =m.Instance(fsm_s, 'fs', params = None, ports = [aclk, rst, temp, out_v])
 
     return m
 
+def mkNeuronRNL(numports = 10):
+    m = Module('neuron_rnl_ptt')
+    in_size = m.Parameter('INPUT_SIZE', 64)
+    thres = m.Parameter('THRESHOLD', 13)
+
+    in_v = m.Input('input_spikes', in_size.value)
+    inc = m.Input('inc', in_size.value)
+    dec = m.Input('dec', in_size.value)
+    weight_en = m.Input('weight_update_en', 1)
+    aclk = m.Input('aclk', 1)
+    gclk = m.Input('gclk', 1)
+    grst = m.Input('grst', 1)
+    rst = m.Input('rst', 1)
+
+    out_v = m.Output('out_spike', 1)
+    weight = m.Output('weights', in_size.value, dims = 3 )
+
+    up_in = m.Wire('up_in', in_size.value)
+
+    fsm_s = mkFsm_synapse()
+    nbody = mkNeuronbody()
+
+    for i in range(in_size.value):
+        m.Instance(fsm_s, 'f1_'+str(i), params = None, ports = [weight_en, aclk, gclk, rst, in_v[i], inc[i], dec[i], up_in[i], weight[i]])
+
+    par_nbody = [in_size.value, thres.value]
+
+    m.Instance(nbody, 'p1', params = par_nbody, ports = [up_in, aclk, grst, rst, out_v])    
+
+    return m
 
 
 
@@ -477,19 +537,27 @@ if __name__=='__main__':
     stdp_case = mkStdp_case_gen()
     stdp = mkStdp()
     pac = mkPac()
+    n_body = mkNeuronbody()
+    n_rnl = mkNeuronRNL()
 
-    pulse_v = pulse.to_verilog('pulse2edge.v')
-    adder_v = adder.to_verilog('adder.v')
-    edge_v = edge.to_verilog('edge2pulse.v')
-    less_v = less.to_verilog('less_equal.v') 
-    incdec_v = incdec.to_verilog('incdec.v')
-    wta_v = wta.to_verilog('wta.v')
-    flogic_v = flogic.to_verilog('flogic.v')
-    simple_v = simple.to_verilog('fsm_simple.v')
-    synapse_v = synapse.to_verilog('fsm_synapse.v')
-    stdp_case_gen_v = stdp_case.to_verilog('stdp_case_gen.v')
-    stdp_v = stdp.to_verilog('stdp.v')
-    pac_v = pac.to_verilog('pac.v')
+    if not os.path.exists('out_rtl'):
+        os.mkdir('out_rtl')    
+
+    pulse_v = pulse.to_verilog('out_rtl/pulse2edge.v')
+    adder_v = adder.to_verilog('out_rtl/adder.v')
+    edge_v = edge.to_verilog('out_rtl/edge2pulse.v')
+    less_v = less.to_verilog('out_rtl/less_equal.v') 
+    incdec_v = incdec.to_verilog('out_rtl/incdec.v')
+    wta_v = wta.to_verilog('out_rtl/wta.v')
+    flogic_v = flogic.to_verilog('out_rtl/flogic.v')
+    simple_v = simple.to_verilog('out_rtl/fsm_simple.v')
+    synapse_v = synapse.to_verilog('out_rtl/fsm_synapse.v')
+    stdp_case_gen_v = stdp_case.to_verilog('out_rtl/stdp_case_gen.v')
+    stdp_v = stdp.to_verilog('out_rtl/stdp.v')
+    pac_v = pac.to_verilog('out_rtl/pac.v')
+    n_body_v = n_body.to_verilog('out_rtl/neuron_body.v')
+    n_rnl_v = n_rnl.to_verilog('out_rtl/neuron_rnl_ptt.v')
+
 
     #print(pulse_v)
     #print(adder_v)
@@ -502,4 +570,7 @@ if __name__=='__main__':
     #print(synapse_v)
     #print(stdp_case_gen_v)
     #print(stdp_v)
-    print(pac_v)
+    #print(pac_v)
+    #print(n_body_v)
+    #print(n_rnl_v)
+    #print(col_v)
