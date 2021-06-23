@@ -1,4 +1,4 @@
-# TNN-EDA
+# TNNGen
 
 download pyverilog here - https://pypi.org/project/pyverilog/
 
