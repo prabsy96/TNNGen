@@ -17,6 +17,7 @@ sudo apt-get install -y gtkwave
 Directories & Files -
 
 - TNNGen
+
   |__ asap7/ -> contains all the standard cell .lib files
   
   |__ tnn_hw/ -> original TNN HW framework (https://github.com/hpnair/Neuromorphosis---TNNCMOS)
