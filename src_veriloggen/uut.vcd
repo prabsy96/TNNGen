@@ -1,0 +1,115 @@
+$date
+	Thu Jun 24 17:33:15 2021
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module test_incdec $end
+$scope module dut $end
+$var wire 1 ! F $end
+$var wire 1 " backoff $end
+$var wire 1 # capture $end
+$var wire 1 $ dec $end
+$var wire 1 % inc $end
+$var wire 1 & min $end
+$var wire 1 ' minus $end
+$var wire 1 ( search $end
+$var wire 4 ) stdp_cases [3:0] $end
+$var wire 1 * temp $end
+$upscope $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 4 + dut_stdp_cases [3:0] $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 1 # dut_capture $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 1 ' dut_minus $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 1 ( dut_search $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 1 " dut_backoff $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 1 & dut_min $end
+$upscope $end
+$scope module test_incdec $end
+$var reg 1 ! dut_F $end
+$upscope $end
+$scope module test_incdec $end
+$var wire 1 % dut_inc $end
+$upscope $end
+$scope module test_incdec $end
+$var wire 1 $ dut_dec $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b0 +
+0*
+b0 )
+0(
+0'
+0&
+0%
+0$
+0#
+0"
+0!
+$end
+#5
+b1000 )
+b1000 +
+#10
+1#
+#15
+1*
+1!
+#20
+b100 )
+b100 +
+#25
+0*
+0!
+1'
+#30
+1*
+1!
+#35
+1$
+b10 )
+b10 +
+#40
+0$
+0*
+0!
+1(
+#45
+1$
+1*
+1!
+#50
+1%
+0$
+b1 )
+b1 +
+#55
+0%
+0*
+0!
+1"
+#60
+1%
+1*
+1!
+#70
+0%
+b0 )
+b0 +
+#270

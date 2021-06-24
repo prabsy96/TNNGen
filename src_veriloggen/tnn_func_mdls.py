@@ -3,6 +3,7 @@ import numpy as np
 import os
 
 # Author = Prabhu Vellaisamy
+
 # TNN Column Submodule VerilogGen library for Verilog RTL creation
 # Original Verilog files created by Harideep Nair 
 
@@ -18,23 +19,17 @@ def mkLessequal(numports=5):
     temp1 = m.Wire('temp1', 1)
     temp2 = m.Wire('temp2', 1)
 
-    temp1.assign(~data_in & inhibit_in)
-
-
     # target submodule
     pulse = mkPulse2edge()
 
     # copy paras and ports
     #params = m.copy_params(led)
     ports = m.copy_ports(pulse)
-    
-    # aclk = ports['aclk']
-    # pulse_in = ports['pulse_in']
-    # grst = ports['grst']
-    # edge_out = ports['edge_out']
 
-    pulse_inst = m.Instance(mkPulse2edge(numports), 'pulse_inst', params = None,  ports = [aclk, temp1, rst, temp2]) #m.connect_ports(pulse))    
+    pulse_inst = Submodule(m, pulse, name = 'pulse_inst', arg_ports = [aclk, temp1, rst, temp2])
 
+    temp1.assign(~data_in & inhibit_in)
+   
     out.assign(data_in & ~temp2)
 
     return m
@@ -562,7 +557,7 @@ if __name__=='__main__':
     #print(pulse_v)
     #print(adder_v)
     #print(edge_v)
-    #print(less_v)
+    print(less_v)
     #print(incdec_v)
     #print(wta_v)
     #print(flogic_v)
