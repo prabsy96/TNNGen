@@ -1,11 +1,10 @@
 # TNNGen
 
-For running TNNGen - 
-
 Framework for generating Temporal Neural Network ecosystems with support for predictive 7 nm post-synthesis PPA metric results
 
-Instructions -
+# Instructions -
 
+```bash
 sudo apt install iverilog
 
 pip3 install pyverilog numpy
@@ -13,8 +12,9 @@ pip3 install pyverilog numpy
 sudo apt install verilator
 
 sudo apt-get install -y gtkwave
+```
 
-Directories & Files -
+# Directories & Files -
 
 - TNNGen
 
