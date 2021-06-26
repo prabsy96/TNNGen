@@ -59,8 +59,8 @@ if __name__ == '__main__':
     #verilog = test.to_verilog()
     print(verilog)
 
-   # sim = simulation.Simulator(test)
-   # rslt = sim.run()
-   # print(rslt)
+    sim = simulation.Simulator(test)
+    rslt = sim.run()
+    print(rslt)
 
-    # sim.view_waveform()
+    sim.view_waveform()

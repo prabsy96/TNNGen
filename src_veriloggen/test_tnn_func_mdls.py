@@ -149,9 +149,9 @@ def mkTest_Pulse2edge():
 def mkTest_Adder():
 	m = Module('test_adder')
 
-	adder = mkAdder()
+	adder = mkAdder(4)
 
-	dut = Submodule(m, adder, 'dut', arg_params = int(4))
+	dut = Submodule(m, adder, 'dut')
 
 	out = dut['out']
 	a = dut['a']
@@ -305,6 +305,97 @@ def mkTest_Incdec():
 	return m
 
 
+def mkTest_Wta():
+
+	m = Module('test_wta')
+
+	wta = mkWta(4)
+
+	dut = Submodule(m, wta, 'dut')
+
+	ec_spikes = dut['ec_spikes']
+	aclk = dut['aclk']
+	grst = dut['grst']
+	li_out = dut['li_out']	
+
+	i = m.Integer('i', 32, 0)
+
+	dump = simulation.setup_waveform(m, dut, [ec_spikes, aclk, grst, li_out])
+	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
+	
+	dump.add(
+		ec_spikes(0),
+		Delay(5),
+
+		ec_spikes[2](1),
+		ec_spikes[1](1),
+		Delay(1),
+
+		ec_spikes[3](1),
+		Delay(5),
+
+		ec_spikes[0](1),
+		Delay(2),
+
+		ec_spikes[2](0),
+		ec_spikes[1](0),
+		Delay(1),
+
+		ec_spikes[3](0),
+		Delay(5),
+
+		ec_spikes[0](0),
+		Delay(9),
+
+		ec_spikes[2](1),
+        ec_spikes[1](1),
+        ec_spikes[0](1),
+        ec_spikes[3](1),
+
+        Delay(8),
+        ec_spikes[3](0),
+        ec_spikes[2](0),
+        ec_spikes[0](0),
+        ec_spikes[1](0),
+        
+        Delay(15),
+        ec_spikes[2](1),
+        ec_spikes[3](1),
+
+        Delay(1),
+        ec_spikes[1](1),
+        
+        Delay(5),
+        ec_spikes[0](1),
+
+        Delay(6),
+        ec_spikes[2](0),
+        ec_spikes[3](0),
+
+        Delay(1),
+        ec_spikes[1](0),
+
+        Delay(5),
+        ec_spikes[0](0),
+        
+        Delay(10),
+        ec_spikes(0),
+
+        Delay(100),
+
+        simulation.finish()
+		)
+
+	m.Always(aclk) (i(i%23), \
+		If(i==0) (
+			grst(1)) 
+		.Else(
+			grst(0))
+		, i.inc())
+
+	return m
+
+
 
 
 
@@ -314,6 +405,7 @@ if __name__ == '__main__':
 	test_adder = mkTest_Adder()
 	test_edge = mkTest_Edge2pulse()
 	test_incdec = mkTest_Incdec()
+	test_wta = mkTest_Wta()
 
 	if not os.path.exists('out_test'):
 		os.mkdir('out_test')
@@ -322,15 +414,17 @@ if __name__ == '__main__':
 	#test_pulse_v = test_pulse.to_verilog('out_test/pulse2edge_tb.v')
 	#test_adder_v = test_adder.to_verilog('out_test/adder_tb.v')
 	#test_edge_v =test_edge.to_verilog('out_test/edge_tb.v')
-	test_incdec_v = test_incdec.to_verilog('out_test/incdec_tb.v')
+	#test_incdec_v = test_incdec.to_verilog('out_test/incdec_tb.v')
+	test_wta_v = test_wta.to_verilog('out_test/wta_tb.v')
 
 	#print(test_lq_v)
 	#print(test_pulse_v)
 	#print(test_adder_v)
 	#print(test_edge_v)
-	print(test_incdec_v)
+	#print(test_incdec_v)
+	print(test_wta_v)
 
-	sim = simulation.Simulator(test_incdec)
+	sim = simulation.Simulator(test_wta)
 	rslt = sim.run()
 	print(rslt)
 	sim.view_waveform()

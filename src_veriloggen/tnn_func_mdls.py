@@ -8,7 +8,7 @@ import os
 # Original Verilog files created by Harideep Nair 
 
 
-def mkLessequal(numports=5):
+def mkLessequal():
     m = Module('less_equal')
     data_in = m.Input('data_in', 1)
     inhibit_in = m.Input('inhibit_in', 1)
@@ -35,7 +35,7 @@ def mkLessequal(numports=5):
     return m
 
 
-def mkPulse2edge(numports=4):
+def mkPulse2edge():
 	m = Module('pulse2edge')
 	aclk = m.Input('aclk', 1)
 	pulse_in = m.Input('pulse_in', 1)
@@ -48,9 +48,9 @@ def mkPulse2edge(numports=4):
 	edge_out.assign(pulse_in | temp)
 	return m
 
-def mkAdder(numports=4):
+def mkAdder(res = 4):
     m = Module('adder')
-    res = m.Parameter('RES',4)
+    res = m.Parameter('RES',res )
     a = m.Input('a', res)
     b = m.Input('b', res)
     cin = m.Input('cin')
@@ -60,7 +60,7 @@ def mkAdder(numports=4):
 
     return m
 
-def mkEdge2pulse(numports=3):
+def mkEdge2pulse():
     m = Module('edge2pulse')
     edge_in = m.Input('edge_in', 1)
     clk_in = m.Input('clk_in', 1)
@@ -79,7 +79,7 @@ def mkEdge2pulse(numports=3):
 
 
 
-def mkIncdec(numports=9):
+def mkIncdec():
 
     m = Module('incdec')
     cases = m.Input('stdp_cases', 4)
@@ -101,11 +101,10 @@ def mkIncdec(numports=9):
 
     return m
 
-def mkWta(numports=4):
+def mkWta(Q = 10):
     
     m = Module('wta')
-    default_par = 10
-    Q = m.Parameter('Q', default_par)
+    Q = m.Parameter('Q', Q)
     ec_spikes = m.Input('ec_spikes', Q)
     aclk = m.Input('aclk', 1)
     grst = m.Input('grst', 1)
@@ -119,11 +118,18 @@ def mkWta(numports=4):
 
     # target submodule
     pulse = mkPulse2edge()
-    less_equal = mkLessequal()
+    less_equal = mkLessequal()   
 
-    pulse_inst = m.Instance(pulse, 'wta_pet', params = None, ports = [aclk, first_spike, grst, first_spike_edge])   
+    pulse_inst = Submodule(m, pulse, name = 'pulse_inst', arg_ports = [aclk, first_spike, grst, first_spike_edge])
 
-    for j in range(default_par): m.Instance(less_equal, 'l1_'+str(j), params = None, ports = [ec_spikes[j], first_spike_edge[j], aclk, grst, temp[j]])
+    for j in range(Q.value): 
+        Submodule(m, less_equal, name = 'l1_'+str(j), arg_ports = [ec_spikes[j], first_spike_edge, aclk, grst, temp[j]])
+
+    li_out[0].assign(temp[0])
+
+    for k in range(1, Q.value):
+        li_out[k].assign(temp[k] & ~ Uor(Slice(temp, k-1, 0)) )
+
 
     return m
 
