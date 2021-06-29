@@ -133,11 +133,11 @@ def mkWta(Q = 10):
 
     return m
 
-def mkFlogic(numports=3):
+def mkFlogic():
     m = Module('flogic')
     F = m.Input('F', 6)
     input_weight = m.Input('input_weight', 3)
-    out = m.Output('out', 1)
+    out = m.OutputReg('out', 1)
 
     #m.Always(Posedge(aclk), Posedge(grst)) (If(grst) (temp(0)).Else (temp(edge_out)))
 
@@ -154,7 +154,7 @@ def mkFlogic(numports=3):
 
     return m
 
-def mkStdp_case_gen(numports=5):
+def mkStdp_case_gen():
 
     m = Module('stdp_case_gen')
     ein = m.Input('ein', 1)
@@ -185,7 +185,7 @@ def mkStdp_case_gen(numports=5):
 
     return m
 
-def mkFsm_simple(numports=4):
+def mkFsm_simple():
     m = Module('fsm_simple')
     aclk = m.Input('aclk', 1)
     rst = m.Input('rst', 1)
@@ -212,7 +212,7 @@ def mkFsm_simple(numports=4):
 
     return m
 
-def mkFsm_synapse(numports=9):
+def mkFsm_synapse():
     m = Module('fsm_synapse')
     weight_update_en = m.Input('weight_update_en', 1)
     aclk = m.Input('aclk', 1)
@@ -369,7 +369,7 @@ def mkFsm_synapse(numports=9):
 
     return m
 
-def mkStdp(numports=13):
+def mkStdp():
     m = Module('stdp.v')
     ein = m.Input('ein', 1)
     eout = m.Input('eout', 1)
@@ -469,7 +469,7 @@ def mkPac():
   
     return m
 
-def mkNeuronbody(numports = 5):
+def mkNeuronbody():
     m = Module('neuron_body')
     in_size_v = m.Parameter('INPUT_SIZE', 16)
     thres_v = m.Parameter('THRESHOLD', 13)
@@ -492,7 +492,7 @@ def mkNeuronbody(numports = 5):
 
     return m
 
-def mkNeuronRNL(numports = 10):
+def mkNeuronRNL():
     m = Module('neuron_rnl_ptt')
     in_size = m.Parameter('INPUT_SIZE', 64)
     thres = m.Parameter('THRESHOLD', 13)

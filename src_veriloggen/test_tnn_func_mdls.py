@@ -395,6 +395,169 @@ def mkTest_Wta():
 
 	return m
 
+def mkTest_Flogic(): 
+
+	m = Module('test_flogic')
+	flogic = mkFlogic()
+
+	dut = Submodule(m, flogic, 'dut')
+
+	F = dut['F']
+	input_weight = dut['input_weight']
+	out = dut['out']
+
+	dump = simulation.setup_waveform(m, dut, [F, input_weight, out])
+
+	dump.add(
+		F(0),
+		input_weight (0),
+		Delay(5),
+
+		F(int('111111', 2)),
+		Delay(5),
+
+		input_weight(1),
+		Delay(5),
+
+		F(int('011111', 2)),
+		Delay(5),
+
+		input_weight(2),
+		F(int('111111', 2)),
+		Delay(5),
+
+		F(int('101111', 2)),
+		Delay(5),
+
+		input_weight(3),
+		F(int('111111', 2)),
+		Delay(5),
+
+		F(int('110111', 2)),
+		Delay(5),
+
+		input_weight(4),
+		Delay(5),
+
+		F(int('111011', 2)),
+		Delay(5),
+
+		input_weight(5),
+		Delay(5),
+
+		F(int('111101', 2)),
+		Delay(5),
+
+		input_weight(6),
+		Delay(5),
+
+		F(int('111110', 2)),
+		Delay(5),
+
+		input_weight(7),
+		Delay(5),
+
+		F(0),
+		Delay(5),
+
+        Delay(100),
+
+        simulation.finish()
+		)
+
+
+
+	return m
+
+def mkTest_Stdp_case_gen():
+
+	m = Module('test_stdp_case_gen')
+	stdp_case = mkStdp_case_gen()
+
+	dut = Submodule(m, stdp_case, 'dut')
+
+	stdp_cases = dut['stdp_cases']
+	ein = dut['ein']
+	eout = dut['eout']
+	aclk = dut['aclk']
+	grst = dut['grst']
+
+	i = m.Integer('i', 32, 0)
+
+	dump = simulation.setup_waveform(m, dut, [ein, eout, aclk, grst])
+	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
+
+	dump.add(
+		ein(0),
+		eout(0),
+		Delay(5),
+
+		ein(1),
+		Delay(2),
+
+		eout(1),
+		Delay(16),
+
+		ein(0),
+		eout(0),
+		Delay(5),
+
+		eout(1),
+		Delay(2),
+
+        ein(1),
+		Delay(16),
+
+		ein(0),
+		eout(0),
+        
+        Delay(5),
+        ein(1),
+		
+		Delay(18),
+		ein(0),
+
+		Delay(16),
+		eout(1),
+
+		Delay(7),
+		eout(0),
+
+		Delay(5),
+		ein(0),
+
+		Delay(2),
+		eout(0),
+
+		Delay(6),
+		ein(0),
+		
+		Delay(9),
+		eout(0),
+
+		Delay(10),
+		ein(0),
+		eout(0),
+
+		Delay(10),
+
+		Delay(100),
+
+		simulation.finish()
+		)
+
+	m.Always(aclk) (i(i%23), \
+		If(i==0) (
+			grst(1)) 
+		.Else(
+			grst(0))
+		, i.inc())
+
+	return m
+
+
+
+
 
 
 
@@ -406,6 +569,8 @@ if __name__ == '__main__':
 	test_edge = mkTest_Edge2pulse()
 	test_incdec = mkTest_Incdec()
 	test_wta = mkTest_Wta()
+	test_flogic = mkTest_Flogic()
+	test_stdp_case = mkTest_Stdp_case_gen()
 
 	if not os.path.exists('out_test'):
 		os.mkdir('out_test')
@@ -415,16 +580,20 @@ if __name__ == '__main__':
 	#test_adder_v = test_adder.to_verilog('out_test/adder_tb.v')
 	#test_edge_v =test_edge.to_verilog('out_test/edge_tb.v')
 	#test_incdec_v = test_incdec.to_verilog('out_test/incdec_tb.v')
-	test_wta_v = test_wta.to_verilog('out_test/wta_tb.v')
+	#test_wta_v = test_wta.to_verilog('out_test/wta_tb.v')
+	#test_flogic_v = test_flogic.to_verilog('out_test/flogic_tb.v')
+	test_stdp_case_v = test_stdp_case.to_verilog('out_test/stdp_cases_tb.v')
 
 	#print(test_lq_v)
 	#print(test_pulse_v)
 	#print(test_adder_v)
 	#print(test_edge_v)
 	#print(test_incdec_v)
-	print(test_wta_v)
+	#rint(test_wta_v)
+	#print(test_flogic_v
+	print(test_stdp_case_v)
 
-	sim = simulation.Simulator(test_wta)
+	sim = simulation.Simulator(test_stdp_case)
 	rslt = sim.run()
 	print(rslt)
 	sim.view_waveform()
