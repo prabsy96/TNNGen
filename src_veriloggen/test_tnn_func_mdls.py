@@ -1,3 +1,7 @@
+# Author = Prabhu Vellaisamy
+
+# TNN testbench generation using VerilogGen library to check correctness
+
 from veriloggen import *
 import numpy as np
 from tnn_func_mdls import * 
@@ -554,6 +558,41 @@ def mkTest_Stdp_case_gen():
 		, i.inc())
 
 	return m
+
+
+def Test_Fsm_simple():
+
+	m = Module('test_fsm_simple')
+	fsm_simple = Fsm_simple()
+	dut = Submodule(m, fsm_simple, 'dut')
+
+	aclk = dut['aclk']
+	rst = dut['rst']
+	in_v = dut['in']
+	out_v = dut['out']
+
+	i = m.Integer('i', 32, 0)
+
+	dump = simulation.setup_waveform(m, dut, [aclk, rst, in_v, out_v])
+	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
+
+	dump.add(
+
+		in_v(0),
+		rst(1),
+		Delay(25),
+
+		rst(0),
+		Delay(5.001),
+
+		in_v(1),
+		
+
+
+		)
+
+
+
 
 
 

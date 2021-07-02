@@ -1,11 +1,11 @@
-from veriloggen import *
-import numpy as np
-import os
-
 # Author = Prabhu Vellaisamy
 
 # TNN Column Submodule VerilogGen library for Verilog RTL creation
 # Original Verilog files created by Harideep Nair 
+
+from veriloggen import *
+import numpy as np
+import os
 
 
 def mkLessequal():
