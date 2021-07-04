@@ -370,7 +370,7 @@ def mkFsm_synapse():
     return m
 
 def mkStdp():
-    m = Module('stdp.v')
+    m = Module('stdp')
     ein = m.Input('ein', 1)
     eout = m.Input('eout', 1)
     capture = m.Input('capture', 1)
@@ -404,43 +404,48 @@ def mkStdp():
 
     return m
 
-def mkPac():
+def mkPac(ip_size = 32, thres = 13):
     m = Module('pac')
-    ip_size = m.Parameter('INPUT_SIZE', 32)
-    thres = m.Parameter('THRESHOLD', 13)
+    in_size = m.Parameter('INPUT_SIZE', int(ip_size))
+    thres = m.Parameter('THRESHOLD', int(thres))
+    clog2_in_size = np.log2(int(in_size.value))
+    clog2_thres = np.log2(int(thres.value))
+
+
+    stages = m.Localparam('STAGES', int(clog2_in_size)-1)
+    out_res = m.Localparam('OUT_RES', int(clog2_in_size))
+    num = m.Localparam('NUM', 2*in_size.value-out_res.value-2)
+    maxres = m.Localparam('MAXRES', max(out_res.value+1, int(clog2_thres)+1))
+
+
 
     #clog2_ip_size = ip_size.value.bit_length() - 1
-    clog2_ip_size = np.log2(ip_size.value) 
-    #x = raw_value('$clog2(INPUT_SIZE)')
-    out_res = m.Localparam('OUT_RES', int(clog2_ip_size)) 
-    in_size = m.Localparam('IN_SIZE', out_res.value*2) 
-    stages = m.Localparam('STAGES', in_size.value-1)
-    num = m.Localparam('NUM', 2*in_size.value-out_res.value-2)
-    maxres = m.Localparam('MAXRES', max(out_res.value+1, thres.value+1))    
+    # clog2_ip_size = np.log2(ip_size_v.value) 
+    # clog2_thres = np.log2(thres.value)
+    # out_res = m.Localparam('OUT_RES', int(clog2_ip_size)) 
+    # in_size = m.Localparam('IN_SIZE', ip_size_v.value)
+    # stages = m.Localparam('STAGES', int(clog2_ip_size)-1)
+    # num = m.Localparam('NUM', 2*in_size.value-out_res.value-2)
+    # maxres = m.Localparam('MAXRES', max(out_res.value+1, clog2_thres+1))    
 
     in_v = m.Input('in', in_size.value)
     aclk = m.Input('aclk', 1)
     grst = m.Input('grst', 1)
     out_v = m.Output('out', 1)
 
-    tin = m.Wire('tin', in_size.value)
-    temp = m.Wire('temp', num.value)
-    tout = m.Wire('tout', out_res.value)
-    t2out = m.Wire('t2out', maxres.value)
-    fout = m.Reg('fout', maxres.value)
-    maxout = m.Wire('maxout', maxres.value)
+    #tin = m.Wire('tin', in_size.value)
+    temp = m.Wire('temp', width = num.value)
+    tout = m.Wire('tout', width = out_res.value)
+    t2out = m.Wire('t2out', width = maxres.value+1)
+    fout = m.Reg('fout', width = maxres.value)
+    muxout = m.Wire('muxout', width = maxres.value)
 
-    insert_code_1 = m.EmbeddedCode("assign tin = IN_SIZE\'(in);")
+    #insert_code_1 = m.EmbeddedCode("assign tin = IN_SIZE\'(in);")
 
     in_size_val = int((in_size.value)/2)
 
-    #f = For(pre = '0', condition = 'in_size.name/2', post = '1' ) 
-    #f_st= f.set_statement(temp(0))
-    #f = While(condition='in_size.name/2' )
-    #print(f(temp(0)))
-
     for i_v in range(in_size_val):
-        temp[i_v].assign(tin[i_v])
+        temp[i_v].assign(in_v[i_v])
 
     adder = mkAdder()
 
@@ -451,29 +456,34 @@ def mkPac():
          
         j = Div(in_size.value,Sll(1, (i+2)))
         for j in range(i):
-            m.Instance(adder, 'a1_'+str(i)+str(j), params = count, ports = [Slice(temp, Srl(in_size.value, i)*(Sll(1, i+1)-i-3 + 2*j*(i+1)), (Srl(in_size.value, i))*((Sll(1, i+1))-i-2) + 2*j*(i+1)+i), 
-            Slice(temp, Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + (2*j+1), Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + (2*j+1)*(i+1)+i),
-            tin[Add(in_size_val,(Srl(in_size.value, i+1))*((Sll(1,i)-1))+j)],
-            Slice(temp, Srl(in_size.value, i+1)*(Sll(1, i+2)-i-3 + j*(i+2)), Srl(in_size.value, i+1)*(Sll(1, i+2)-i-3 + j*(i+2)) +(i+1))
-            ])
+            m.Instance(adder, 'a1_'+str(i)+str(j), 
+                params = count, 
+                ports = [
+                Slice(temp, Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + 2*j*(i+1)+i, Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + 2*j*(i+1)), 
+                Slice(temp, Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + (2*j+1)*(i+1)+i, Srl(in_size.value, i)*((Sll(1, i+1))-i-2) + (2*j+1)*(i+1)),
+                in_v[Add(in_size_val,(Srl(in_size.value, i+1))*((Sll(1,i)-1))+j)],
+                Slice(temp, Srl(in_size.value, i+1)*(Sll(1, i+2)-i-3 + j*(i+2)) +(i+1), Srl(in_size.value, i+1)*(Sll(1, i+2)-i-3 + j*(i+2)))
+                ])
+
 
         count[0] = i+1
 
-    tout.assign(Slice(temp, num.value - out_res.value, num.value-1))
+    tout.assign(Slice(temp, num.value-1, num.value - out_res.value))
 
-    m.Always(Posedge(aclk)) (fout(maxout))
+    muxout.assign(Cond((out_v | grst) == 1, true_value = -1*thres.value,  false_value = Slice(t2out, maxres.value,  1)))
+
+    m.Always(Posedge(aclk)) (fout(muxout))
 
     out_v.assign(~ t2out[1])
 
-    insert_code_2 = m.EmbeddedCode("assign muxout = (out | grst) ? -1*THRESHOLD : t2out[1:MAXRES];")
-  
+
     return m
 
-def mkNeuronbody():
+def mkNeuronbody(ip_size = 16, thres = 13):
     m = Module('neuron_body')
-    in_size_v = m.Parameter('INPUT_SIZE', 16)
-    thres_v = m.Parameter('THRESHOLD', 13)
-    acc_in = m.Input('acc_in', in_size_v)
+    in_size_v = m.Parameter('INPUT_SIZE', ip_size)
+    thres_v = m.Parameter('THRESHOLD', thres)
+    acc_in = m.Input('acc_in', in_size_v.value)
     aclk = m.Input('aclk', 1)
     pac_rst = m.Input('pac_rst', 1)
     rst = m.Input('rst', 1)
@@ -525,6 +535,8 @@ def mkNeuronRNL():
 
 
 
+
+
 if __name__=='__main__':
     pulse = mkPulse2edge()
     adder = mkAdder()
@@ -563,12 +575,12 @@ if __name__=='__main__':
     #print(pulse_v)
     #print(adder_v)
     #print(edge_v)
-    print(less_v)
+    #print(less_v)
     #print(incdec_v)
     #print(wta_v)
     #print(flogic_v)
     #print(simple_v)
-    #print(synapse_v)
+    print(synapse_v)
     #print(stdp_case_gen_v)
     #print(stdp_v)
     #print(pac_v)

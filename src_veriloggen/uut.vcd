@@ -1,5 +1,5 @@
 $date
-	Mon Jun 28 22:18:39 2021
+	Sat Jul  3 22:43:41 2021
 $end
 $version
 	Icarus Verilog
@@ -7,91 +7,97 @@ $end
 $timescale
 	1s
 $end
-$scope module test_stdp_case_gen $end
+$scope module test_pac $end
 $scope module dut $end
 $var wire 1 ! aclk $end
-$var wire 1 " ein $end
-$var wire 1 # eout $end
-$var wire 1 $ grst $end
-$var wire 1 % tboth $end
-$var wire 1 & temp $end
-$var wire 1 ' tone $end
-$var wire 4 ( stdp_cases [3:0] $end
-$var wire 1 ) greater $end
-$scope module pe $end
-$var wire 1 ! aclk $end
-$var wire 1 ) edge_out $end
-$var wire 1 $ grst $end
-$var wire 1 & pulse_in $end
-$var reg 1 * temp $end
+$var wire 1 " grst $end
+$var wire 4 # in [3:0] $end
+$var wire 1 $ out $end
+$var wire 5 % t2out [4:0] $end
+$var wire 2 & tout [1:0] $end
+$var wire 4 ' temp [3:0] $end
+$var wire 4 ( muxout [3:0] $end
+$var reg 4 ) fout [3:0] $end
 $upscope $end
 $upscope $end
+$scope module test_pac $end
+$var reg 4 * dut_in [3:0] $end
 $upscope $end
-$scope module test_stdp_case_gen $end
-$var reg 1 " dut_ein $end
-$upscope $end
-$scope module test_stdp_case_gen $end
-$var reg 1 # dut_eout $end
-$upscope $end
-$scope module test_stdp_case_gen $end
+$scope module test_pac $end
 $var reg 1 ! dut_aclk $end
 $upscope $end
-$scope module test_stdp_case_gen $end
-$var reg 1 $ dut_grst $end
+$scope module test_pac $end
+$var reg 1 " dut_grst $end
+$upscope $end
+$scope module test_pac $end
+$var wire 1 $ dut_out $end
 $upscope $end
 $enddefinitions $end
 #0
 $dumpvars
-x*
-x)
-b0 (
-0'
-0&
-0%
-0$
-0#
-0"
+b0 *
+bx )
+bx (
+bz00 '
+bz &
+bz %
+z$
+b0 #
+x"
 0!
 $end
 #1
+b11 (
+1"
 1!
 #2
 0!
 #3
+bx (
+0"
+b11 )
 1!
 #4
 0!
 #5
-bx00 (
-1'
+bx )
+bz01 '
 1!
-1"
+b1 #
+b1 *
 #6
 0!
 #7
-b0xx (
-1%
-0'
 1!
-1#
 #8
 0!
+b1001 #
+b1001 *
 #9
 1!
 #10
+bz00 '
 0!
+b1000 #
+b1000 *
 #11
 1!
 #12
 0!
+b1100 #
+b1100 *
 #13
 1!
 #14
 0!
+b1000 #
+b1000 *
 #15
 1!
 #16
 0!
+b0 #
+b0 *
 #17
 1!
 #18
@@ -105,11 +111,7 @@ b0xx (
 #22
 0!
 #23
-b0 (
-0%
 1!
-0#
-0"
 #24
 0!
 #25
@@ -119,22 +121,11 @@ b0 (
 #27
 1!
 #28
-1)
-b1000 (
-1&
-1'
 0!
-1#
 #29
-1*
 1!
 #30
-0&
-b10 (
-1%
-0'
 0!
-1"
 #31
 1!
 #32
@@ -166,11 +157,7 @@ b10 (
 #45
 1!
 #46
-b0 (
-0%
 0!
-0#
-0"
 #47
 1!
 #48
@@ -180,10 +167,7 @@ b0 (
 #50
 0!
 #51
-b1000 (
-1'
 1!
-1"
 #52
 0!
 #53
@@ -219,10 +203,7 @@ b1000 (
 #68
 0!
 #69
-b0 (
-0'
 1!
-0"
 #70
 0!
 #71
@@ -254,11 +235,7 @@ b0 (
 #84
 0!
 #85
-b1000 (
-1&
-1'
 1!
-1#
 #86
 0!
 #87
@@ -272,11 +249,7 @@ b1000 (
 #91
 1!
 #92
-b0 (
-0&
-0'
 0!
-0#
 #93
 1!
 #94
@@ -561,3 +534,13 @@ b0 (
 1!
 #234
 0!
+#235
+1!
+#236
+0!
+#237
+1!
+#238
+0!
+#239
+1!
