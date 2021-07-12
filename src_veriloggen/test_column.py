@@ -58,7 +58,7 @@ def mkTest_Column(p = 4, q = 3, thres = 11):
 	rst = ports['rst']
 	out_spike = ports['output_spikes']
 
-	dut = m.Instance(col, 'dut', ports = m.connect_ports(col))
+	dut = m.Instance(col, 'dut', params = [p, q, thres], ports = m.connect_ports(col))
 
 	dump = simulation.setup_waveform(m, dut, ports = m.connect_ports(col))
 	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
@@ -384,11 +384,15 @@ def mkTest_Column(p = 4, q = 3, thres = 11):
 	return m 
 
 if __name__=='__main__':
-    col = mkTest_Column()
+    test_col = mkTest_Column()
     if not os.path.exists('out_test'):
         os.mkdir('out_test')
-    col_v = col.to_verilog('out_test/test_column.v')
-    print(col_v)
+    test_col_v = test_col.to_verilog('out_test/test_column.v')
+    print(test_col_v)
+    sim = simulation.Simulator(test_col)
+    rslt = sim.run()
+    print(rslt)
+    sim.view_waveform()
 
 
 

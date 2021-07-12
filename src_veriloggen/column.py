@@ -67,7 +67,7 @@ def mkColumn(p = 4, q = 3, thres = 13):
     rnl_param = [p.value, thres.value]
 
     for j in range(q.value):
-    	m.Instance(n_rnl, 'ec_'+str(j), params = rnl_param, ports = [aclk, in_spike[j], gclk_pulse, ein[j]])
+    	m.Instance(n_rnl, 'ec_'+str(j), params = rnl_param, ports = [in_spike, inc[j], dec[j], weight_en, aclk, gclk, gclk_pulse, rst])
     	m.Instance(pulse, 'out_pe_'+str(j), ports = [aclk, out_spike[j], gclk_pulse, eout[j]] )
 
     	for z in range(p.value):
@@ -80,15 +80,13 @@ def mkColumn(p = 4, q = 3, thres = 13):
     			min_v[j][z], 
     			aclk, 
     			gclk_pulse, 
-                weight[j][z], 
+                weight[j], 
                 f[j], 
                 inc[j][z], 
                 dec[j][z]])
 
 
-    wta_param = [q.value]
-
-    m.Instance(wta, 'li', params = wta_param, ports = [ec_spikes, aclk, gclk_pulse, out_spike])
+    m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, aclk, gclk_pulse, out_spike])
 
     return m
 

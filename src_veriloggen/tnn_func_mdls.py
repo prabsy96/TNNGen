@@ -105,14 +105,14 @@ def mkWta(Q = 10):
     
     m = Module('wta')
     Q = m.Parameter('Q', Q)
-    ec_spikes = m.Input('ec_spikes', Q)
+    ec_spikes = m.Input('ec_spikes', Q.value)
     aclk = m.Input('aclk', 1)
     grst = m.Input('grst', 1)
-    li_out = m.Output('li_out', Q)
+    li_out = m.Output('li_out', Q.value)
 
     first_spike = m.Wire('first_spike')
     first_spike_edge = m.Wire('first_spike_edge')
-    temp = m.Wire('temp', Q)
+    temp = m.Wire('temp', Q.value)
 
     i = m.Genvar('i', 32)
 
@@ -395,11 +395,10 @@ def mkStdp():
     flogic = mkFlogic()
     incdec = mkIncdec()
 
-    
 
     stdp_case_gen_inst = m.Instance(pulse, 's1', params = None, ports = [ein, eout, aclk, grst, cases])
     flogic_inst = m.Instance(flogic, 's2', params = None, ports = [F, input_weight, fout])
-    incdec_inst = m.Instance(incdec, 's3', params = None, ports = [cases, capture, minus, search, backoff, min_v, F, inc, dec]) 
+    incdec_inst = m.Instance(incdec, 's3', params = None, ports = [cases, capture, minus, search, backoff, min_v, fout, inc, dec]) 
 
 
     return m
