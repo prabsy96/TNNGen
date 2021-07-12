@@ -7,35 +7,50 @@ import os
 # TNN Column VerilogGen code for Verilog RTL creation
 # Original Verilog files created by Harideep Nair 
 
-def mkColumn(numports=13):
+def mkColumn(p = 4, q = 3, thres = 13):
 
     m = Module('column')
-    p = m.Parameter('P', 32)
-    q = m.Parameter('Q', 12)
-    thres = m.Parameter('THRESHOLD', 13)
+    p = m.Parameter('P', p)
+    q = m.Parameter('Q', q)
+    thres = m.Parameter('THRESHOLD', thres)
 
-    in_spike = m.Input('input_spike', p.value)
-    capture = m.Input('capture', q.value, dims = p.value)
-    minus = m.Input('minus', q.value, dims = p.value)
-    search = m.Input('search', q.value, dims = p.value)
-    backoff = m.Input('backoff', q.value, dims = p.value)
-    min_v = m.Input('min', q.value, dims = p.value)
-    f = m.Input('F', q.value, dims = 6)
+    in_spike = m.Input('input_spikes', p.value)
+    # capture = m.Input('capture', q.value, dims = p.value)
+    # minus = m.Input('minus', q.value, dims = p.value)
+    # search = m.Input('search', q.value, dims = p.value)
+    # backoff = m.Input('backoff', q.value, dims = p.value)
+    # min_v = m.Input('min', q.value, dims = p.value)
+    # f = m.Input('F', q.value, dims = 6)
+
+    minus, capture, search, backoff, min_v, f, weight, inc, dec = [], [], [], [], [], [], [], [], []
+
+    for i in range(q.value):
+        capture.append(m.Input('capture_'+str(i), p.value))
+        minus.append(m.Input('minus_'+str(i), p.value))
+        search.append(m.Input('search_'+str(i), p.value))
+        backoff.append(m.Input('backoff_'+str(i), q.value))
+        min_v.append(m.Input('min_'+str(i), p.value))
+        inc.append(m.Wire('inc'+str(i), p.value))
+        dec.append(m.Wire('dec'+str(i), p.value))
+        f.append(m.Input('F_'+str(i), 6))
+    
     weight_en = m.Input('weight_update_en', 1)
     aclk = m.Input('aclk', 1)
     gclk = m.Input('gclk', 1)
     rst = m.Input('rst', 1)
     out_spike = m.Output('output_spikes', q.value)
-    eout = m.Output('eout', q.value)
-
+    eout = m.Wire('eout', q.value)
     ein = m.Wire('ein', p.value)
     ec_spikes = m.Wire('ec_spikes', q.value)
 
-    weights = m.Wire('weights', q.value,  dims = (p.value, 3) )
+    for k in range(q.value):
+        for l in range(p.value):
+            #weights.append(m.Wire('weights', q.value,  dims = (p.value, 3)))
+            weight.append(m.Wire('weights_'+str(k)+'_'+str(l), 3))
 
-    inc = m.Wire('inc', q.value, dims = (p.value, 2))
-    dec = m.Wire('dec', q.value, dims = p.value)
-    #weights = Wire(2)
+    # inc = m.Wire('inc', q.value, dims = (p.value, 2))
+    # dec = m.Wire('dec', q.value, dims = p.value)
+
     gclk_pulse = m.Wire('gclk_pulse', 1)
 
     edge = mkEdge2pulse()
@@ -65,8 +80,8 @@ def mkColumn(numports=13):
     			min_v[j][z], 
     			aclk, 
     			gclk_pulse, 
-                weights[j][z], 
-                f[j][z], 
+                weight[j][z], 
+                f[j], 
                 inc[j][z], 
                 dec[j][z]])
 

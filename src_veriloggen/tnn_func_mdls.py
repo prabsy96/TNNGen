@@ -415,18 +415,7 @@ def mkPac(ip_size = 32, thres = 13):
     stages = m.Localparam('STAGES', int(clog2_in_size)-1)
     out_res = m.Localparam('OUT_RES', int(clog2_in_size))
     num = m.Localparam('NUM', 2*in_size.value-out_res.value-2)
-    maxres = m.Localparam('MAXRES', max(out_res.value+1, int(clog2_thres)+1))
-
-
-
-    #clog2_ip_size = ip_size.value.bit_length() - 1
-    # clog2_ip_size = np.log2(ip_size_v.value) 
-    # clog2_thres = np.log2(thres.value)
-    # out_res = m.Localparam('OUT_RES', int(clog2_ip_size)) 
-    # in_size = m.Localparam('IN_SIZE', ip_size_v.value)
-    # stages = m.Localparam('STAGES', int(clog2_ip_size)-1)
-    # num = m.Localparam('NUM', 2*in_size.value-out_res.value-2)
-    # maxres = m.Localparam('MAXRES', max(out_res.value+1, clog2_thres+1))    
+    maxres = m.Localparam('MAXRES', max(out_res.value+1, int(clog2_thres)+1))   
 
     in_v = m.Input('in', in_size.value)
     aclk = m.Input('aclk', 1)
@@ -491,7 +480,7 @@ def mkNeuronbody(ip_size = 16, thres = 13):
 
     temp = m.Wire('temp_spike', 1)
 
-    pac = mkPac()
+    pac = mkPac(ip_size = in_size_v.value, thres = thres_v.value)
     fsm_s = mkFsm_simple()
 
     par_pac = [in_size_v.value, thres_v.value]
@@ -502,10 +491,10 @@ def mkNeuronbody(ip_size = 16, thres = 13):
 
     return m
 
-def mkNeuronRNL():
+def mkNeuronRNL(ip_size = 4, thres = 13):
     m = Module('neuron_rnl_ptt')
-    in_size = m.Parameter('INPUT_SIZE', 64)
-    thres = m.Parameter('THRESHOLD', 13)
+    in_size = m.Parameter('INPUT_SIZE', ip_size)
+    thres = m.Parameter('THRESHOLD', thres)
 
     in_v = m.Input('input_spikes', in_size.value)
     inc = m.Input('inc', in_size.value)
@@ -517,12 +506,15 @@ def mkNeuronRNL():
     rst = m.Input('rst', 1)
 
     out_v = m.Output('out_spike', 1)
-    weight = m.Output('weights', in_size.value, dims = 3 )
+    weight = []
+    for i in range(in_size.value):
+        weight.append(m.Output('weights_'+str(i), 3))
+    #weight = m.Output('weights', 3 , dims = in_size.value )
 
     up_in = m.Wire('up_in', in_size.value)
 
     fsm_s = mkFsm_synapse()
-    nbody = mkNeuronbody()
+    nbody = mkNeuronbody(ip_size = in_size.value, thres = thres.value )
 
     for i in range(in_size.value):
         m.Instance(fsm_s, 'f1_'+str(i), params = None, ports = [weight_en, aclk, gclk, rst, in_v[i], inc[i], dec[i], up_in[i], weight[i]])
@@ -580,10 +572,10 @@ if __name__=='__main__':
     #print(wta_v)
     #print(flogic_v)
     #print(simple_v)
-    print(synapse_v)
+    #print(synapse_v)
     #print(stdp_case_gen_v)
     #print(stdp_v)
     #print(pac_v)
     #print(n_body_v)
-    #print(n_rnl_v)
+    print(n_rnl_v)
     #print(col_v)

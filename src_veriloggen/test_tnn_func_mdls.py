@@ -903,7 +903,7 @@ def mkTest_Pac():
 			grst(0))
 		, i.inc())
 
-	
+
 
 	return m
 
@@ -920,13 +920,13 @@ def mkTest_Neuronbody():
 	rst = dut['rst']
 	out_v = dut['out_spike']
 
-	i = m.Integer('i', initval = 0)
+	i = m.Integer('i', 32, value = 0)
 
 	dump = simulation.setup_waveform(m, dut, [acc_in, aclk, pac_rst, rst, out_v])
 	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
 
 	dump.add(
-
+		i(0),
 		acc_in(0),
 		rst(1),
 		Delay(5),
@@ -977,7 +977,392 @@ def mkTest_Neuronbody():
 
 	return m
 
-# z
+
+def mkTest_NeuronRNL():
+	m = Module('test_neuron_rnl')
+	ip_size_def = 4
+	rnl = mkNeuronRNL(ip_size = 4, thres = 11)
+	
+	# input_spikes = m.Wire('input_spikes', ip_size_def)
+	# inc = m.Wire('inc', ip_size_def)
+	# dec = m.Wire('dec', ip_size_def)
+	# weight_en = m.Wire('weight_update_en', 1)
+	# aclk = m.Wire('aclk', 1)
+	# gclk = m.Wire('gclk', 1)
+	# grst = m.Wire('grst', 1)
+	# rst = m.Wire('rst', 1)
+	# out_v = m.Wire('out_spike', 1)
+	# weight = m.Wire('weights', 3, dims = ip_size_def )
+
+	here = m.copy_sim_ports(rnl)
+
+
+	input_spikes = here['input_spikes']
+	inc = here['inc']
+	dec = here['dec']
+	weight_en = here['weight_update_en']
+	aclk = here['aclk']
+	gclk = here['gclk']
+	grst = here['grst']
+	rst = here['rst']
+
+	
+	out_v = here['out_spike']
+
+	dut = m.Instance(rnl, 'dut', ports = m.connect_ports(rnl))
+
+
+	i = m.Integer('i', 32, value = 0)
+	j = m.Integer('j', 32, value = 0)
+
+
+
+	dump = simulation.setup_waveform(m, dut, ports = m.connect_ports(rnl))
+	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
+
+	dump.add(
+		input_spikes (0),
+		inc(0),
+		dec(0),
+		rst(1),
+
+
+
+
+		Delay(18),
+		rst(0),
+		#/* Computational Wave 1 */
+	
+		Delay(29),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+		
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 2 */
+
+		Delay(6),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](0),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 3 */
+
+		Delay(5),
+		inc[0](1),
+		inc[1](1),
+		inc[3](1),
+
+		Delay(1),
+		inc(0),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 4 */
+
+		Delay(5),
+		inc(1),
+
+		Delay(1),
+		inc(0),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 5 */
+
+		Delay(5),
+		inc(1),
+
+		Delay(1),
+		inc(0),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),
+		input_spikes[0](0),
+		
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 6 */
+
+		Delay(5),
+		inc(1),
+
+		Delay(1),
+		inc(0),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+		
+		Delay(1),
+		input_spikes[3](0),
+		
+		Delay(1),
+		input_spikes[2](0),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 7 */
+
+		Delay(5),
+		inc[0](1),
+		inc[1](1),
+		inc[3](1),
+
+		Delay(1),
+		inc(0),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 8 */
+
+		Delay(5),
+		inc[0](1),
+		inc[1](1),
+		dec[2](1),
+		inc[3](1),
+
+		Delay(1),
+		inc(0),
+		dec(0),
+		input_spikes[3](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[1](1),
+
+		Delay(1),
+		input_spikes[3](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),	
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[1](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		#/* Computational Wave 9 */
+
+		Delay(5),
+		inc(1),
+
+		Delay(1),
+		inc(0),
+		input_spikes[2](1),
+
+		Delay(3),
+		input_spikes[1](1),
+
+		Delay(4),
+		input_spikes[3](1),
+
+		Delay(1),
+		input_spikes[2](0),
+
+		Delay(1),
+		input_spikes[0](1),
+
+		Delay(2),
+		input_spikes[1](0),
+		
+		Delay(4),
+		input_spikes[3](0),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		#/* Computational Wave 10 */
+
+		Delay(5),
+		inc(1),
+
+		Delay(1),
+		inc (0),
+		input_spikes[1](1),
+
+		Delay(3),
+		input_spikes[0](1),
+
+		Delay(4),
+		input_spikes[3](1),
+
+		Delay(1),
+		input_spikes[1](0),
+
+		Delay(1),
+		input_spikes[2](1),
+
+		Delay(2),
+		input_spikes[0](0),
+
+		Delay(4),
+		input_spikes[3](0),
+
+		Delay(2),
+		input_spikes[2](0),
+
+		Delay(10),
+		input_spikes(0),
+
+		Delay(10),
+		simulation.finish()
+
+		)
+
+	m.Always(aclk) (i(i%23), 
+		If(i==0) (
+			gclk(1)) 
+		.Else(
+			gclk(0))
+		, i.inc())
+
+	m.Always(Posedge(aclk)) (j(j%23), 
+		If(j==0) (
+			grst(1)) 
+		.Else(
+			grst(0))
+		, j.inc())
+
+	return m
+
+
+
+	
+
+
+
+
+
 
 
 
@@ -997,6 +1382,7 @@ if __name__ == '__main__':
 	test_stdp = mkTest_Stdp()
 	test_pac = mkTest_Pac()
 	test_nb = mkTest_Neuronbody()
+	test_rnl = mkTest_NeuronRNL()
 
 	if not os.path.exists('out_test'):
 		os.mkdir('out_test')
@@ -1012,8 +1398,9 @@ if __name__ == '__main__':
 	#test_fsm_simple_v = test_fsm_simple.to_verilog('out_test/fsm_simple_tb.v')
 	#test_fsm_synapse_v = test_fsm_synapse.to_verilog('out_test/fsm_synapse_tb.v')
 	#test_stdp_v = test_stdp.to_verilog('out_test/stdp_tb.v')
-	test_pac_v = test_pac.to_verilog('out_test/pac_tb.v')
+	#test_pac_v = test_pac.to_verilog('out_test/pac_tb.v')
 	#test_nb_v = test_nb.to_verilog('out_test/neuron_body_tb.v')
+	test_rnl_v = test_rnl.to_verilog('out_test/neuron_rnl_tb.v')
 
 
 	#print(test_lq_v)
@@ -1027,10 +1414,11 @@ if __name__ == '__main__':
 	#print(test_fsm_simple_v)
 	#print(test_fsm_synapse_v)
 	#print(test_stdp_v)
-	print(test_pac_v)
+	#print(test_pac_v)
 	#print(test_nb_v)
+	print(test_rnl_v)
 
-	sim = simulation.Simulator(test_pac)
+	sim = simulation.Simulator(test_rnl)
 	rslt = sim.run()
 	print(rslt)
 	sim.view_waveform()
