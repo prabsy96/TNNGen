@@ -13,7 +13,7 @@ def mkTest_Column(p = 4, q = 3, thres = 11):
 	m = Module('test_column')
 	p = m.Parameter('P', p)
 	q = m.Parameter('Q', q)
-	thres = m.Parameter('THRESHOLD', 13)
+	thres = m.Parameter('THRESHOLD', thres)
 	col = mkColumn(p, q, thres)
 
 	ports = m.copy_sim_ports(col)
@@ -392,7 +392,7 @@ if __name__=='__main__':
     sim = simulation.Simulator(test_col)
     rslt = sim.run()
     print(rslt)
-    sim.view_waveform()
+    #sim.view_waveform()
 
 
 

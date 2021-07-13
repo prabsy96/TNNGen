@@ -104,15 +104,16 @@ def mkIncdec():
 def mkWta(Q = 10):
     
     m = Module('wta')
-    Q = m.Parameter('Q', Q)
-    ec_spikes = m.Input('ec_spikes', Q.value)
+    q = m.Parameter('Q', Q)
+
+    ec_spikes = m.Input('ec_spikes', q.value)
     aclk = m.Input('aclk', 1)
     grst = m.Input('grst', 1)
-    li_out = m.Output('li_out', Q.value)
+    li_out = m.Output('li_out', q.value)
 
     first_spike = m.Wire('first_spike')
     first_spike_edge = m.Wire('first_spike_edge')
-    temp = m.Wire('temp', Q.value)
+    temp = m.Wire('temp', q.value)
 
     i = m.Genvar('i', 32)
 
@@ -122,12 +123,12 @@ def mkWta(Q = 10):
 
     pulse_inst = Submodule(m, pulse, name = 'pulse_inst', arg_ports = [aclk, first_spike, grst, first_spike_edge])
 
-    for j in range(Q.value): 
+    for j in range(q.value): 
         Submodule(m, less_equal, name = 'l1_'+str(j), arg_ports = [ec_spikes[j], first_spike_edge, aclk, grst, temp[j]])
 
     li_out[0].assign(temp[0])
 
-    for k in range(1, Q.value):
+    for k in range(1, q.value):
         li_out[k].assign(temp[k] & ~ Uor(Slice(temp, k-1, 0)) )
 
 
@@ -490,7 +491,7 @@ def mkNeuronbody(ip_size = 16, thres = 13):
 
     return m
 
-def mkNeuronRNL(ip_size = 4, thres = 13):
+def mkNeuronRNL(ip_size = 16, thres = 13):
     m = Module('neuron_rnl_ptt')
     in_size = m.Parameter('INPUT_SIZE', ip_size)
     thres = m.Parameter('THRESHOLD', thres)

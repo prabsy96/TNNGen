@@ -55,8 +55,8 @@ def mkColumn(p = 4, q = 3, thres = 13):
 
     edge = mkEdge2pulse()
     pulse = mkPulse2edge()
-    n_rnl = mkNeuronRNL()
-    wta = mkWta()
+    n_rnl = mkNeuronRNL(p.value, thres.value)
+    wta = mkWta(q.value)
     stdp = mkStdp()
 
     m.Instance(edge, 'ep', ports = [gclk, aclk, gclk_pulse])
