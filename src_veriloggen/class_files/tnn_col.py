@@ -1,6 +1,6 @@
 from veriloggen import *
 import numpy as np
-from func_mdls import TNN_Functions
+from func_mdls import *
 from tnn_backend import *
 import os
 
@@ -14,7 +14,7 @@ class TNN_Col:
 
         self.p = p
         self.q = q
-        self. thres = thres
+        self.thres = thres
 
     def constr_verilog(self):
 
@@ -92,6 +92,10 @@ class TNN_Col:
 
 if __name__=='__main__':
     
-    tnn = TNN_Col()
-    tnn = tnn.constr_verilog()
-    gen_verilog(module = tnn, path = 'out_rtl', print_v = True)
+    tnn_col = TNN_Col()
+    tnn_test = Test_TNN_func()
+    
+    do = tnn_test.mkTest_less_equal()
+
+    gen_verilog(module = do, path = 'out_rtl', filename = 'default.v', print_v = False)
+    sim_verilog(obj = do, waveform = True)
