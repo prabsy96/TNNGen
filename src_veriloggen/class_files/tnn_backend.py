@@ -2,8 +2,8 @@ from veriloggen import *
 import numpy as np
 import os
 import sys
-import collections
-import warnings
+import subprocess
+import shlex
 
 # Author: Prabhu Vellaisamy
 # Backend functions built from veriloggen
@@ -51,8 +51,17 @@ def sim_verilog(obj = None, waveform = False):
 	sim = simulation.Simulator(obj)
 	rslt = sim.run()
 	print(rslt)
+	
 	if waveform is True:
 		sim.view_waveform()
+
+def source_sh (file = None):
+	cmnd = shlex.split('bash -c source '+file)
+	proc = subprocess.Popen(cmnd, stdout=subprocess.PIPE)
+	stdout, stderr = proc.communicate()
+	pprint.pprint(stdout)
+
+
 
 
 
