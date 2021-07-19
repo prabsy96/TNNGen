@@ -1418,7 +1418,7 @@ if __name__ == '__main__':
 	#print(test_nb_v)
 	print(test_rnl_v)
 
-	sim = simulation.Simulator(test_rnl)
+	sim = simulation.Simulator(test_rnl, display = True)
 	rslt = sim.run()
 	print(rslt)
 	sim.view_waveform()

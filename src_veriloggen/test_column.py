@@ -34,25 +34,6 @@ def mkTest_Column(p = 4, q = 3, thres = 11):
 		min_v.append(ports['min_'+str(j)])
 		f.append(ports['F_'+str(j)])
 
-
-	# for j in range(q.value):
-	# 	if (j != q.value-1):
-	# 		capture_temp.append(ports['capture_'+str(j)])
-	# 		minus_temp.append('minus_'+str(j)+',')
-	# 		search_temp.append('search_'+str(j)+',')
-	# 		backoff_temp.append('backoff_'+str(j)+',')
-	# 		min_v_temp.append('min_'+str(j)+',')
-	# 		f_temp.append('F_'+str(j)+',')
-
-	# 	else:
-	# 		capture_temp.append('capture_'+str(j))
-	# 		minus_temp.append('minus_'+str(j))
-	# 		search_temp.append('search_'+str(j))
-	# 		backoff_temp.append('backoff_'+str(j))
-	# 		min_v_temp.append('min_'+str(j))
-	# 		f_temp.append('F_'+str(j))
-
-
 	weight_en = ports['weight_update_en']
 	gclk = ports['gclk']
 	rst = ports['rst']
@@ -62,8 +43,6 @@ def mkTest_Column(p = 4, q = 3, thres = 11):
 
 	dump = simulation.setup_waveform(m, dut, ports = m.connect_ports(col))
 	clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
-
-	#add_for = for j in range(q.value): capture[j](1), minus[j](1), search[j](1), backoff[j](1), min_v[j](1), f[j](1)
 
 	for j in range(q.value):
 		capture_temp.append(capture[j](1))
