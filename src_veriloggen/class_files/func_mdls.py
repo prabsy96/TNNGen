@@ -382,10 +382,6 @@ class TNN_Functions():
         fout = m.Wire('fout', 1)
 
         # target submodule
-<<<<<<< HEAD
-=======
-        pulse = self.Pulse2edge()
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
         stdp_case = self.Stdp_case_gen()
         flogic =self. Flogic()
         incdec = self.Incdec()
@@ -591,21 +587,12 @@ class Test_TNN_Functions():
             simulation.finish()
             )
 
-<<<<<<< HEAD
         m.Always(aclk) (EmbeddedCode('i = i%23;'), 
             If(i==0) (
                 rst(1))
             .Else(
                 rst(0))
             , EmbeddedCode('i = i+1;'))
-=======
-        m.Always(aclk) (i(i%23), \
-            If(i==0) (
-                rst(1)) 
-            .Else(
-                rst(0))
-            , i.inc())
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
         
         return m
 
@@ -654,20 +641,12 @@ class Test_TNN_Functions():
             simulation.finish()
             )
 
-<<<<<<< HEAD
         m.Always(Posedge(aclk)) (EmbeddedCode('i = i%23;'), 
-=======
-        m.Always(aclk) (i(i%23), \
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
             If(i==0) (
                 grst(1)) 
             .Else(
                 grst(0))
-<<<<<<< HEAD
             , EmbeddedCode('i=i+1;'))
-=======
-            , i.inc())
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         return m
 
@@ -740,17 +719,10 @@ class Test_TNN_Functions():
             simulation.finish()
             )
 
-<<<<<<< HEAD
         m.Always(clk_in) (EmbeddedCode('i = i%23;'), 
             If(i==0) (
                 EmbeddedCode('edge_in = ~edge_in;')) 
             , EmbeddedCode('i = i+1;'))
-=======
-        m.Always(clk_in) (i(i%23), 
-            If(i==0) (
-                edge_in(~edge_in)) 
-            , i.inc())
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         return m
 
@@ -915,20 +887,12 @@ class Test_TNN_Functions():
             simulation.finish()
             )
 
-<<<<<<< HEAD
         m.Always(Posedge(aclk)) (EmbeddedCode('i = i%23;'), 
-=======
-        m.Always(aclk) (i(i%23), 
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
             If(i==0) (
                 grst(1)) 
             .Else(
                 grst(0))
-<<<<<<< HEAD
             , EmbeddedCode('i=i+1;'))
-=======
-            , i.inc())
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         return m
 
@@ -1081,20 +1045,12 @@ class Test_TNN_Functions():
             simulation.finish()
             )
 
-<<<<<<< HEAD
         m.Always(Posedge(aclk)) (EmbeddedCode('i = i%23;'), 
-=======
-        m.Always(aclk) (i(i%23), 
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
             If(i==0) (
                 grst(1)) 
             .Else(
                 grst(0))
-<<<<<<< HEAD
             , EmbeddedCode('i=i+1;'))
-=======
-            , i.inc())
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         return m
 
@@ -1225,19 +1181,10 @@ class Test_TNN_Functions():
             simulation.finish()
             )
 
-<<<<<<< HEAD
         m.Always(aclk) (EmbeddedCode('i = i%23;'), 
             If(i==0) (
                 EmbeddedCode('gclk = ~gclk;')) 
             , EmbeddedCode('i=i+1;'))
-=======
-        m.Always(aclk) (i(i%23), 
-            If(i==0) (
-                gclk(1)) 
-            .Else(
-                gclk(0))
-            , i.inc())
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         return m
 
@@ -1366,7 +1313,6 @@ class Test_TNN_Functions():
 
             eout(0),
             Delay(6),
-<<<<<<< HEAD
 
             ein(0),
             Delay(9),
@@ -1875,515 +1821,4 @@ class Test_TNN_Functions():
                 grst(0))
             , EmbeddedCode('j = j+1;'))
 
-=======
-
-            ein(0),
-            Delay(9),
-
-            eout(0),
-            Delay(10),
-
-            ein(0),
-            eout(0),
-            Delay(10),
-
-            simulation.finish()
-            )
-
-        m.Always(Posedge(aclk)) (i(i%23), 
-            If(i==0) (
-                grst(1)) 
-            .Else(
-                grst(0))
-            , i.inc())
-
-        return m
-
-    def Tb_Pac(self, ip_size = 4, thres = 13):
-        m = Module('test_pac')
-        ip_size = m.Parameter('IP_SIZE', ip_size)
-        thres = m.Parameter('THRESHOLD', thres)
-
-        pac = self.tnn.Pac(ip_size = ip_size.value, thres = thres.value)
-        dut = Submodule(m, pac, 'dut')
-
-        in_v = dut['in']
-        aclk = dut['aclk']
-        grst = dut['grst']
-        out_v = dut['out']
-
-        i = m.Integer('i', 32, value = 0)
-
-        dump = simulation.setup_waveform(m, dut, [in_v, aclk, grst, out_v])
-        clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
-
-        dump.add(
-            i(0),
-            in_v(0),
-            Delay(5),
-
-            in_v(int('0001', 2)),
-            Delay(3),
-
-            in_v(int('1001', 2)),
-            Delay(2),
-
-            in_v(int('1000', 2)),
-            Delay(2),
-
-            in_v(int('1100', 2)),
-            Delay(2),
-
-            in_v(int('1000', 2)),
-            Delay(2),
-
-            in_v(int('0000', 2)),
-            Delay(3),
-
-            in_v(int('0000', 2)),
-            Delay(20),
-
-            in_v(int('0000', 2)),
-            Delay(200),
-
-            simulation.finish()
-            )
-
-        m.Always(Posedge(aclk)) (i(i%23), 
-            If(i==0) (
-                grst(1)) 
-            .Else(
-                grst(0))
-            , i.inc())
-
-        return m
-
-    def Tb_Neuronbody(self, ip_size = 4, thres = 13):
-
-        m = Module('test_neuron_body')
-        ip_size = m.Parameter('IP_SIZE', ip_size)
-        thres = m.Parameter('THRESHOLD', thres)
-
-        nb = self.tnn.Neuronbody(ip_size = ip_size.value, thres = thres.value)
-        dut = Submodule(m, nb, 'dut')
-
-        acc_in = dut['acc_in']
-        aclk = dut['aclk']
-        pac_rst = dut['pac_rst']
-        rst = dut['rst']
-        out_v = dut['out_spike']
-
-        i = m.Integer('i', 32, value = 0)
-
-        dump = simulation.setup_waveform(m, dut, [acc_in, aclk, pac_rst, rst, out_v])
-        clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
-
-        dump.add(
-            i(0),
-            acc_in(0),
-            rst(1),
-            Delay(5),
-
-            rst(0),
-            Delay(46),
-
-            rst(0),
-            Delay(1),
-
-            acc_in(int('0001', 2)),
-            Delay(1),
-
-            acc_in(int('1001', 2)),
-            Delay(4),       
-
-            acc_in(int('1000', 2)),
-            Delay(2),
-
-            acc_in(int('1100', 2)),
-            Delay(1),
-
-            acc_in(int('0100', 2)),
-            Delay(1),
-
-            acc_in(int('0000', 2)),
-            Delay(20),
-
-            rst(1),
-            Delay(20),
-
-            acc_in(0),
-            Delay(20),
-
-            acc_in(0),
-            Delay(200),
-
-            simulation.finish()
-            )
-
-        m.Always(Posedge(aclk)) (i(i%23), 
-            If(i==0) (
-                pac_rst(1)) 
-            .Else(
-                pac_rst(0))
-            , i.inc())
-
-        return m
-
-
-    def Tb_NeuronRNL(self, ip_size = 4, thres = 13):
-        m = Module('test_neuron_rnl')
-        ip_size = m.Parameter('IP_SIZE', ip_size)
-        thres = m.Parameter('THRESHOLD', thres)
-        rnl = self.tnn.NeuronRNL(ip_size = ip_size.value, thres = thres.value)
-
-        here = m.copy_sim_ports(rnl)
-
-        input_spikes = here['input_spikes']
-        inc = here['inc']
-        dec = here['dec']
-        weight_en = here['weight_update_en']
-        aclk = here['aclk']
-        gclk = here['gclk']
-        grst = here['grst']
-        rst = here['rst']
-        out_v = here['out_spike']
-
-        dut = m.Instance(rnl, 'dut', ports = m.connect_ports(rnl))
-
-        i = m.Integer('i', 32, value = 0)
-        j = m.Integer('j', 32, value = 0)
-
-        dump = simulation.setup_waveform(m, dut, ports = m.connect_ports(rnl))
-        clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
-
-        dump.add(
-            input_spikes (0),
-            inc(0),
-            dec(0),
-            rst(1),
-            Delay(18),
-            
-            rst(0),
-            #/* Computational Wave 1 */
-        
-            Delay(29),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-            
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 2 */
-
-            Delay(6),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](0),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 3 */
-
-            Delay(5),
-            inc[0](1),
-            inc[1](1),
-            inc[3](1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 4 */
-
-            Delay(5),
-            inc(1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 5 */
-
-            Delay(5),
-            inc(1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-            
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 6 */
-
-            Delay(5),
-            inc(1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-            
-            Delay(1),
-            input_spikes[3](0),
-            
-            Delay(1),
-            input_spikes[2](0),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 7 */
-
-            Delay(5),
-            inc[0](1),
-            inc[1](1),
-            inc[3](1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 8 */
-
-            Delay(5),
-            inc[0](1),
-            inc[1](1),
-            dec[2](1),
-            inc[3](1),
-
-            Delay(1),
-            inc(0),
-            dec(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),   
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            #/* Computational Wave 9 */
-
-            Delay(5),
-            inc(1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[2](1),
-
-            Delay(3),
-            input_spikes[1](1),
-
-            Delay(4),
-            input_spikes[3](1),
-
-            Delay(1),
-            input_spikes[2](0),
-
-            Delay(1),
-            input_spikes[0](1),
-
-            Delay(2),
-            input_spikes[1](0),
-            
-            Delay(4),
-            input_spikes[3](0),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            #/* Computational Wave 10 */
-
-            Delay(5),
-            inc(1),
-
-            Delay(1),
-            inc (0),
-            input_spikes[1](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[3](1),
-
-            Delay(1),
-            input_spikes[1](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[3](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            Delay(10),
-            input_spikes(0),
-
-            Delay(10),
-            simulation.finish()
-            )
-
-        m.Always(aclk) (i(i%23), 
-            If(i==0) (
-                gclk(1)) 
-            .Else(
-                gclk(0))
-            , i.inc())
-
-        m.Always(Posedge(aclk)) (j(j%23), 
-            If(j==0) (
-                grst(1)) 
-            .Else(
-                grst(0))
-            , j.inc())
-
->>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
         return m
