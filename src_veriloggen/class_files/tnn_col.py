@@ -97,7 +97,11 @@ class TNN_Col():
         q = m.Parameter('Q', self.q)
         thres = m.Parameter('THRESHOLD', self.thres)
 
+<<<<<<< HEAD
         col = self.constr_v()
+=======
+        col = constr_v(p.value, q.value, thres.value)
+>>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         ports = m.copy_sim_ports(col)
         i = m.Integer('i', 32, value = 0)
@@ -435,12 +439,21 @@ class TNN_Col():
 
             )
 
+<<<<<<< HEAD
         m.Always(aclk) (EmbeddedCode('i = i%23;'), 
             If(i==0) (
                 EmbeddedCode('gclk = 0;')) 
             .Else(
                 EmbeddedCode('gclk = 1;'))
             , EmbeddedCode('i = i+1;'))
+=======
+        m.Always(aclk) (i(i%23), 
+            If(i==0) (
+                gclk(1)) 
+            .Else(
+                gclk(0))
+            , i.inc())
+>>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
         return m 
 

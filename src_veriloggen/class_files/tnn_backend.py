@@ -9,7 +9,11 @@ import shlex
 # Backend functions built from veriloggen
 
 
+<<<<<<< HEAD
 def gen_verilog(module = None, path = None, filename = None, print_v = 'no'):
+=======
+def gen_verilog(module = None, path = None, filename = None, print_v = False):
+>>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
 	if module is None:
 		raise ValueError("Module is required.")
@@ -48,8 +52,13 @@ def sim_verilog(obj = None, waveform = False):
 		if isinstance(obj, Module) is False:
 			raise TypeError("Object is not of type Veriloggen.Module")
 
+<<<<<<< HEAD
 	sim = simulation.Simulator(obj, sim = 'iverilog')
 	rslt = sim.run(display = True) #outputfile = str(obj.name)+'.out')
+=======
+	sim = simulation.Simulator(obj)
+	rslt = sim.run()
+>>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 	print(rslt)
 	
 	if waveform is True:
@@ -57,14 +66,22 @@ def sim_verilog(obj = None, waveform = False):
 
 def source_sh (file = None):
 	cmnd = shlex.split('bash -c source '+file)
+<<<<<<< HEAD
 	proc = subprocess.Popen(cmnd, shell=True)
 	stdout, stderr = proc.communicate()
 
+=======
+	proc = subprocess.Popen(cmnd, stdout=subprocess.PIPE)
+	stdout, stderr = proc.communicate()
+>>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 	pprint.pprint(stdout)
 
 
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f94eeb49dcfb9046ddb2178c7fbc9f87371738b6
 
