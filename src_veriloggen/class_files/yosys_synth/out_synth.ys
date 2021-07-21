@@ -1,0 +1,10 @@
+
+read_verilog /home/prabhu96/Workspace/TNNGen/TNNGen/src_veriloggen/class_files/out_rtl/test_column.v
+hierarchy --top test_column
+proc; fsm; opt; memory; opt
+techmap; opt
+dfflibmap -liberty /home/prabhu96/Workspace/TNNGen/TNNGen/src_veriloggen/class_files/std_lib/NangateOpenCellLibrary_typical_ccs.lib
+abc -liberty /home/prabhu96/Workspace/TNNGen/TNNGen/src_veriloggen/class_files/std_lib/NangateOpenCellLibrary_typical_ccs.lib
+write_verilog ./yosys_synth/out_synth.v
+clean 
+exit

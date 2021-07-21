@@ -8,23 +8,20 @@ if __name__ == '__main__':
 # parse command line aarguments
 	parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
 
-	parser.add_argument('--top_lvl_mdl', type = str, default= 'column', 
-						help = "Provide top level modules for verilog generation \n verilog library: column, neuron_rnl, neuron_body, stdp, pac, stdp_case_gen, wta, flogic, fsm_synapse, fsm_simple, incdec, edge2pulse, adder, less_equal, pulse2edge")
+	parser.add_argument('--top', type = str, default= 'column', 
+						help = "Provide top level modules for verilog generation \n Verilog library: 1. column, 2. neuron_rnl, 3. neuron_body, 4. stdp, 5. pac, 6. stdp_case_gen, 7. wta, 8. flogic, 9. fsm_synapse, 10. fsm_simple, 11. incdec, 12. edge2pulse, 13. adder, 14. less_equal, 15. pulse2edge")
 
-	parser.add_argument('--testbench', type = str, default = 'no',
+	parser.add_argument('--tb', type = str, default = 'no',
 						help = "'yes' for generating testbench; default is 'no")
 
-	parser.add_argument('--flow', type = str, default = 'pre-synthesis',
-						help = "Choose the EDA flow from ''pre-synthesis'' and ''post-synthesis'' ")
+	parser.add_argument('--flow', type = str, default = 'rtl_sim',
+						help = "Select the EDA operation: rtl_sim, rtl_synth, post_synth_verif")
 
 	parser.add_argument('--run_sim', type = str, default = 'no',
 						help = "'yes' for running RTL sim; default is 'no")
 
-	parser.add_argument('--simulater', type = str, default = 'verilator',
-						help = 'Provide simulator name: \n verilator(default), vcs, xrun (provide paths for vcs and xrun)')
-
-	parser.add_argument('--sim_script', type = str, default = None,
-						help = 'Provide filename of shell script with sim path (for vcs or xrun); None for verilator')
+	parser.add_argument('--simulater', type = str, default = 'iverilog',
+						help = 'Provide simulator name: iverilog (default), vcs, xrun (provide paths for vcs and xrun)')
 
 	parser.add_argument('--print', type = str, default = 'no',
 						help = "'yes' for printing code in command line; default is 'no")
@@ -32,15 +29,16 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	# # argument variables
-	top_lvl_mdl = args.top_lvl_mdl
-	tb = args.testbench
+	top_lvl_mdl = args.top
+	tb = args.tb
 	run_sim = args.run_sim
 	sim_name = args.simulater
-	sim_script = args.sim_script
+	flow = args.flow
 	print_v = args.print
 
 	v_lib = ['column', 'neuron_rnl', 'neuron_body', 'stdp', 'pac', 'stdp_case_gen', 'wta', 'flogic', 'fsm_synapse', 'fsm_simple', 'incdec', 'edge2pulse', 'adder', 'less_equal', 'pulse2edge']
-	sim_lib = ['verilator', 'vcs', 'xrun']
+	sim_lib = ['iverilog', 'vcs', 'xrun']
+	flow_lib = ['rtl_sim', 'rtl_synth', 'post_synth_verif']
 
 	# initialize objects
 	f = TNN_Functions()
@@ -65,20 +63,18 @@ if __name__ == '__main__':
 	if isinstance(sim_name, str) is False:
 		raise TypeError('Incorrect type; provide in %s format')
 	if sim_name not in sim_lib:
-		raise ValueError('Invalid entry: sim_name is either ''verilator'', ''vcs'' or ''xrun''')
-
-	if sim_script is None:
-		if sim_name in ['vcs', 'xrun']:
-			raise ValueError('Missing .sh file')
-	else:
-		if isinstance(sim_script, str) is False:
-			raise TypeError('Incorrect type; provide in %s format')
-		source_sh(sim_script)
+		raise ValueError('Invalid entry: sim_name is either ''iverilog'', ''vcs'' or ''xrun''')
 
 	if isinstance(top_lvl_mdl, str) is False:
 		raise TypeError('Incorrect format; provide in %s format')
 	if top_lvl_mdl not in v_lib:
 		raise ValueError('Incorrect top level module name')
+
+	if isinstance(flow, str) is False:
+		raise TypeError('Incorrect format; provide in %s format')
+	if flow not in flow_lib:
+		raise ValueError('Incorrect flow name')
+
 
 	# generate verilog for top_level modules
 	if top_lvl_mdl == 'column':
@@ -105,8 +101,6 @@ if __name__ == '__main__':
 		else:
 			obj = col.constr_v()
 
-		gen_verilog(module = obj, path = 'out_rtl', filename = 'column.v', print_v = print_v)
-
 	else:
 		if top_lvl_mdl == 'less_equal':
 			if tb == 'yes':
@@ -114,15 +108,11 @@ if __name__ == '__main__':
 			else:
 				obj = f.Less_equal()
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'less_equal.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'pulse2edge':
 			if tb == 'yes':
 				obj = tb_f.Tb_Pulse2edge()
 			else:
 				obj = f.Pulse2edge()
-
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'pulse2edge.v', print_v = print_v)
 
 		elif top_lvl_mdl == 'edge2pulse':
 			if tb == 'yes':
@@ -130,15 +120,11 @@ if __name__ == '__main__':
 			else:
 				obj = f.Edge2pulse()
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'edge2pulse.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'adder':
 			if tb == 'yes':
 				obj = tb_f.Tb_Adder()
 			else:
 				obj = f.Adder()
-
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'adder.v', print_v = print_v)
 
 		elif top_lvl_mdl == 'incdec':
 			if tb == 'yes':
@@ -146,11 +132,9 @@ if __name__ == '__main__':
 			else:
 				obj = f.Incdec()
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'incdec.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'wta':
 			print("WTA selected, provide parameter")
-			q = int(input(' Enter # output neurons ') or 3)
+			q = int(input(' Enter # output neurons ') or 4)
 
 			if not isinstance(q, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -160,15 +144,11 @@ if __name__ == '__main__':
 			else:
 				obj = f.Wta(q)
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'wta.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'flogic':
 			if tb == 'yes':
 				obj = tb_f.Tb_Flogic()
 			else:
 				obj = f.Flogic()
-
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'flogic.v', print_v = print_v)
 
 		elif top_lvl_mdl == 'stdp_case_gen':
 			if tb == 'yes':
@@ -176,15 +156,11 @@ if __name__ == '__main__':
 			else:
 				obj = f.Stdp_case_gen()
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'stdp_case_gen.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'fsm_simple':
 			if tb == 'yes':
 				obj = tb_f.Tb_Fsm_simple()
 			else:
 				obj = f.Fsm_simple()
-
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'fsm_simple.v', print_v = print_v)
 
 		elif top_lvl_mdl == 'fsm_synapse':
 			if tb == 'yes':
@@ -192,15 +168,11 @@ if __name__ == '__main__':
 			else:
 				obj = f.Fsm_synapse()
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'fsm_synapse.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'stdp':
 			if tb == 'yes':
 				obj = tb_f.Tb_Stdp()
 			else:
 				obj = f.Stdp()
-
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'stdp.v', print_v = print_v)
 
 		elif top_lvl_mdl == 'pac':
 			print("WTA selected, provide parameters")
@@ -219,8 +191,6 @@ if __name__ == '__main__':
 			else:
 				obj = f.Pac(ip_size = p, thres = thres)
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'pac.v', print_v = print_v)
-
 		elif top_lvl_mdl == 'neuron_body':
 			print("Neuron body selected, provide parameters")
 
@@ -237,8 +207,6 @@ if __name__ == '__main__':
 				obj = tb_f.Tb_Neuronbody(ip_size = p, thres = thres)
 			else:
 				obj = f.Neuronbody(ip_size = p, thres = thres)
-
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'neuron_body.v', print_v = print_v)
 
 		elif top_lvl_mdl == 'neuron_rnl':
 			print("Neuron RNL selected, provide parameters")
@@ -257,22 +225,51 @@ if __name__ == '__main__':
 			else:
 				obj = f.NeuronRNL(ip_size = p, thres = thres)
 
-			gen_verilog(module = obj, path = 'out_rtl', filename = 'neuron_rnl.v', print_v = print_v)
+	gen_verilog(module = obj, path = 'out_rtl', filename = obj.name+'.v', print_v = print_v)
 
 	# run sim
+
 	if run_sim == 'yes':
-		if sim_name == 'verilator':
-			gtk = input("Run GTKWave Waveform Viewer? Enter ''yes'' or ''no'' ") or 'no' 
+
+		sim = sim_verilog(obj = obj, sim_name = sim_name )
+		if sim_name == 'iverilog':
+			gtk = input("\nRun GTKWave Waveform Viewer? Enter ''yes'' or ''no'' ") or 'no' 
 
 		if isinstance(gtk, str) is False:
 			raise TypeError('Provide ''yes'' or ''no'' in %s format')
 
 		if gtk == 'yes':
-			sim_verilog(obj, True)
+			sim.view_waveform()
 		elif gtk == 'no':
-			sim_verilog(obj, False)
+			pass
 		else:
 			raise ValueError('Invalid entry for GTKWave value; choose ''yes'' or ''no''')
+
+	# synth
+
+	if flow == flow_lib[1] or flow == flow_lib[2]:
+		print('\n Provide the following synthesis parameters - ')
+		node = int(input("Specify tech node size in  %d format; Aailable node sizes: 45, 7 ") or 45)
+
+		print("specify the library model")
+		if node == 45:
+			model = input("available are: 1. ccs 2. ecsm 3. nldm") or 'ccs'
+			corner = input("specify the corner for the tech node, available are 1. typical 2. fast 3. slow 4. low_temp 5. worst_low ") or 'typical'
+
+		else:
+			model = input("available are: 1. ccs 2. nldm ") or 'ccs'
+			corner = input("specify the corner for the tech node, available are 1. rvt 2. lvt 3. slvt 4. sram ") or 'rvt'
+
+		tool = input('which tool; available are 1. yosys 2. genus 3. dc_shell ') or 'yosys'
+
+		tcl = input('path to tcl file; press Enter otherwise to generate default template ') or None
+
+		synth_verilog(obj = obj, node = 45, corner = corner, model = model, tool = tool, tcl = tcl)
+
+
+
+
+
 
 
 

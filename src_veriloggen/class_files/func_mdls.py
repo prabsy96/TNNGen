@@ -508,7 +508,7 @@ class TNN_Functions():
 
         return m
 
-class Test_TNN_Functions():
+class Test_TNN_Functions(TNN_Functions):
 
     tnn = TNN_Functions()
 
