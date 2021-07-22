@@ -31,15 +31,15 @@ Follow Yosys installation from here: http://www.clifford.at/yosys/download.html
 
   |__ tnngen_core/ -> Parent directory for TNNGen 
 	
-        |__ backend/backend.py
+     |__ backend/backend.py
 	
-        |__ synthesis/synthesis.py 
+     |__ synthesis/synthesis.py 
 
-        |__ tnn_mdls/func_mdls.py
+     |__ tnn_mdls/func_mdls.py
 
-        |__ column.py
+     |__ column.py
 	
-        |__ main.py 
+     |__ main.py 
 
 -------------------------------------------------------------------------------------------------------
 
@@ -51,12 +51,19 @@ python3 main.py
 
 ```
 
-Command line arguments: [--top <top_lvl column module> 
-                         --tb <testbench> 
-	                 --flow <rtl_sim, rtl_synth, post_synth_verif>, 
-                         --run_sim <run sim> 
-	                 --simulator <iverilog, vcs, xrun> 
-	                 --print <print code in console> ]
+Command line arguments: 
+                         
+			 [--top <top_lvl column module> 
+                         
+			 --tb <testbench> 
+	                 
+			 --flow <rtl_sim, rtl_synth, post_synth_verif>, 
+                         
+			 --run_sim <run sim> 
+	                 
+			 --simulator <iverilog, vcs, xrun> 
+	                 
+			 --print <print code in console> ]
 
 --------------------------------------------------------------------------------------------------------
 pyverilog - https://pypi.org/project/pyverilog/
