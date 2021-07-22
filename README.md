@@ -1,39 +1,60 @@
 # TNNGen
 
-Framework for generating Temporal Neural Network ecosystems with support for predictive 7 nm post-synthesis PPA metric results
+A framework for generating Temporal Neural Network (TNN) ecosystems with post-synthesis process flow support. As of now, the framework supports the open-source flow for RTL simulation (iVerilog) and RTL synthesis (Yosys). Synthesis support is currently being experimented using the open source Nangate 45nm cell libraries. 
 
 # Instructions -
 
+Till TNNGen is published as a package, please install the following dependencies:
+
 ```bash
+
 sudo apt install iverilog
 
-pip3 install pyverilog numpy
-
-sudo apt install verilator
+pip3 install pyverilog
 
 sudo apt-get install -y gtkwave
+
 ```
+Follow Yosys installation from here: http://www.clifford.at/yosys/download.html
 
 # Directories & Files -
 
 - TNNGen
+  
+  |__ tnn_hw/ -> Original TNN HW framework (https://github.com/hpnair/Neuromorphosis---TNNCMOS) by Harideep Nair
+  
+  |__ tnn_sw/ -> Pytorch implementation of TNNs (https://github.com/hpnair/Neuromorphosis---TNNSim) by Harideep Nair
+  
+  |__ veriloggen-develop/ -> Veriloggen dir (https://github.com/PyHDI/veriloggen)
+  
+  |__ yosys_dev/ -> Yosys experimentation
 
-  |__ asap7/ -> contains all the standard cell .lib files
-  
-  |__ tnn_hw/ -> original TNN HW framework (https://github.com/hpnair/Neuromorphosis---TNNCMOS)
-  
-  |__ tnn_sw/ -> Pytorch implementation of TNNs (https://github.com/hpnair/Neuromorphosis---TNNSim)
-  
-  |__ Pyverilog-develop -> Pyverilog dir (https://github.com/PyHDI/Pyverilog)
-  
-  |__ veriloggen-develop -> Veriloggen dir (https://github.com/PyHDI/veriloggen)
+  |__ tnngen_core/ -> Parent directory for TNNGen 
+	
+	|__ backend/backend.py
+	
+	|__ synthesis/synthesis.py 
+	
+	|__ tnn_mdls/func_mdls.py
 
-src_veriloggen/tnn_func_mdls.py -> contains veriloggen function scripts for generating all the TNN column submodules
-
-src_veriloggen/column.py -> veriloggen function script for top level TNN column 
+	|__ column.py
+	
+	|__ main.py 
 
 -------------------------------------------------------------------------------------------------------
 
+# To run script - 
+
+```bash
+
+python3 main.py 
+
+```
+
+Command line arguments: [--top <top_lvl column module> --tb <testbench> --flow <rtl_sim, rtl_synth, post_synth_verif>, 
+--run_sim <run sim> --simulator <iverilog, vcs, xrun> --print <print code in console> ]
+
+--------------------------------------------------------------------------------------------------------
 pyverilog - https://pypi.org/project/pyverilog/
 
 veriloggen - https://github.com/PyHDI/veriloggen
