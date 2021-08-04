@@ -3,9 +3,12 @@ import os
 import pathlib
 import subprocess
 import sys
+import shlex
 
-sys.path.append("../synthesis/")
+sys.path.append("../")
 from synthesis.synthesis import synth_support
+from simulation.simulation import sim_support
+
 
 # Author: Prabhu Vellaisamy
 # Backend functions built from veriloggen
@@ -42,14 +45,16 @@ def gen_verilog( module = None, path = None, filename = None, print_v = 'no'):
 		else:
 			if not os.path.exists(path):
 				os.mkdir(path)
-			col_v = module.to_verilog(path+'//'+filename)
+			mod_v = module.to_verilog(path+'/'+filename)
+
+	gen_file = str(pathlib.Path.cwd())+'/'+path+'/'+filename
 
 	if print_v == 'yes':
-		print(col_v)
+		print(mod_v)
 
-	return col_v
+	return gen_file
 
-def sim_verilog(obj = None, sim_name = 'iverilog'):
+def sim_verilog(obj = None, sim_name = 'iverilog', wave = None):
 
 	if obj is None:
 		raise ValueError("Module is required.")
@@ -57,9 +62,24 @@ def sim_verilog(obj = None, sim_name = 'iverilog'):
 		if isinstance(obj, Module) is False:
 			raise TypeError("Object is not of type Veriloggen.Module")
 
-	sim = simulation.Simulator(obj, sim = 'iverilog')
-	rslt = sim.run(display = True) 
-	print(rslt)
+	if sim_name == 'iverilog':
+		# using veriloggen iverilog support
+		sim = simulation.Simulator(obj, sim = 'iverilog')
+		rslt = sim.run(display = True) 
+		print(rslt)
+		print("\n#### Simulation Dump Completed ####")
+
+		if wave == 'yes':
+			sim.view_waveform()
+
+	elif sim_name == 'vcs':
+		#sim = simulation.run_vcs(obj, True)
+		sim = run_sim()
+		print(sim) 
+
+		if wave == 'yes':
+			cmd = []
+			subprocess.call(shlex.split('dve &'))
 	
 	return sim
 

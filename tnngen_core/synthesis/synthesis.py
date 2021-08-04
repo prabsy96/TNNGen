@@ -4,12 +4,12 @@ import shlex
 
 class synth_support:
 
-	def __init__(self, file_v = None, std_lib = None, name = None):
+	def __init__(self, file_v = None, std_lib = None, name = None, outputfile = 'synth'):
 
 		self.file_v = file_v
 		self.std_lib = std_lib
 		self.name = name
-		self.op_path = './yosys_synth/'
+		self.outputfile = outputfile
 
 	def gen_ys_template(self):
 
@@ -38,11 +38,20 @@ class synth_support:
 		f.close() 
 
 	def _exec_ys(self):
-		print('\n Initiating Yosys synthesis')
-
+		print('\nInitiating Yosys Synthesis')
 		subprocess.call(shlex.split('yosys '+os.path.join(self.op_path,'out_synth.ys')))
 
 	# expand later
 
 	def gen_tcl(self, name = None, std_lib = None, file_v = None):
 		pass
+	
+	def _exec_genus(self):
+		pass
+		# print('\nInitiating Genus Synthesis')
+		# subprocess.call(shlex.split('genus '+os.path.))
+		
+		
+		
+		
+		

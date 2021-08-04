@@ -2,8 +2,10 @@ from column import TNN_Col
 from backend.backend import * 
 from tnn_mdls.func_mdls import *
 from synthesis.synthesis import synth_support
+from simulation.simulation import sim_support
 import argparse
 import os
+
 
 if __name__ == '__main__':
 
@@ -19,24 +21,24 @@ if __name__ == '__main__':
 	parser.add_argument('--flow', type = str, default = 'rtl_sim',
 						help = "Select the EDA operation: rtl_sim, rtl_synth, post_synth_verif")
 
-	parser.add_argument('--run_sim', type = str, default = 'no',
-						help = "'yes' for running RTL sim; default is 'no'")
-
-	parser.add_argument('--simulater', type = str, default = 'iverilog',
+	parser.add_argument('--sim', type = str, default = 'iverilog',
 						help = 'Provide simulator name: iverilog (default), vcs, xrun (provide paths for vcs and xrun)')
 
 	parser.add_argument('--print', type = str, default = 'no',
 						help = "'yes' for printing code in command line; default is 'no'")
+
+	parser.add_argument('--wave', type = str, default = 'no', 
+						help = "view waveform? ''yes'' or ''no''")
 
 	args = parser.parse_args()
 
 	# argument variables
 	top_lvl_mdl = args.top
 	tb = args.tb
-	run_sim = args.run_sim
-	sim_name = args.simulater
+	sim_name = args.sim
 	flow = args.flow
 	print_v = args.print
+	wave = args.wave
 
 	# initialize objects
 	f = TNN_Functions()
@@ -49,17 +51,12 @@ if __name__ == '__main__':
 	# handling errors
 	if isinstance(print_v, str) is False:
 		raise TypeError('Incorrect type; provide in %s format')
-	if print_v not in ['yes', 'no']:
+	if print_v not in ('yes', 'no'):
 		raise ValueError('Invalid entry: provide either ''yes'' or ''no''')
 
 	if isinstance(tb, str) is False:
 		raise TypeError('Incorrect type; provide in %s format')
-	if tb not in ['yes', 'no']:
-		raise ValueError('Invalid entry: provide either ''yes'' or ''no''')
-
-	if isinstance(run_sim, str) is False:
-		raise TypeError('Incorrect type; provide in %s format')
-	if run_sim not in ['yes', 'no']:
+	if tb not in ('yes', 'no'):
 		raise ValueError('Invalid entry: provide either ''yes'' or ''no''')
 
 	if isinstance(sim_name, str) is False:
@@ -79,6 +76,12 @@ if __name__ == '__main__':
 
 	if flow != flow_lib[0] and tb == 'yes':
 		raise ValueError('Cannot synthesize a testbench module')
+
+	if isinstance(wave, str) is False:
+		raise TypeError('Incorrect format; provide in %s format')
+	if wave not in ('yes', 'no') :
+		raise ValueError('Incorrect value provided')
+
 
 	# generate verilog for top_level modules
 	if top_lvl_mdl == 'column':
@@ -229,29 +232,40 @@ if __name__ == '__main__':
 			else:
 				obj = f.NeuronRNL(ip_size = p, thres = thres)
 
-	gen_verilog(module = obj, path = 'out_rtl', filename = obj.name+'.v', print_v = print_v)
+	# generate verilog
+	gen_file = gen_verilog(module = obj, path = 'out_rtl', filename = obj.name+'.v', print_v = print_v)
 
 	# run sim
-
-	if run_sim == 'yes':
-
-		sim = sim_verilog(obj = obj, sim_name = sim_name )
-		if sim_name == 'iverilog': 
-			while True:
-				gtk = input("\nRun GTKWave Waveform Viewer? Enter ''yes'' or ''no'' ") or 'no'
-				if isinstance(gtk, str) is False:
-					print('Provide ''yes'' or ''no'' in %s format')
-				elif gtk not in ['yes', 'no']:
-					print('Invalid entry for GTKWave value; choose ''yes'' or ''no''')
-				else:
-					break
-
-		if gtk == 'yes':
-			sim.view_waveform()
+	if flow == flow_lib[0]:
+		sim = sim_support(file = gen_file, outputfile = 'simv')
+		
+		if sim_name  == 'iverilog':
+			# using veriloggen iverilog support
+			sim_v = simulation.Simulator(obj, sim = 'iverilog')
+			rslt = sim_v.run(display = True) 
+			print(rslt)
+			print("\n#### Simulation Dump Completed ####\n")
+			
+			if wave == 'yes':
+				sim.viewform()
+		
+		elif sim_name == 'vcs':
+			sim_v = sim.run_vcs(tb = tb)
+			print("\n#### Simulation Dump Completed ####\n")
+			#if wave == 'yes':
+				
+			
+			
+		elif sim_name == 'xrun':
+			sim_v = sim.run_xrun()
+			print("\n#### Simulation Dump Completed ####\n")
+			
+			
+		
 
 	# synth
 
-	if flow == flow_lib[1] or flow == flow_lib[2]:
+	elif flow == flow_lib[1]:
 		print('\nProvide the following synthesis parameters - ')
 		node = int(input("Specify tech node size in  %d format; \nAvailable node sizes: 45, 7 \t") or 45)
 
