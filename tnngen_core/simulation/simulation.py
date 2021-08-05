@@ -4,6 +4,7 @@ import subprocess
 import shlex
 
 class sim_support:
+
 	def __init__(self, outputfile = 'sim_out', libdir = None, sv = False, file = None):
 		self.outputfile = outputfile
 		self.libdir = libdir
@@ -40,7 +41,8 @@ class sim_support:
 		else:
 			if verbose == 'yes':
 				cmd.append('-V')
-			
+		
+		cmd.append('-R')
 		cmd.append(self.file)
 			
 		cmd = ' '.join(cmd)
@@ -63,33 +65,80 @@ class sim_support:
 		proc.stdout.close()
 		dis = ''.join(dis)
 		
+		return dis
 		
 		
 		#sim_res = subprocess.call(shlex.split(cmd), shell = True)
 		#return sim_res
+		
+	def dve(self):
+		
+		cmd = []
+		cmd.extend(['./simv', '-gui', '&'])
+		
+		if sys.maxsize > 2**32:
+			cmd.append('-full64')
+		
+		cmd = ' '.join(cmd)
+		
+		proc = subprocess.Popen(cmd, shell = True, cwd = './'+self.outputfile, stdout = subprocess.PIPE)
+		proc.wait()
+		proc.stdout.close()
+
 	
 	def run_xrun(self, nospecify = 'yes', timescale = '1ns/1ps'):
 		
+		if not os.path.exists(self.outputfile):
+			os.mkdir(self.outputfile)
+	
 		cmd = []
 		cmd.append('xrun')
-	
-		cmd.append('-clean')
+		cmd.append('-clean'
+		)
 		if nospecify == 'yes':
 			cmd.append('-nospecify')
-		cmd.append('-timescale')
+		
+		cmd.append('-timescale 1ns/1ps')
 		cmd.append('-mess')
 		cmd.append('-access +rwc')
+		
 		if self.sv is True:
 			cmd.append('-sv')
 		cmd.append(self.file)
 		
-		sim.res = subprocess.call(shlex.split(cmd))
-		return sim_res
+		cmd = ' '.join(cmd)
+		print(cmd)
+		
+		proc = subprocess.Popen(cmd, shell = True, cwd = './'+self.outputfile, stdout = subprocess.PIPE)
+		dis = []
+		
+		while True:
+			data = proc.stdout.readline()
+			out = data.decode(sys.getdefaultencoding())
+			dis.append(out)
+			print(out, end = '')
+			if not data:
+				break
+				
+		proc.wait()
+		proc.stdout.close()
+		dis = ''.join(dis)
+		
+		return dis
+		
+	def simvision(self):
+		cmd = []
+		cmd.append('simvision')
+		
+		if sys.maxsize > 2**32:
+			cmd.append('-64BIT')
+			
+		cmd = ' '.join(cmd)
+		print(cmd)
+		
+		proc = subprocess.Popen(cmd, shell = True, cwd = './'+self.outputfile, stdout = subprocess.PIPE)
+		proc.wait()
+		proc.stdout.close()
 		
 
-def dve(self):
-	
-	cmd = []
-	cmd 
-			
 		
