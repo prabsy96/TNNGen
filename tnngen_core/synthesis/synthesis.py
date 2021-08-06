@@ -4,17 +4,17 @@ import shlex
 
 class synth_support:
 
-	def __init__(self, file_v = None, std_lib = None, name = None, outputfile = 'synth'):
+	def __init__(self, file_v = None, std_lib = None, name = None, output = 'synth'):
 
 		self.file_v = file_v
 		self.std_lib = std_lib
 		self.name = name
-		self.outputfile = outputfile
+		self.output = output
 
 	def gen_ys_template(self):
 
-		if not os.path.exists(self.op_path):
-				os.mkdir(self.op_path)
+		if not os.path.exists(self.output):
+				os.mkdir(self.output)
 
 		graph = input("Show design netlist graph; select ''yes'' or ''no'' ") or 'yes'
 

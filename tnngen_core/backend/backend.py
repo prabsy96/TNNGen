@@ -16,6 +16,7 @@ from simulation.simulation import sim_support
 def is_file(file = None, path = None):
 	curr = pathlib.Path.cwd()
 	file_path = os.path.join(curr, path, file)
+	print(file_path)
 	if os.path.exists(file_path):
 		return True, file_path
 	else: 
@@ -150,6 +151,7 @@ def synth_verilog(obj = None, node = 45, corner = 'typical', model = 'ccs', tool
 
 	# check if file exists
 	if node == node_list[1]:
+		print(std_lib['nangate'])
 		std_file = std_lib['nangate'][model][corner_nangate.index(corner)]
 
 	elif node == node_list[0]:

@@ -18,7 +18,7 @@ class sim_support:
 		if isinstance(sv, bool) is False:
 			raise TypeError("Flag sv should be of type Bool")
 			
-	def run_vcs(self, notimingcheck = False, tb = 'no', verbose = 'no'):
+	def run_vcs(self, notimingcheck = False, verbose = 'no'):
 	# extended from veriloggen.simulation
 		
 		cmd = []
@@ -27,8 +27,8 @@ class sim_support:
 		if self.sv is True:
 			cmd.append('-sv')
 		
-		if tb == 'yes':
-			   cmd.append('-debug_all')
+		cmd.append('-debug_all')
+		
 		
 		if sys.maxsize > 2**32:
 			   cmd.append('-full64')
@@ -74,11 +74,11 @@ class sim_support:
 	def dve(self):
 		
 		cmd = []
-		cmd.extend(['./simv', '-gui', '&'])
+		cmd.extend(['./simv', '-gui'])
 		
 		if sys.maxsize > 2**32:
 			cmd.append('-full64')
-		
+
 		cmd = ' '.join(cmd)
 		
 		proc = subprocess.Popen(cmd, shell = True, cwd = './'+self.outputfile, stdout = subprocess.PIPE)
