@@ -5,10 +5,22 @@ from synthesis.synthesis import synth_support
 from simulation.simulation import *
 import argparse
 import os
-
+from rich.console import Console
+from rich.progress import track
 
 if __name__ == '__main__':
 
+	console = Console()
+	console.print("[bold blue] /----------------------------------------------------------------------------\\")
+	console.print("[bold blue] |                                                                            |")
+	console.print("[bold blue] |  Welcome to TNNGen (Temporal Neural Network Generator)!                    |")
+	console.print("[bold blue] |  TNNGen is a Python framework for building TNN ecosystems                  |")
+	console.print("[bold blue] |                                                                            |")
+	console.print("[bold blue] |  Prabhu Vellaisamy <pvellais@andrew.cmu.edu>                               |")
+	console.print("[bold blue] |  CMU-NCAL, Carnegie Mellon University                                      |")
+	console.print("[bold blue] |                                                                            |")
+	console.print("[bold blue] \\----------------------------------------------------------------------------/")
+	
 # parse command line aarguments
 	parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
 	
@@ -30,7 +42,6 @@ if __name__ == '__main__':
 						help = "'yes' for generating .sv files; 'no' for generating for .v files"
 						)
 					
-						
 	rtl.add_argument('--print', type = str, default = 'no',
 						help = "'yes' for printing code in command line; default is 'no'"
 						)
@@ -51,7 +62,7 @@ if __name__ == '__main__':
 						help = "'yes' for printing code in command line; default is 'no'"
 						)
 							
-	sim.add_argument('--sim', type = str, required = True,
+	sim.add_argument('--sim_tool', type = str, required = True,
 						help = "Provide simulator name: iverilog (default), vcs, xrun (provide paths for vcs and xrun)"
 						)
 	
@@ -92,7 +103,7 @@ if __name__ == '__main__':
 	
 	elif flow == 'sim':
 		tb = args.tb
-		sim_name = args.sim
+		sim_name = args.sim_tool
 		wave = args.wave
 		sim_path = args.sim_path
 		
@@ -162,11 +173,11 @@ if __name__ == '__main__':
 	if top_lvl_mdl == 'column':
 		print("Column selected, provide parameters")
 		p = int(input('Enter # synapses per neuron : ') or 4)
-		print("-> Selected # synapse per neuron: "+str(p))
+		console.print("\n[bold orange]  -> Selected # synapse per neuron: "+str(p))
 		q = int(input('Enter # output neurons : ') or 3)
-		print("-> Selected # output neurons: "+str(q))
+		console.print("\n[bold blue]  -> Selected # output neurons: "+str(q))
 		thres = int(input('Enter threshold value ') or 13)
-		print("-> Selected threshold value: "+str(thres))
+		console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
 
 		if not isinstance(p, int):
 			raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -178,126 +189,126 @@ if __name__ == '__main__':
 		col = TNN_Col(p, q, thres)
 		
 		if flow == 'synth':
-			obj, clk_name = col.col_v()
+			obj, col_clk = col.col_v()
 		else:
 			if tb == 'yes' :
 				obj = col.col_tb()
 			else:
-				obj = col.col_v()
+				obj, col_clk = col.col_v()
 	else:
 		if top_lvl_mdl == 'less_equal':
 			if flow == 'synth':
-				obj, clk_name = f.Less_equal()
+				obj, lq_clk = f.Less_equal()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Less_equal()
 				else:
-					obj = f.Less_equal()
+					obj, lq_clk = f.Less_equal()
 
 		elif top_lvl_mdl == 'pulse2edge':
 			if flow == 'synth':
-				obj, clk_name = f.Pulse2edge()
+				obj, pulse_clk = f.Pulse2edge()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Pulse2edge()
 				else:
-					obj = f.Pulse2edge()
+					obj, pulse_clk = f.Pulse2edge()
 
 		elif top_lvl_mdl == 'edge2pulse':
 			if flow == 'synth':
-				obj, clk_name = f.Edge2pulse()
+				obj, edge_clk = f.Edge2pulse()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Edge2pulse()
 				else:
-					obj = f.Edge2pulse()
+					obj, edge_clk = f.Edge2pulse()
 
 		elif top_lvl_mdl == 'adder':
 			if flow == 'synth':
-				obj, clk_name = f.Adder()
+				obj, add_clk = f.Adder()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Adder()
 				else:
-					obj = f.Adder()
+					obj, add_clk = f.Adder()
 
 		elif top_lvl_mdl == 'incdec':
 			if flow == 'synth':
-				obj, clk_name = f.Incdec()
+				obj, inc_clk = f.Incdec()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Incdec()
 				else:
-					obj = f.Incdec()
+					obj, inc_clk = f.Incdec()
 
 		elif top_lvl_mdl == 'wta':
 			print("WTA selected, provide parameter")
 			q = int(input(' Enter # output neurons ') or 4)
-			print("-> Selected # output neurons: "+str(q))
+			console.print("\n[bold blue]  -> Selected # output neurons: "+str(q))
 			
 			if not isinstance(q, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
 			
 			if flow == 'synth':
-				obj, clk_name = f.Wta(q)
+				obj, wta_clk = f.Wta(q)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Wta(q)
 				else:
-					obj = f.Wta(q)
+					obj, wta_clk = f.Wta(q)
 
 		elif top_lvl_mdl == 'flogic':
 			if flow == 'synth':
-				obj, clk_name = f.Flogic()
+				obj, flogic_clk = f.Flogic()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Flogic()
 				else:
-					obj = f.Flogic()
+					obj, flogic_clk = f.Flogic()
 
 		elif top_lvl_mdl == 'stdp_case_gen':
 			if flow == 'synth':
-				obj, clk_name = f.Stdp_case_gen()
+				obj, case_gen = f.Stdp_case_gen()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Stdp_case_gen()
 				else:
-					obj = f.Stdp_case_gen()
+					obj, case_gen = f.Stdp_case_gen()
 
 		elif top_lvl_mdl == 'fsm_simple':
 			if flow == 'synth':
-				obj, clk_name = f.Fsm_simple()
+				obj, simple_clk = f.Fsm_simple()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Fsm_simple()
 				else:
-					obj = f.Fsm_simple()
+					obj, simple_clk = f.Fsm_simple()
 
 		elif top_lvl_mdl == 'fsm_synapse':
 			if flow == 'synth':
-				obj, clk_name = f.Fsm_synapse()
+				obj, fsm_clk = f.Fsm_synapse()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Fsm_synapse()
 				else:
-					obj = f.Fsm_synapse()
+					obj, fsm_clk = f.Fsm_synapse()
 
 		elif top_lvl_mdl == 'stdp':
 			if flow == 'synth':
-				obj, clk_name = f.Stdp()
+				obj, stdp_clk = f.Stdp()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Stdp()
 				else:
-					obj = f.Stdp()
+					obj, stdp_clk = f.Stdp()
 
 		elif top_lvl_mdl == 'pac':
 			print("WTA selected, provide parameters")
 
 			p = int(input('Enter # synapses per neuron : ') or 4)
-			print("-> Selected # synapse per neuron: "+str(p))
+			console.print("\n[bold blue]  -> Selected # synapse per neuron: "+str(p))
 			thres = int(input('Enter threshold value ') or 13)
-			print("-> Selected threshold value: "+str(thres))
+			console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
 
 			if not isinstance(p, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -306,20 +317,20 @@ if __name__ == '__main__':
 				raise TypeError('Invalid type for threshold value; provide in %d format')
 			
 			if flow == 'synth':
-				obj, clk_name = f.Pac(ip_size = p, thres = thres)
+				obj, pac_clk = f.Pac(ip_size = p, thres = thres)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Pac(ip_size = p, thres = thres)
 				else:
-					obj = f.Pac(ip_size = p, thres = thres)
+					obj, pac_clk = f.Pac(ip_size = p, thres = thres)
 
 		elif top_lvl_mdl == 'neuron_body':
 			print("Neuron body selected, provide parameters")
 
 			p = int(input('Enter # synapses per neuron : ') or 4)
-			print("-> Selected # synapse per neuron: "+str(p))
+			console.print("\n[bold blue]  -> Selected # synapse per neuron: "+str(p))
 			thres = int(input('Enter threshold value ') or 13)
-			print("-> Selected threshold value: "+str(thres))
+			console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
 
 			if not isinstance(p, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -328,20 +339,20 @@ if __name__ == '__main__':
 				raise TypeError('Invalid type for threshold value; provide in %d format')
 			
 			if flow == 'synth':
-				obj, clk_name = f.Neuronbody(ip_size = p, thres = thres)
+				obj, body_clk = f.Neuronbody(ip_size = p, thres = thres)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Neuronbody(ip_size = p, thres = thres)
 				else:
-					obj = f.Neuronbody(ip_size = p, thres = thres)
+					obj, body_clk = f.Neuronbody(ip_size = p, thres = thres)
 
 		elif top_lvl_mdl == 'neuron_rnl_ptt':
 			print("Neuron RNL selected, provide parameters")
 
 			p = int(input('Enter # synapses per neuron : ') or 4)
-			print("-> Selected # synapse per neuron: "+str(p))
+			console.print("\n[bold blue]  -> Selected # synapse per neuron: "+str(p))
 			thres = int(input('Enter threshold value ') or 13)
-			print("-> Selected threshold value: "+str(thres))
+			console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
 
 			if not isinstance(p, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -350,12 +361,12 @@ if __name__ == '__main__':
 				raise TypeError('Invalid type for threshold value; provide in %d format')
 			
 			if flow == 'synth':
-				obj, clk_name = f.NeuronRNL(ip_size = p, thres = thres)
+				obj, rnl_clk = f.NeuronRNL(ip_size = p, thres = thres)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_NeuronRNL(ip_size = p, thres = thres)
 				else:
-					obj = f.NeuronRNL(ip_size = p, thres = thres)
+					obj, rnl_clk = f.NeuronRNL(ip_size = p, thres = thres)
 
 	# generate verilog
 	if sv == 'yes':
@@ -364,10 +375,11 @@ if __name__ == '__main__':
 		filename = obj.name+".v"
 	
 	gen_file = gen_verilog(module = obj, path = 'out_rtl', filename = filename, print_v = print_v)
-
+	console.print("\n[bold blue]  -> RTL Generated! \n  -----------------------------------------")
+	
 	# run sim
 	if flow == flow_lib[1]:
-		sim = sim_support(file = gen_file, output = sim_path)
+		sim = sim_support(file = gen_file, outputfile = sim_path, sv = sv)
 		
 		if sim_name  == 'iverilog':
 			# using veriloggen iverilog support
@@ -379,32 +391,32 @@ if __name__ == '__main__':
 		
 		elif sim_name == 'vcs':
 			sim_v = sim.run_vcs()
-			print("\n#### Simulation Dump Completed ####\n_________________________________________")
+			console.print("\n[bold blue]  -> Simulation Dump Completed \n  -----------------------------------------")
 			if wave == 'yes':
 				sim.dve()
 			
 		elif sim_name == 'xrun':
 			sim_v = sim.run_xrun()
-			print("\n#### Simulation Dump Completed ####\n_________________________________________")
+			console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
 			if wave == 'yes':
 				sim.simvision()
 	# synth
 	elif flow == flow_lib[2]:
-		print("\nProvide the following synthesis parameters - \n___________________________________________________")
+		print("\nProvide the following synthesis parameters - \n-----------------------------------------")
 		node = int(input("Specify tech node size in  %d format; Available node sizes: 45, 7 : ") or '45')
-		print("-> Selected node: "+str(node))
+		console.print("[bold blue]-> Selected node: "+str(node))
 		print("Specify the library model", end = "")
 		if node == 45:
 			model = input("ccs, ecsm, nldm : ") or 'ccs'
-			print("-> Selected model: "+model)
+			console.print("[bold blue]-> Selected model: "+model)
 			corner = input("Specify the process corner for the tech node, available are - typical, fast, slow, low_temp, worst_low : ") or 'typical'
-			print("-> Selected process corner: "+corner)
+			console.print("[bold blue]-> Selected process corner: "+corner)
 
 		else:
 			model = input("ccs, nldm : ") or 'ccs'
-			print("-> Selected model: "+model)
+			console.print("[bold blue]-> Selected model: "+model)
 			corner = input("Specify the corner for the tech node, available are rvt, lvt, slvt, sram : ") or 'rvt'
-			print("-> Selected process corner: "+corner)
+			console.print("[bold blue]-> Selected process corner: "+corner)
 		synth_verilog(obj = obj, node = 45, corner = corner, model = model, tool = tool, tcl = tcl, file_v = gen_file, clk_name = clk_name)
 
 

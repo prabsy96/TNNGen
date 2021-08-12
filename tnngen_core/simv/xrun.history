@@ -1,1 +1,1 @@
-s1(04Aug2021:21:06:38):  xrun -clean -nospecify -timescale 1ns/1ps -mess -access +rwc /afs/ece.cmu.edu/usr/pvellais/Private/tnngen/TNNGen/tnngen_core/out_rtl/test_less_equal.v 
+s1(12Aug2021:19:30:15):  xrun -clean -nospecify -timescale 1ns/1ps -mess -access +rwc /afs/ece.cmu.edu/usr/pvellais/Private/tnngen/TNNGen/tnngen_core/out_rtl/test_less_equal.v 

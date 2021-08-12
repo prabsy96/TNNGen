@@ -515,7 +515,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Less_equal(self):
         
         m = Module('test_less_equal')
-        lq = self.tnn.Less_equal()
+        lq, lq_clk = self.tnn.Less_equal()
 
         dut = Submodule(m, lq, name = 'dut')
 
@@ -599,7 +599,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Pulse2edge(self):
         m = Module('test_pulse2edge')
 
-        pulse = self.tnn.Pulse2edge()
+        pulse, pulse_clk = self.tnn.Pulse2edge()
 
         dut = Submodule(m, pulse, 'dut')
 
@@ -656,7 +656,7 @@ class Test_TNN_Functions(TNN_Functions):
 
         res = m.Parameter('RES', RES)
 
-        adder = self.tnn.Adder(res.value)
+        adder, add_clk = self.tnn.Adder(res.value)
 
         dut = Submodule(m, adder, 'dut')
 
@@ -696,7 +696,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Edge2pulse(self):
         m = Module('test_edge2pulse')
 
-        edge = self.tnn.Edge2pulse()
+        edge, edge_clk = self.tnn.Edge2pulse()
 
         dut = Submodule(m, edge, 'dut')
 
@@ -729,7 +729,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Incdec(self):
         m = Module('test_incdec')
 
-        incdec = self.tnn.Incdec()
+        incdec, inc_clk = self.tnn.Incdec()
 
         dut = Submodule(m, incdec, 'dut')
 
@@ -810,7 +810,7 @@ class Test_TNN_Functions(TNN_Functions):
         m = Module('test_wta')
 
         q = m.Parameter('Q', Q)
-        wta = self.tnn.Wta(q.value)
+        wta, wta_clk = self.tnn.Wta(q.value)
 
         dut = Submodule(m, wta, 'dut')
 
@@ -901,7 +901,7 @@ class Test_TNN_Functions(TNN_Functions):
         m = Module('test_flogic')
         flogic = self.tnn.Flogic()
 
-        dut = Submodule(m, flogic, 'dut')
+        dut, flogic_clk = Submodule(m, flogic, 'dut')
 
         F = dut['F']
         input_weight = dut['input_weight']
@@ -973,7 +973,7 @@ class Test_TNN_Functions(TNN_Functions):
         m = Module('test_stdp_case_gen')
         stdp_case = self.tnn.Stdp_case_gen()
 
-        dut = Submodule(m, stdp_case, 'dut')
+        dut, case_clk = Submodule(m, stdp_case, 'dut')
 
         stdp_cases = dut['stdp_cases']
         ein = dut['ein']
@@ -1057,7 +1057,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Fsm_simple(self):
 
         m = Module('test_fsm_simple')
-        fsm_simple = self.tnn.Fsm_simple()
+        fsm_simple, simple_clk = self.tnn.Fsm_simple()
         dut = Submodule(m, fsm_simple, 'dut')
 
         aclk = dut['aclk']
@@ -1103,7 +1103,7 @@ class Test_TNN_Functions(TNN_Functions):
 
         m = Module('test_fsm_synapse')
         synapse = self.tnn.Fsm_synapse()
-        dut = Submodule(m, synapse, 'dut')
+        dut, synapse_clk = Submodule(m, synapse, 'dut')
 
         weight_update_en = dut['weight_update_en']
         aclk = dut['aclk']
@@ -1190,7 +1190,7 @@ class Test_TNN_Functions(TNN_Functions):
 
     def Tb_Stdp(self):
         m = Module('test_stdp')
-        stdp = self.tnn.Stdp()
+        stdp, stdp_clk = self.tnn.Stdp()
         dut = Submodule(m, stdp, 'dut')
 
         ein = dut['ein']
@@ -1341,7 +1341,7 @@ class Test_TNN_Functions(TNN_Functions):
         ip_size = m.Parameter('IP_SIZE', ip_size)
         thres = m.Parameter('THRESHOLD', thres)
 
-        pac = self.tnn.Pac(ip_size = ip_size.value, thres = thres.value)
+        pac, pac_clk = self.tnn.Pac(ip_size = ip_size.value, thres = thres.value)
         dut = Submodule(m, pac, 'dut')
 
         in_v = dut['in']
@@ -1401,7 +1401,7 @@ class Test_TNN_Functions(TNN_Functions):
         ip_size = m.Parameter('IP_SIZE', ip_size)
         thres = m.Parameter('THRESHOLD', thres)
 
-        nb = self.tnn.Neuronbody(ip_size = ip_size.value, thres = thres.value)
+        nb, bdy_clk = self.tnn.Neuronbody(ip_size = ip_size.value, thres = thres.value)
         dut = Submodule(m, nb, 'dut')
 
         acc_in = dut['acc_in']
@@ -1471,7 +1471,7 @@ class Test_TNN_Functions(TNN_Functions):
         m = Module('test_neuron_rnl')
         ip_size = m.Parameter('IP_SIZE', ip_size)
         thres = m.Parameter('THRESHOLD', thres)
-        rnl = self.tnn.NeuronRNL(ip_size = ip_size.value, thres = thres.value)
+        rnl, rnl_clk = self.tnn.NeuronRNL(ip_size = ip_size.value, thres = thres.value)
 
         here = m.copy_sim_ports(rnl)
 

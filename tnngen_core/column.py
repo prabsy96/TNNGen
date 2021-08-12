@@ -96,7 +96,7 @@ class TNN_Col():
         q = m.Parameter('Q', self.q)
         thres = m.Parameter('THRESHOLD', self.thres)
 
-        col = self.col_v()
+        col, col_clk = self.col_v()
 
         ports = m.copy_sim_ports(col)
         i = m.Integer('i', 32, value = 0)

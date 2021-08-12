@@ -15,8 +15,11 @@ class sim_support:
 		else:
 			self.file = file
 	
-		if isinstance(sv, bool) is False:
-			raise TypeError("Flag sv should be of type Bool")
+		if isinstance(sv, str) is False:
+			raise TypeError("Flag sv should be of type str")
+		elif sv not in ('yes', 'no'):
+			print(sv)
+			raise ValueError("Invalid sv value")
 			
 	def run_vcs(self, notimingcheck = False, verbose = 'no'):
 	# extended from veriloggen.simulation
