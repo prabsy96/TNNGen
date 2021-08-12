@@ -13,16 +13,7 @@ from simulation.simulation import sim_support
 # Author: Prabhu Vellaisamy
 # Backend functions built from veriloggen
 
-def is_file(file = None, path = None):
-	curr = pathlib.Path.cwd()
-	file_path = os.path.join(curr, path, file)
-	print(file_path)
-	if os.path.exists(file_path):
-		return True, file_path
-	else: 
-		raise FileNotFoundError
-
-def gen_verilog( module = None, path = None, filename = None, print_v = 'no'):
+def gen_verilog( module = None, path = None, filename = None, print_v = 'no', sv = 'no'):
 
 	if module is None:
 		raise ValueError("Module is required.")
@@ -32,13 +23,19 @@ def gen_verilog( module = None, path = None, filename = None, print_v = 'no'):
 
 	if path is None and filename is None:
 		path = 'out_rtl'
-		filename = 'default.v'
-		print('file generated at ./'+path+filename)
+		if sv == 'no':
+			filename = 'default.v'
+		else:
+			filename = 'default.sv'
+			print('file generated at ./'+path+filename)
 	else:
 		if path is None:
 			path = 'out_rtl'
 		if filename is None:
-			filename = 'default.v'
+			if sv == 'no':
+				filename = 'default.v'
+			else:
+				filename = 'default.sv'
 		if isinstance(path, str) is False:
 			raise TypeError("Path name is required as string r'%s.")
 		elif isinstance(filename, str) is False:
@@ -91,7 +88,7 @@ def source_sh (file = None):
 
 	pprint.pprint(stdout)
 
-def synth_verilog(obj = None, node = 45, corner = 'typical', model = 'ccs', tool = 'yosys', tcl = None):
+def synth_verilog(obj = None, node = 45, corner = 'typical', model = 'ccs', tool = 'yosys', tcl = None, file_v = None, clk_name = None):
 
 	node_list = (7, 45)
 	corner_nangate = ('typical', 'fast', 'slow', 'low_temp', 'worst_low')
@@ -148,36 +145,51 @@ def synth_verilog(obj = None, node = 45, corner = 'typical', model = 'ccs', tool
 		TypeError('Wrong type: arg tool is of type %s')
 	elif tool not in tool_list:
 		ValueError('Incorrect value for synthesis tool')
-
+	
+	lib_path = []
 	# check if file exists
+	curr = pathlib.Path.cwd()
 	if node == node_list[1]:
-		print(std_lib['nangate'])
 		std_file = std_lib['nangate'][model][corner_nangate.index(corner)]
-
+		lef_file = [os.path.join(curr, 'Nangate45/lef/NangateOpenCellLibrary.lef'), os.path.join(curr,'Nangate45/lef/NangateOpenCellLibrary.macro.lef'), os.path.join(curr,'Nangate45/lef/NangateOpenCellLibrary.tech.lef')]
+		qrc_file = None
+		
 	elif node == node_list[0]:
 		std_file = std_lib['asap7'][model][corner_nangate.index(corner)]
 
-	chk_std, std_path = is_file(std_file, 'std_lib')
-
-	if chk_std is False:
-		raise FileNotFoundError('File '+std_file+' not present in the directory')
-
-	# initiate synth
-
-	chk_v, file_v = is_file(obj.name+'.v', 'out_rtl')
-
-	if chk_v is False:
-		raise FileNotFoundError('File '+file_v+' not present in the directory')
-
-	synth = synth_support(file_v, std_path, obj.name)
+	std_file = [os.path.join(curr, 'Nangate45/Liberty',model.upper(),std_file)]
+	if std_file is not None:
+		lib_path.append(os.path.join('Nangate45/Liberty',model.upper()))
+		for file in std_file:
+			if os.path.exists(os.path.join(curr, file)) is False:
+				raise FileNotFoundError("File "+os.path.join(curr, file)+"not found")
+	elif lef_file is not None:
+		lib_path.append(os.path.join(curr, "Nangate45/lef"))
+		for file in lef_file:
+			if os.path.exists(os.path.join(curr, lef_file)) is False:
+				raise FileNotFoundError("File "+os.path.join(curr, file)+"not found")
+	elif file_v is not None:
+		if file_v is False:
+			raise FileNotFoundError("File "+os.path.join(curr, file_v)+"not found")
+	elif qrc_file is not None:
+		lib_path.append(os.path.join(curr, "Nangate45/qrc"))
+		if os.path.exists(os.path.join(curr, qrc_file)) is False:
+			raise FileNotFoundError("File "+os.path.join(curr, qrc_file)+"not found")
+	
+	synth = synth_support(file_v = file_v, sv = False, name = obj.name, output = None, std_lib = std_file, std_lef = lef_file, std_qrc = qrc_file, lib_path = lib_path)
 	
 	if tcl is None:
 		if tool == tool_list[0]:
 			synth.gen_ys_template()
 			synth_res = synth._exec_ys()
 		elif tool == tool_list[1] or tool_list[2]:
-			synth.gen_tcl()
-			synth_res = synth_support._exec_ys()
+				if tcl is None:
+					synth.gen_genus_sdf(clk_name = clk_name)
+					tcl_file = synth.gen_genus_tcl()
+					synth_res = synth._exec_genus(tcl_file)
+				else:
+					synth_res = synth._exec_genus(file = tcl)
+
 	elif isinstance(tcl, str) is False:
 		raise TypeError('Wrong type: arg tool is of type %s')
 

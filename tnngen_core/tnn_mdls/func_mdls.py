@@ -21,7 +21,7 @@ class TNN_Functions():
         temp2 = m.Wire('temp2', 1)
 
         # target submodule
-        pulse = self.Pulse2edge()
+        pulse, pulse_clk_name = self.Pulse2edge()
 
         # copy paras and ports
         #params = m.copy_params(led)
@@ -33,7 +33,7 @@ class TNN_Functions():
        
         out.assign(data_in & ~temp2)
 
-        return m
+        return m, ('aclk')
 
     def Pulse2edge(self):
     	m = Module('pulse2edge')
@@ -46,7 +46,8 @@ class TNN_Functions():
 
     	m.Always(Posedge(aclk), Posedge(grst)) (If(grst) (temp(0)).Else (temp(edge_out)))
     	edge_out.assign(pulse_in | temp)
-    	return m
+
+    	return m, ('aclk')
 
     def Adder(self, res = 4):
         m = Module('adder')
@@ -58,7 +59,7 @@ class TNN_Functions():
 
         out.assign(a + b + cin)
 
-        return m
+        return m, None
 
     def Edge2pulse(self):
         m = Module('edge2pulse')
@@ -75,7 +76,7 @@ class TNN_Functions():
                 )
 
         pulse_out.assign(edge_in & ~temp2)
-        return m
+        return m, ('clk_in')
 
     def Incdec(self):
 
@@ -97,7 +98,7 @@ class TNN_Functions():
         inc.assign((cases[0] & capture & temp) | (cases[2] & search))
         dec.assign((cases[1] & minus & temp) | (cases[3] & backoff & temp));
 
-        return m
+        return m, None
 
     def Wta(self, Q = 10):
         
@@ -116,8 +117,8 @@ class TNN_Functions():
         i = m.Genvar('i', 32)
 
         # target submodule
-        pulse = self.Pulse2edge()
-        less_equal = self.Less_equal()   
+        pulse, pulse_clk_name = self.Pulse2edge()
+        less_equal, less_equal_clk_name = self.Less_equal()   
 
         pulse_inst = Submodule(m, pulse, name = 'pulse_inst', arg_ports = [aclk, first_spike, grst, first_spike_edge])
 
@@ -129,7 +130,7 @@ class TNN_Functions():
         for k in range(1, q.value):
             li_out[k].assign(temp[k] & ~ Uor(Slice(temp, k-1, 0)) )
 
-        return m
+        return m, ('aclk')
 
     def Flogic(self):
         m = Module('flogic')
@@ -147,7 +148,7 @@ class TNN_Functions():
             .Elif(input_weight==Int(7, width = 3, base = 2)) (out(1))
             )
 
-        return m
+        return m, None
 
     def Stdp_case_gen(self):
 
@@ -166,7 +167,7 @@ class TNN_Functions():
 
         temp.assign(~ ein & eout)
 
-        pulse = self.Pulse2edge()
+        pulse, pulse_clk_name = self.Pulse2edge()
 
         pulse_inst = m.Instance(pulse, 'pe', params = None,  ports = [aclk, temp, grst, greater]) #m.connect_ports(pulse))    
 
@@ -178,7 +179,7 @@ class TNN_Functions():
         stdp_cases[2].assign(~ greater & tone)
         stdp_cases[3].assign(greater & tone)
 
-        return m
+        return m, ('aclk')
 
     def Fsm_simple(self):
         m = Module('fsm_simple')
@@ -203,7 +204,7 @@ class TNN_Functions():
         out_v.assign((~temp) | (temp & in_v))
         temp.assign(~ fsm_v[2] | fsm_v[1] | fsm_v[0])
 
-        return m
+        return m, ('aclk')
 
     def Fsm_synapse(self):
         m = Module('fsm_synapse')
@@ -358,7 +359,7 @@ class TNN_Functions():
         out_v.assign(~ dout | input_spike)
         weight.assign(state)
 
-        return m
+        return m, ('aclk', 'gclk')
 
     def Stdp(self):
         m = Module('stdp')
@@ -381,15 +382,15 @@ class TNN_Functions():
         fout = m.Wire('fout', 1)
 
         # target submodule
-        stdp_case = self.Stdp_case_gen()
-        flogic =self. Flogic()
-        incdec = self.Incdec()
+        stdp_case, stdp_case_gen_clk = self.Stdp_case_gen()
+        flogic, flogic_clk =self. Flogic()
+        incdec, incdec_clk = self.Incdec()
 
         stdp_case_gen_inst = m.Instance(stdp_case, 's1', params = None, ports = [ein, eout, aclk, grst, cases])
         flogic_inst = m.Instance(flogic, 's2', params = None, ports = [F, input_weight, fout])
         incdec_inst = m.Instance(incdec, 's3', params = None, ports = [cases, capture, minus, search, backoff, min_v, fout, inc, dec]) 
 
-        return m
+        return m, ('aclk')
 
     def Pac(self, ip_size = 32, thres = 13):
         m = Module('pac')
@@ -420,7 +421,7 @@ class TNN_Functions():
         for i_v in range(in_size_val):
             temp[i_v].assign(in_v[i_v])
 
-        adder = self.Adder()
+        adder, add_clk = self.Adder()
 
         count = []
         count.append(0)
@@ -448,7 +449,7 @@ class TNN_Functions():
 
         out_v.assign(~ t2out[1])
 
-        return m
+        return m, ('aclk')
 
     def Neuronbody(self, ip_size = 16, thres = 13):
         m = Module('neuron_body')
@@ -462,8 +463,8 @@ class TNN_Functions():
 
         temp = m.Wire('temp_spike', 1)
 
-        pac = self.Pac(ip_size = in_size_v.value, thres = thres_v.value)
-        fsm_s = self.Fsm_simple()
+        pac, pac_clk = self.Pac(ip_size = in_size_v.value, thres = thres_v.value)
+        fsm_s, fsm_s_clk = self.Fsm_simple()
 
         par_pac = [in_size_v.value, thres_v.value]
 
@@ -471,7 +472,7 @@ class TNN_Functions():
 
         fsm_simple_inst =m.Instance(fsm_s, 'fs', params = None, ports = [aclk, rst, temp, out_v])
 
-        return m
+        return m, ('aclk')
 
     def NeuronRNL(self, ip_size = 16, thres = 13):
         m = Module('neuron_rnl_ptt')
@@ -495,8 +496,8 @@ class TNN_Functions():
 
         up_in = m.Wire('up_in', in_size.value)
 
-        fsm_s = self.Fsm_synapse()
-        nbody = self.Neuronbody(ip_size = in_size.value, thres = thres.value )
+        fsm_s, fsm_clk = self.Fsm_synapse()
+        nbody, nbody_clk = self.Neuronbody(ip_size = in_size.value, thres = thres.value )
 
         for i in range(in_size.value):
             m.Instance(fsm_s, 'f1_'+str(i), params = None, ports = [weight_en, aclk, gclk, rst, in_v[i], inc[i], dec[i], up_in[i], weight[i]])
@@ -505,7 +506,7 @@ class TNN_Functions():
 
         m.Instance(nbody, 'p1', params = par_nbody, ports = [up_in, aclk, grst, rst, out_v])    
 
-        return m
+        return m, ('aclk', 'gclk')
 
 class Test_TNN_Functions(TNN_Functions):
 

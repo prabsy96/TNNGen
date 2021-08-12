@@ -53,11 +53,11 @@ class TNN_Col():
 
         tnn_func = TNN_Functions()
 
-        edge = tnn_func.Edge2pulse()
-        pulse = tnn_func.Pulse2edge()
-        n_rnl = tnn_func.NeuronRNL(p.value, thres.value)
-        wta = tnn_func.Wta(q.value)
-        stdp = tnn_func.Stdp()
+        edge, edge_clk = tnn_func.Edge2pulse()
+        pulse, pulse_clk = tnn_func.Pulse2edge()
+        n_rnl, n_rnl_clk = tnn_func.NeuronRNL(p.value, thres.value)
+        wta, wta_clk = tnn_func.Wta(q.value)
+        stdp, stdp_clk = tnn_func.Stdp()
 
         m.Instance(edge, 'ep', ports = [gclk, aclk, gclk_pulse])
 
@@ -87,7 +87,7 @@ class TNN_Col():
 
         m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, aclk, gclk_pulse, out_spike])
 
-        return m
+        return m, (aclk.name, gclk.name)
 
     def col_tb(self):
 
