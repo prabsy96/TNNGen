@@ -4,14 +4,13 @@ import pathlib
 import subprocess
 import sys
 import shlex
+from rich.console import Console 
 
 sys.path.append("../")
 from synthesis.synthesis import synth_support
 from simulation.simulation import sim_support
 
-
-# Author: Prabhu Vellaisamy
-# Backend functions built from veriloggen
+console = Console()
 
 def gen_verilog( module = None, path = None, filename = None, print_v = 'no', sv = 'no'):
 
@@ -27,7 +26,7 @@ def gen_verilog( module = None, path = None, filename = None, print_v = 'no', sv
 			filename = 'default.v'
 		else:
 			filename = 'default.sv'
-			print('file generated at ./'+path+filename)
+			console.print('[bold blue]  -> file generated at ./'+path+filename)
 	else:
 		if path is None:
 			path = 'out_rtl'
@@ -65,7 +64,7 @@ def sim_verilog(obj = None, sim_name = 'iverilog', wave = None):
 		sim = simulation.Simulator(obj, sim = 'iverilog')
 		rslt = sim.run(display = True) 
 		print(rslt)
-		print("\n#### Simulation Dump Completed ####")
+		console.print("[bold blue]  -> Simulation dump completed")
 
 		if wave == 'yes':
 			sim.view_waveform()
@@ -105,13 +104,16 @@ def synth_verilog(obj = None, node = 45, corner = 'typical', model = 'ccs', tool
 						'NangateOpenCellLibrary_low_temp_ecsm', 'NangateOpenCellLibrary_worst_low_ecsm'],
 						'nldm':['NangateOpenCellLibrary_typical_nldm.lib', 'NangateOpenCellLibrary_fast_ndlm.lib', 'NangateOpenCellLibrary_slow_nldm',
 						'NangateOpenCellLibrary_low_temp_nldm', 'NangateOpenCellLibrary_worst_low_nldm']},
-				'asap7': {'ccs':'Asap7_rvt_tt_ccs.lib',
-						'nldm':	{'rvt': ['Asap7_rvt_tt_nldm.lib', 'Asap7_rvt_ff_ccs.lib', 'Asap7_rvt_ss_ccs.lib'],
-								'lvt': ['Asap7_lvt_tt_nldm.lib', 'Asap7_lvt_ff_ccs.lib', 'Asap7_lvt_ss_ccs.lib'],
-								'slvt': ['Asap7_slvt_tt_nldm.lib', 'Asap7_slvt_ff_ccs.lib', 'Asap7_slvt_ss_ccs.lib'],
-								'sram': ['Asap7_sram_tt_nldm.lib', 'Asap7_sram_ff_ccs.lib', 'Asap7_sram_ss_ccs.lib'],
+				'asap7': {'ccs':('asap7sc7p5t_SEQ_RVT_TT_ccs_191031.lib', 'asap7sc7p5t_SIMPLE_RVT_TT_ccs_191031.lib',
+								'asap7sc7p5t_INVBUF_RVT_TT_ccs_191031.lib', 'asap7sc7p5t_OA_RVT_TT_ccs_191031.lib',
+								'asap7sc7p5t_AO_RVT_TT_ccs_191031.lib')  ,
+						'nldm':	{'rvt': {'ff':(),
+								#'lvt': ,
+								#'slvt': ,
+								#'sram': 
 								}
 							}
+				}
 				}
 
 	# Handle errors and exceptions

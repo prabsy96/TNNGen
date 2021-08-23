@@ -69,11 +69,7 @@ class sim_support:
 		dis = ''.join(dis)
 		
 		return dis
-		
-		
-		#sim_res = subprocess.call(shlex.split(cmd), shell = True)
-		#return sim_res
-		
+	
 	def dve(self):
 		
 		cmd = []
@@ -88,7 +84,6 @@ class sim_support:
 		proc.wait()
 		proc.stdout.close()
 
-	
 	def run_xrun(self, nospecify = 'yes', timescale = '1ns/1ps'):
 		
 		if not os.path.exists(self.outputfile):

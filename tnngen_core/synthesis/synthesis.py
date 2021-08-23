@@ -2,7 +2,10 @@ import os
 import sys
 import subprocess
 import pathlib
-import shlex 
+import shlex
+from rich.console import Console 
+
+console = Console()
 
 class synth_support:
 
@@ -34,7 +37,7 @@ class synth_support:
 				os.makedirs(self.output)
 
 		graph = input("Show design netlist graph; select ''yes'' or ''no'' ") or 'yes'
-
+		console.print("[bold magenta]  -> Selected "+graph)
 		# yosys script
 		l1 = "\nread_verilog "+self.file_v
 		l2 = "\nhierarchy -top "+self.name
@@ -85,22 +88,20 @@ class synth_support:
 		
 		print("\nProvide Tcl file parameters below\n_______________________________________________________")
 		gen_eff = input("Synthesis to Generic effort (low, medium or high): ") or 'medium'
-		print("-> Selected GEN_EFF: "+gen_eff)
+		console.print("[bold blue]  -> Selected GEN_EFF: "+gen_eff)
 		map_opt_eff = input("Mapping Optimization Effort (low, medium or high): ") or 'medium'
-		print("-> Selected MAP_OPT_EFF: "+map_opt_eff)
+		console.print("[bold blue]  -> Selected MAP_OPT_EFF: "+map_opt_eff)
 		lp_clk_gating = input("Enable low power clock gating (yes or no): ") or 'yes'
-		print("-> Low power clock gating enabled?: "+gen_eff)
+		console.print("[bold blue]  -> Low power clock gating enabled?: "+gen_eff)
 		lp_power_analysis_effort = input("Low power analysis effort (low, medium or high): ") or 'medium'
-		print("-> Low power analysis effort: "+lp_power_analysis_effort)
+		console.print("[bold blue]  -> Low power analysis effort: "+lp_power_analysis_effort)
 		max_cpus_per_server = input("Max # CPUs per server: ") or None
 		if max_cpus_per_server is not None:
-			print("-> Selected # CPUs per server: "+max_cpus_per_server)
+			console.print("[bold blue]  -> Selected # CPUs per server: "+max_cpus_per_server)
 		lp_default_toggle_rate = input("Low power toggle rate: ") or '0.00002'
-		print("-> Selected low power toggle rate: "+lp_default_toggle_rate)
+		console.print("[bold blue]  -> Selected low power toggle rate: "+lp_default_toggle_rate)
 		lec = input("Produce .lec files for conformal checks? (yes or no): ") or 'no'
-		print("-> Generate .lec files?: "+gen_eff)
-		
-		print(lp_default_toggle_rate)
+		console.print("[bold blue]  -> Generate .lec files?: "+gen_eff)
 
 		if not os.path.exists(self.output):
 				os.makedirs(self.output)
@@ -300,7 +301,7 @@ class synth_support:
 		return tcl_path
 		
 	def gen_genus_sdf(self, clk_name = None):
-		
+		print(clk_name)
 		print("\nEnter .sdc file subfields\n_____________________________________")
 		period, wave_new, waveform = [], [], []
 		idx = 0
@@ -312,9 +313,9 @@ class synth_support:
 					if clk == 'aclk':
 						hw_clk = clk
 					period.append(input("Enter clock period for "+clk+" (%d or %f type) : ") or '5555.5556')
-					print("-> Selected clock period for "+clk+": "+period[idx])
+					console.print("[bold blue]  -> Selected clock period for "+clk+": "+period[idx])
 					waveform.append(input("Enter time for rise and fall edges for "+clk+" in %s type (only two inputs). Ex. \"0 5\" : ") or '0 5')
-					print("-> Selected rise and fall edges for "+clk+": ("+waveform[idx]+")")
+					console.print("[bold blue]  -> Selected rise and fall edges for "+clk+": ("+waveform[idx]+")")
 					idx = idx+1
 				for wave in waveform:
 					wave_new.append(tuple(map(int, wave.split(' '))))
@@ -344,9 +345,9 @@ class synth_support:
 			elif isinstance(clk_name, str) is True:
 				hw_clk = clk_name
 				period = input("Enter clock period for "+clk_name+" (%d or %f type) : ") or '5555.5556'
-				print("-> Selected clock period for "+clk_name+": "+str(period))
+				console.print("[bold blue]  -> Selected clock period for "+clk_name+": "+str(period))
 				waveform = input("Enter time for rise and fall edges for "+clk_name+" in %s type (only two inputs). Ex. \"0 5\" : ") or '0 5'
-				print("-> Selected rise and fall edges for "+clk_name+": ("+waveform+")")
+				console.print("[bold blue]  -> Selected rise and fall edges for "+clk_name+": ("+waveform+")")
 				wave_new = tuple(map(int, waveform.split(' ')))
 				
 				if clk_name is None:
@@ -370,18 +371,18 @@ class synth_support:
 								print("Waveform fields should of type %d or %f")
 				
 			uncertainity = input("Enter uncertainity in clock network in %f form; btw 0.0 and 1.0 : ") or '0.1'
-			print("-> Selected clock network uncertainity : "+uncertainity)
+			console.print("[bold blue]  -> Selected clock network uncertainity : "+uncertainity)
 			fall_transition = input("Fall transition in %f form; btw 0.0 and 1.0 : ") or '0.15'
-			print("-> Selected fall transition: "+fall_transition)
+			console.print("[bold blue]  -> Selected fall transition: "+fall_transition)
 			rise_transition = input("Rise transition in %f form; btw 0.0 and 1.0 : ") or '0.15'
-			print("-> Selected rise transition: "+rise_transition)
+			console.print("[bold blue]  -> Selected rise transition: "+rise_transition)
 			ip_delay = input("Set input delay in %f form : ") or '2.0'
-			print("-> Selected input delay: "+ip_delay)
+			console.print("[bold blue]  -> Selected input delay: "+ip_delay)
 			op_delay = input("Set output delay in %f form : ") or '2.0'
-			print("-> Selected output delay: "+op_delay)
+			console.print("[bold blue]  -> Selected output delay: "+op_delay)
 		
 		set_load = input("Set the capacitive load in %f form : ") or '15.0'
-		print("-> Selected load : "+set_load)
+		console.print("[bold blue]  -> Selected load : "+set_load)
 		
 		f_sdc = open(os.path.join(self.output,"chip.sdc"), 'w')
 		cmd = []

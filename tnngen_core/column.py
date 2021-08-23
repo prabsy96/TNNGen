@@ -67,7 +67,7 @@ class TNN_Col():
         rnl_param = [p.value, thres.value]
 
         for j in range(q.value):
-        	m.Instance(n_rnl, 'ec_'+str(j), params = rnl_param, ports = [in_spike, inc[j], dec[j], weight_en, aclk, gclk, gclk_pulse, rst])
+        	m.Instance(n_rnl, 'ec_'+str(j), params = rnl_param, ports = [in_spike, inc[j], dec[j], weight_en, aclk, gclk, gclk_pulse, rst, ec_spikes[j], weight[j]])
         	m.Instance(pulse, 'out_pe_'+str(j), ports = [aclk, out_spike[j], gclk_pulse, eout[j]] )
 
         	for z in range(p.value):

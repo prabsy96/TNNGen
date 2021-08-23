@@ -1,7 +1,0 @@
-define XMSIMRC	( /afs/ece.cmu.edu/support/cds/share/image/usr/cds/xcelium-19.03.010/tools/xcelium/files/xmsimrc, ~/.xmsimrc )
-include ./hdlrun.var
-define SNAPSHOT worklib.test_less_equal:v
-DEFINE RUNMODEDEFAULT 1
-DEFINE LIB_MAP ( + => worklib )
-define ELAB_SNAPSHOT
-define SNAPSHOT worklib.test_less_equal:v

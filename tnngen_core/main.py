@@ -7,21 +7,37 @@ import argparse
 import os
 from rich.console import Console
 from rich.progress import track
+from rich.table import Table
 
 if __name__ == '__main__':
 
 	console = Console()
-	console.print("[bold blue] /----------------------------------------------------------------------------\\")
-	console.print("[bold blue] |                                                                            |")
-	console.print("[bold blue] |  Welcome to TNNGen (Temporal Neural Network Generator)!                    |")
-	console.print("[bold blue] |  TNNGen is a Python framework for building TNN ecosystems                  |")
-	console.print("[bold blue] |                                                                            |")
-	console.print("[bold blue] |  Prabhu Vellaisamy <pvellais@andrew.cmu.edu>                               |")
-	console.print("[bold blue] |  CMU-NCAL, Carnegie Mellon University                                      |")
-	console.print("[bold blue] |                                                                            |")
-	console.print("[bold blue] \\----------------------------------------------------------------------------/")
-	
-# parse command line aarguments
+	console.print("[bold magenta]		/------------------------------------------------------------\\")
+	console.print("[bold magenta]		|                                                            |")
+	console.print("[bold magenta]		|  Welcome to TNNGen (Temporal Neural Network Generator)!    |")
+	console.print("[bold magenta]		|  TNNGen is a Python framework for building TNN ecosystems  |")
+	console.print("[bold magenta]		|                                                            |")
+	console.print("[bold magenta]		|  Prabhu Vellaisamy <pvellais@andrew.cmu.edu>               |")
+	console.print("[bold magenta]		|  CMU-NCAL, Carnegie Mellon University                      |")
+	console.print("[bold magenta]		|                                                            |")
+	console.print("[bold magenta]		\\-----------------------------------------------------------/")
+
+	# help table print
+	table1 = Table(show_header=True, header_style="bold magenta")
+	table1.add_column("TNN Module List", justify="center")
+	table1.add_row("1.edge2pulse 2.pulse2edge 3.less_equal 4.adder 5.incdec 6.wta 7.flogic 8.stdp_case_gen")
+	table1.add_row("9.fsm_simple 10.fsm_synapse 11.stdp 12.pac 13.neuron_body 14.neuron_rnl_ptt 15.column")
+	console.print(table1)
+
+	table2 = Table(show_header=True, header_style="bold magenta")
+	table2.add_column("Simulation Tools")
+	table2.add_column("Synthesis Tools")
+	table2.add_row("iVerilog", "Yosys")
+	table2.add_row("Synopsys VCS", "Synopsys Design Compiler")
+	table2.add_row("Cadence Xcelium", "Cadence Genus")
+	console.print(table2)
+
+	# parse command line aarguments
 	parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
 	
 	subparser = parser.add_subparsers(dest = 'command')
@@ -142,7 +158,6 @@ if __name__ == '__main__':
 		raise ValueError('Incorrect top level module name')
 	
 	if flow == 'rtl' or flow == 'sim':
-	
 		if isinstance(print_v, str) is False:
 			raise TypeError('Incorrect type; provide in %s format')
 		if print_v not in ('yes', 'no'):
@@ -154,7 +169,6 @@ if __name__ == '__main__':
 			raise ValueError('Invalid entry: provide either ''yes'' or ''no''')
 			
 	if flow == 'sim':
-
 		if isinstance(sim_name, str) is False:
 			raise TypeError('Incorrect type; provide in %s format')
 		if sim_name not in sim_lib:
@@ -173,11 +187,11 @@ if __name__ == '__main__':
 	if top_lvl_mdl == 'column':
 		print("Column selected, provide parameters")
 		p = int(input('Enter # synapses per neuron : ') or 4)
-		console.print("\n[bold orange]  -> Selected # synapse per neuron: "+str(p))
+		console.print("[bold blue]  -> Selected # synapse per neuron: "+str(p))
 		q = int(input('Enter # output neurons : ') or 3)
-		console.print("\n[bold blue]  -> Selected # output neurons: "+str(q))
+		console.print("[bold blue]  -> Selected # output neurons: "+str(q))
 		thres = int(input('Enter threshold value ') or 13)
-		console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
+		console.print("[bold blue]  -> Selected threshold value: "+str(thres))
 
 		if not isinstance(p, int):
 			raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -189,126 +203,126 @@ if __name__ == '__main__':
 		col = TNN_Col(p, q, thres)
 		
 		if flow == 'synth':
-			obj, col_clk = col.col_v()
+			obj, clk_name = col.col_v()
 		else:
 			if tb == 'yes' :
 				obj = col.col_tb()
 			else:
-				obj, col_clk = col.col_v()
+				obj, clk_name = col.col_v()
 	else:
 		if top_lvl_mdl == 'less_equal':
 			if flow == 'synth':
-				obj, lq_clk = f.Less_equal()
+				obj, clk_name = f.Less_equal()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Less_equal()
 				else:
-					obj, lq_clk = f.Less_equal()
+					obj, clk_name = f.Less_equal()
 
 		elif top_lvl_mdl == 'pulse2edge':
 			if flow == 'synth':
-				obj, pulse_clk = f.Pulse2edge()
+				obj, clk_name = f.Pulse2edge()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Pulse2edge()
 				else:
-					obj, pulse_clk = f.Pulse2edge()
+					obj, clk_name = f.Pulse2edge()
 
 		elif top_lvl_mdl == 'edge2pulse':
 			if flow == 'synth':
-				obj, edge_clk = f.Edge2pulse()
+				obj, clk_name = f.Edge2pulse()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Edge2pulse()
 				else:
-					obj, edge_clk = f.Edge2pulse()
+					obj, clk_name = f.Edge2pulse()
 
 		elif top_lvl_mdl == 'adder':
 			if flow == 'synth':
-				obj, add_clk = f.Adder()
+				obj, clk_name = f.Adder()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Adder()
 				else:
-					obj, add_clk = f.Adder()
+					obj, clk_name = f.Adder()
 
 		elif top_lvl_mdl == 'incdec':
 			if flow == 'synth':
-				obj, inc_clk = f.Incdec()
+				obj, clk_name = f.Incdec()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Incdec()
 				else:
-					obj, inc_clk = f.Incdec()
+					obj, clk_name = f.Incdec()
 
 		elif top_lvl_mdl == 'wta':
 			print("WTA selected, provide parameter")
 			q = int(input(' Enter # output neurons ') or 4)
-			console.print("\n[bold blue]  -> Selected # output neurons: "+str(q))
+			console.print("[bold blue]  -> Selected # output neurons: "+str(q))
 			
 			if not isinstance(q, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
 			
 			if flow == 'synth':
-				obj, wta_clk = f.Wta(q)
+				obj, clk_name = f.Wta(q)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Wta(q)
 				else:
-					obj, wta_clk = f.Wta(q)
+					obj, clk_name = f.Wta(q)
 
 		elif top_lvl_mdl == 'flogic':
 			if flow == 'synth':
-				obj, flogic_clk = f.Flogic()
+				obj, clk_name = f.Flogic()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Flogic()
 				else:
-					obj, flogic_clk = f.Flogic()
+					obj, clk_name = f.Flogic()
 
 		elif top_lvl_mdl == 'stdp_case_gen':
 			if flow == 'synth':
-				obj, case_gen = f.Stdp_case_gen()
+				obj, clk_name = f.Stdp_case_gen()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Stdp_case_gen()
 				else:
-					obj, case_gen = f.Stdp_case_gen()
+					obj, clk_name = f.Stdp_case_gen()
 
 		elif top_lvl_mdl == 'fsm_simple':
 			if flow == 'synth':
-				obj, simple_clk = f.Fsm_simple()
+				obj, clk_name = f.Fsm_simple()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Fsm_simple()
 				else:
-					obj, simple_clk = f.Fsm_simple()
+					obj, clk_name = f.Fsm_simple()
 
 		elif top_lvl_mdl == 'fsm_synapse':
 			if flow == 'synth':
-				obj, fsm_clk = f.Fsm_synapse()
+				obj, clk_name = f.Fsm_synapse()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Fsm_synapse()
 				else:
-					obj, fsm_clk = f.Fsm_synapse()
+					obj, clk_name = f.Fsm_synapse()
 
 		elif top_lvl_mdl == 'stdp':
 			if flow == 'synth':
-				obj, stdp_clk = f.Stdp()
+				obj, clk_name = f.Stdp()
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Stdp()
 				else:
-					obj, stdp_clk = f.Stdp()
+					obj, clk_name = f.Stdp()
 
 		elif top_lvl_mdl == 'pac':
-			print("WTA selected, provide parameters")
+			print("Pac selected, provide parameters")
 
 			p = int(input('Enter # synapses per neuron : ') or 4)
-			console.print("\n[bold blue]  -> Selected # synapse per neuron: "+str(p))
+			console.print("[bold blue]  -> Selected # synapse per neuron: "+str(p))
 			thres = int(input('Enter threshold value ') or 13)
-			console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
+			console.print("[bold blue]  -> Selected threshold value: "+str(thres))
 
 			if not isinstance(p, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -317,20 +331,20 @@ if __name__ == '__main__':
 				raise TypeError('Invalid type for threshold value; provide in %d format')
 			
 			if flow == 'synth':
-				obj, pac_clk = f.Pac(ip_size = p, thres = thres)
+				obj, clk_name = f.Pac(ip_size = p, thres = thres)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Pac(ip_size = p, thres = thres)
 				else:
-					obj, pac_clk = f.Pac(ip_size = p, thres = thres)
+					obj, clk_name = f.Pac(ip_size = p, thres = thres)
 
 		elif top_lvl_mdl == 'neuron_body':
 			print("Neuron body selected, provide parameters")
 
 			p = int(input('Enter # synapses per neuron : ') or 4)
-			console.print("\n[bold blue]  -> Selected # synapse per neuron: "+str(p))
+			console.print("[bold blue]  -> Selected # synapse per neuron: "+str(p))
 			thres = int(input('Enter threshold value ') or 13)
-			console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
+			console.print("[bold blue]  -> Selected threshold value: "+str(thres))
 
 			if not isinstance(p, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -339,20 +353,20 @@ if __name__ == '__main__':
 				raise TypeError('Invalid type for threshold value; provide in %d format')
 			
 			if flow == 'synth':
-				obj, body_clk = f.Neuronbody(ip_size = p, thres = thres)
+				obj, clk_name = f.Neuronbody(ip_size = p, thres = thres)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_Neuronbody(ip_size = p, thres = thres)
 				else:
-					obj, body_clk = f.Neuronbody(ip_size = p, thres = thres)
+					obj, clk_name = f.Neuronbody(ip_size = p, thres = thres)
 
 		elif top_lvl_mdl == 'neuron_rnl_ptt':
 			print("Neuron RNL selected, provide parameters")
 
 			p = int(input('Enter # synapses per neuron : ') or 4)
-			console.print("\n[bold blue]  -> Selected # synapse per neuron: "+str(p))
+			console.print("[bold blue]  -> Selected # synapse per neuron: "+str(p))
 			thres = int(input('Enter threshold value ') or 13)
-			console.print("\n[bold blue]  -> Selected threshold value: "+str(thres))
+			console.print("[bold blue]  -> Selected threshold value: "+str(thres))
 
 			if not isinstance(p, int):
 				raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
@@ -361,12 +375,12 @@ if __name__ == '__main__':
 				raise TypeError('Invalid type for threshold value; provide in %d format')
 			
 			if flow == 'synth':
-				obj, rnl_clk = f.NeuronRNL(ip_size = p, thres = thres)
+				obj, clk_name = f.NeuronRNL(ip_size = p, thres = thres)
 			else:
 				if tb == 'yes':
 					obj = tb_f.Tb_NeuronRNL(ip_size = p, thres = thres)
 				else:
-					obj, rnl_clk = f.NeuronRNL(ip_size = p, thres = thres)
+					obj, clk_name = f.NeuronRNL(ip_size = p, thres = thres)
 
 	# generate verilog
 	if sv == 'yes':
