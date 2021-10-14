@@ -312,10 +312,15 @@ class synth_support:
 				for clk in clk_name:
 					if clk == 'aclk':
 						hw_clk = clk
-					period.append(input("Enter clock period for "+clk+" (%d or %f type) : ") or '5555.5556')
-					console.print("[bold blue]  -> Selected clock period for "+clk+": "+period[idx])
-					waveform.append(input("Enter time for rise and fall edges for "+clk+" in %s type (only two inputs). Ex. \"0 5\" : ") or '0 5')
-					console.print("[bold blue]  -> Selected rise and fall edges for "+clk+": ("+waveform[idx]+")")
+						period.append(input("Enter clock period for "+clk+" (%d or %f type) : ") or '10000.00')
+						console.print("[bold blue]  -> Selected clock period for "+clk+": "+period[idx])
+						waveform.append(input("Enter time for rise and fall edges for "+clk+" in %s type (only two inputs). Ex. \"0 5\" : ") or '0 5')
+						console.print("[bold blue]  -> Selected rise and fall edges for "+clk+": ("+waveform[idx]+")")
+					elif clk == 'gclk':
+						period.append(input("Enter clock period for "+clk+" (%d or %f type) : ") or '150000.00')
+						console.print("[bold blue]  -> Selected clock period for "+clk+": "+period[idx])
+						waveform.append(input("Enter time for rise and fall edges for "+clk+" in %s type (only two inputs). Ex. \"0 5\" : ") or '0 5')
+						console.print("[bold blue]  -> Selected rise and fall edges for "+clk+": ("+waveform[idx]+")")
 					idx = idx+1
 				for wave in waveform:
 					wave_new.append(tuple(map(int, wave.split(' '))))

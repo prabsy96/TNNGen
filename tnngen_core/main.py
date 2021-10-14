@@ -12,30 +12,30 @@ from rich.table import Table
 if __name__ == '__main__':
 
 	console = Console()
-	console.print("[bold magenta]		/------------------------------------------------------------\\")
-	console.print("[bold magenta]		|                                                            |")
-	console.print("[bold magenta]		|  Welcome to TNNGen (Temporal Neural Network Generator)!    |")
-	console.print("[bold magenta]		|  TNNGen is a Python framework for building TNN ecosystems  |")
-	console.print("[bold magenta]		|                                                            |")
-	console.print("[bold magenta]		|  Prabhu Vellaisamy <pvellais@andrew.cmu.edu>               |")
-	console.print("[bold magenta]		|  CMU-NCAL, Carnegie Mellon University                      |")
-	console.print("[bold magenta]		|                                                            |")
-	console.print("[bold magenta]		\\-----------------------------------------------------------/")
+	# console.print("[bold magenta]		/------------------------------------------------------------\\")
+	# console.print("[bold magenta]		|                                                            |")
+	# console.print("[bold magenta]		|  Welcome to TNNGen (Temporal Neural Network Generator)!    |")
+	# console.print("[bold magenta]		|  TNNGen is a Python framework for building TNN ecosystems  |")
+	# console.print("[bold magenta]		|                                                            |")
+	# console.print("[bold magenta]		|  Prabhu Vellaisamy <pvellais@andrew.cmu.edu>               |")
+	# console.print("[bold magenta]		|  CMU-NCAL, Carnegie Mellon University                      |")
+	# console.print("[bold magenta]		|                                                            |")
+	# console.print("[bold magenta]		\\-----------------------------------------------------------/")
 
-	# help table print
-	table1 = Table(show_header=True, header_style="bold magenta")
-	table1.add_column("TNN Module List", justify="center")
-	table1.add_row("1.edge2pulse 2.pulse2edge 3.less_equal 4.adder 5.incdec 6.wta 7.flogic 8.stdp_case_gen")
-	table1.add_row("9.fsm_simple 10.fsm_synapse 11.stdp 12.pac 13.neuron_body 14.neuron_rnl_ptt 15.column")
-	console.print(table1)
+	# # help table print
+	# table1 = Table(show_header=True, header_style="bold magenta")
+	# table1.add_column("TNN Module List", justify="center")
+	# table1.add_row("1.edge2pulse 2.pulse2edge 3.less_equal 4.adder 5.incdec 6.wta 7.flogic 8.stdp_case_gen")
+	# table1.add_row("9.fsm_simple 10.fsm_synapse 11.stdp 12.pac 13.neuron_body 14.neuron_rnl_ptt 15.column")
+	# console.print(table1)
 
-	table2 = Table(show_header=True, header_style="bold magenta")
-	table2.add_column("Simulation Tools")
-	table2.add_column("Synthesis Tools")
-	table2.add_row("iVerilog", "Yosys")
-	table2.add_row("Synopsys VCS", "Synopsys Design Compiler")
-	table2.add_row("Cadence Xcelium", "Cadence Genus")
-	console.print(table2)
+	# table2 = Table(show_header=True, header_style="bold magenta")
+	# table2.add_column("Simulation Tools")
+	# table2.add_column("Synthesis Tools")
+	# table2.add_row("iVerilog", "Yosys")
+	# table2.add_row("Synopsys VCS", "Synopsys Design Compiler")
+	# table2.add_row("Cadence Xcelium", "Cadence Genus")
+	# console.print(table2)
 
 	# parse command line aarguments
 	parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
@@ -421,7 +421,7 @@ if __name__ == '__main__':
 		console.print("[bold blue]-> Selected node: "+str(node))
 		print("Specify the library model", end = "")
 		if node == 45:
-			model = input("ccs, ecsm, nldm : ") or 'ccs'
+			model = input(" ccs, ecsm, nldm : ") or 'ccs'
 			console.print("[bold blue]-> Selected model: "+model)
 			corner = input("Specify the process corner for the tech node, available are - typical, fast, slow, low_temp, worst_low : ") or 'typical'
 			console.print("[bold blue]-> Selected process corner: "+corner)

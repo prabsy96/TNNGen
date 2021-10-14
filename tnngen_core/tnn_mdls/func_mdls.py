@@ -175,7 +175,7 @@ class TNN_Functions():
 
 		pulse, pulse_clk_name = self.Pulse2edge()
 
-		pulse_inst = m.Instance(pulse, 'pe', params = None,  ports = [aclk, temp, grst, greater]) #m.connect_ports(pulse))    
+		pulse_inst = m.Instance(pulse, 'pe', params = None,  ports = [aclk, temp, grst, greater])   
 
 		tboth.assign(ein & eout)
 		tone.assign(ein ^ eout)
@@ -1041,9 +1041,9 @@ class Test_TNN_Functions(TNN_Functions):
 	def Tb_Stdp_case_gen(self):
 
 		m = Module('test_stdp_case_gen')
-		stdp_case = self.tnn.Stdp_case_gen()
+		stdp_case, case_clk = self.tnn.Stdp_case_gen()
 
-		dut, case_clk = Submodule(m, stdp_case, 'dut')
+		dut = Submodule(m, stdp_case, 'dut')
 
 		stdp_cases = dut['stdp_cases']
 		ein = dut['ein']
