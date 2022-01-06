@@ -53,10 +53,6 @@ if __name__ == '__main__':
 	rtl.add_argument('--tb', type = str, default = 'no',
 						help = "'yes' for generating testbench; default is 'no'"
 						)
-						
-	rtl.add_argument('--sv' , type = str, default = 'no',
-						help = "'yes' for generating .sv files; 'no' for generating for .v files"
-						)
 					
 	rtl.add_argument('--print', type = str, default = 'no',
 						help = "'yes' for printing code in command line; default is 'no'"
@@ -69,41 +65,25 @@ if __name__ == '__main__':
 	sim.add_argument('--tb', type = str, default = 'no',
 						help = "'yes' for generating testbench; default is 'no'"
 						)
-	
-	sim.add_argument('--sv' , type = str, default = 'no',
-						help = "'yes' for generating .sv files; 'no' for generating for .v files"
-						)
 						
 	sim.add_argument('--print', type = str, default = 'no',
 						help = "'yes' for printing code in command line; default is 'no'"
 						)
-							
-	sim.add_argument('--sim_tool', type = str, required = True,
-						help = "Provide simulator name: iverilog (default), vcs, xrun (provide paths for vcs and xrun)"
-						)
-	
+								
 	sim.add_argument('--wave', type = str, default = 'no', 
 						help = "view waveform? ''yes'' or ''no''"
 						)
 	
-	sim.add_argument('--sim_path', type = str, default = 'simv',
+	sim.add_argument('--path', type = str, default = 'simv',
 						help = "output path in current dir for storing sim variables"
 						)
 						
 	synth.add_argument('--top', type = str, required = True,
 						help = "Provide top level modules for verilog generation \n Verilog library: 1. column, 2. neuron_rnl, 3. neuron_body, 4. stdp, 5. pac, 6. stdp_case_gen, 7. wta, 8. flogic, 9. fsm_synapse, 10. fsm_simple, 11. incdec, 12. edge2pulse, 13. adder, 14. less_equal, 15. pulse2edge"
-						)	
-
-	synth.add_argument('--tool', type = str, required = True,
-						help = "Select synthesis tool from 1. Yosys [yosys], 2. Genus [genus], 3. Design Compiler [dc]"
 						)
 						
 	synth.add_argument('--tcl', type = str, default = None,
 						help = "Provide path to the Tcl file"
-						)
-	
-	synth.add_argument('--sv' , type = str, default = 'no',
-						help = "'yes' for generating .sv files; 'no' for generating for .v files"
 						)
 
 	args = parser.parse_args()
@@ -137,8 +117,8 @@ if __name__ == '__main__':
 	tb_f = Test_TNN_Functions()
 
 	v_lib = ('column', 'neuron_rnl_ptt', 'neuron_body', 'stdp', 'pac', 'stdp_case_gen', 'wta', 'flogic', 'fsm_synapse', 'fsm_simple', 'incdec', 'edge2pulse', 'adder', 'less_equal', 'pulse2edge')
-	sim_lib = ('iverilog', 'vcs', 'xrun')
-	flow_lib = ('rtl', 'sim', 'synth', 'post_synth_verif')
+	sim_lib = ('xrun')
+	flow_lib = ('rtl', 'sim', 'synth', 'pnr')
 
 	# handling errors
 	
