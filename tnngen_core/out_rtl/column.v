@@ -4,7 +4,7 @@ module column #
 (
   parameter P = 4,
   parameter Q = 2,
-  parameter THRESHOLD = 21
+  parameter THRESHOLD = 12
 )
 (
   input [4-1:0] input_spikes,
@@ -96,7 +96,7 @@ module column #
   neuron_rnl_ptt
   #(
     .INPUT_SIZE(4),
-    .THRESHOLD(21)
+    .THRESHOLD(12)
   )
   ec_0
   (
@@ -202,7 +202,7 @@ module column #
   neuron_rnl_ptt
   #(
     .INPUT_SIZE(4),
-    .THRESHOLD(21)
+    .THRESHOLD(12)
   )
   ec_1
   (
@@ -370,7 +370,7 @@ endmodule
 module neuron_rnl_ptt #
 (
   parameter INPUT_SIZE = 4,
-  parameter THRESHOLD = 21
+  parameter THRESHOLD = 12
 )
 (
   input [4-1:0] input_spikes,
@@ -453,7 +453,7 @@ module neuron_rnl_ptt #
   neuron_body
   #(
     .INPUT_SIZE(4),
-    .THRESHOLD(21)
+    .THRESHOLD(12)
   )
   p1
   (
@@ -587,7 +587,7 @@ endmodule
 module neuron_body #
 (
   parameter INPUT_SIZE = 4,
-  parameter THRESHOLD = 21
+  parameter THRESHOLD = 12
 )
 (
   input [4-1:0] acc_in,
@@ -602,7 +602,7 @@ module neuron_body #
   pac
   #(
     .INPUT_SIZE(4),
-    .THRESHOLD(21)
+    .THRESHOLD(12)
   )
   p1
   (
@@ -630,7 +630,7 @@ endmodule
 module pac #
 (
   parameter INPUT_SIZE = 4,
-  parameter THRESHOLD = 21
+  parameter THRESHOLD = 12
 )
 (
   input [4-1:0] in,
@@ -642,12 +642,12 @@ module pac #
   localparam STAGES = 1;
   localparam OUT_RES = 2;
   localparam NUM = 4;
-  localparam MAXRES = 5;
+  localparam MAXRES = 4;
   wire [4-1:0] temp;
   wire [2-1:0] tout;
-  wire [6-1:0] t2out;
-  reg [5-1:0] fout;
-  wire [5-1:0] muxout;
+  wire [5-1:0] t2out;
+  reg [4-1:0] fout;
+  wire [4-1:0] muxout;
   assign temp[0] = in[0];
   assign temp[1] = in[1];
 
@@ -667,17 +667,17 @@ module pac #
 
   adder
   #(
-    .RES(5)
+    .RES(4)
   )
   adder2_in_pac
   (
-    .a({ 3'b0, tout }),
+    .a({ 2'b0, tout }),
     .b(fout),
     .cin(in[3]),
     .out(t2out)
   );
 
-  assign muxout = ((out | grst) == 1)? -5'sb10101 : t2out[5:1];
+  assign muxout = ((out | grst) == 1)? -4'sb1100 : t2out[4:1];
 
   always @(posedge aclk) begin
     fout <= muxout;

@@ -172,7 +172,7 @@ if __name__ == '__main__':
             if tb == 'yes':
                 obj = col.col_tb()
             else:
-                obj = col.col_v()
+                obj, clk_name = col.col_v()
 
     else:
         if top_lvl_mdl == 'less_equal':
@@ -182,6 +182,8 @@ if __name__ == '__main__':
                 obj = tb_f.Tb_Less_equal()
             elif flow == 'rtl':
                 if tb == 'yes':
+                    obj = tb_f.Tb_Less_equal()
+                else:
                     obj, clk_name = f.Less_equal()
 
         elif top_lvl_mdl == 'pulse2edge':
@@ -191,6 +193,8 @@ if __name__ == '__main__':
                 obj = tb_f.Tb_Pulse2edge()
             elif flow == 'rtl':
                 if tb == 'yes':
+                    obj = tb_f.Tb_Pulse2edge()
+                else:
                     obj, clk_name = f.Pulse2edge()
 
         elif top_lvl_mdl == 'edge2pulse':
@@ -200,6 +204,8 @@ if __name__ == '__main__':
                 obj = tb_f.Tb_Edge2pulse()
             elif flow == 'rtl':
                 if tb == 'yes':
+                    obj = tb_f.Tb_Edge2pulse()
+                else:
                     obj, clk_name = f.Edge2pulse()
 
         elif top_lvl_mdl == 'adder':
@@ -209,11 +215,15 @@ if __name__ == '__main__':
                 obj = tb_f.Tb_Adder()
             elif flow == 'rtl':
                 if tb == 'yes':
+                    obj = tb_f.Tb_Adder()
+                else:
                     obj, clk_name = f.Adder()
 
         elif top_lvl_mdl == 'incdec':
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Incdec()
+            elif flow == 'sim':
+                obj = tb_f.Tb_Incdec()
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Incdec()
@@ -230,6 +240,8 @@ if __name__ == '__main__':
             
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Wta(q)
+            elif flow == 'sim':
+                obj = tb_f.Tb_Wta(q)
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Wta(q)
@@ -239,6 +251,8 @@ if __name__ == '__main__':
         elif top_lvl_mdl == 'flogic':
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Flogic()
+            elif flow == 'sim':
+                obj = tb_f.Tb_Flogic()
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Flogic()
@@ -248,6 +262,8 @@ if __name__ == '__main__':
         elif top_lvl_mdl == 'stdp_case_gen':
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Stdp_case_gen()
+            elif flow == 'sim':
+                obj = tb_f.Tb_Stdp_case_gen()
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Stdp_case_gen()
@@ -257,6 +273,8 @@ if __name__ == '__main__':
         elif top_lvl_mdl == 'fsm_simple':
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Fsm_simple()
+            elif flow == 'sim':
+                obj = tb_f.Tb_Fsm_simple()
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Fsm_simple()
@@ -266,6 +284,8 @@ if __name__ == '__main__':
         elif top_lvl_mdl == 'fsm_synapse':
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Fsm_synapse()
+            elif flow == 'sim':
+                obj = tb_f.Tb_Fsm_synapse()
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Fsm_synapse()
@@ -275,6 +295,8 @@ if __name__ == '__main__':
         elif top_lvl_mdl == 'stdp':
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Stdp()
+            elif flow == 'sim':
+                obj = tb_f.Tb_Stdp()
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Stdp()
@@ -297,6 +319,8 @@ if __name__ == '__main__':
             
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Pac(ip_size = p, thres = thres)
+            elif flow == 'sim':
+                obj = tb_f.Tb_Pac(ip_size = p, thres = thres)
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Pac(ip_size = p, thres = thres)
@@ -319,6 +343,8 @@ if __name__ == '__main__':
             
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.Neuronbody(ip_size = p, thres = thres)
+            elif flow == 'sim':
+                bj = tb_f.Tb_Neuronbody(ip_size = p, thres = thres)
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_Neuronbody(ip_size = p, thres = thres)
@@ -341,6 +367,8 @@ if __name__ == '__main__':
             
             if flow == 'synth' or flow == 'pnr':
                 obj, clk_name = f.NeuronRNL(ip_size = p, thres = thres)
+            elif flow == 'sim':
+                obj = tb_f.Tb_NeuronRNL(ip_size = p, thres = thres)
             else:
                 if tb == 'yes':
                     obj = tb_f.Tb_NeuronRNL(ip_size = p, thres = thres)
