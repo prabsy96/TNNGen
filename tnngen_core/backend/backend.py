@@ -100,3 +100,10 @@ def sim_verilog(obj = None, sim_name = 'simvision', wave = None):
     
     return sim
 
+def parser(file):
+	
+	if file is None:
+		raise ValueError("Arg file not found")
+	elif isinstance(file, str) is False:
+		raise TypeError("Arg file is not of type %s")
+	
