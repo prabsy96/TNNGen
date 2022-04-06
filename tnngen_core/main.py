@@ -407,27 +407,29 @@ if __name__ == '__main__':
             sim.simvision()
             
     # synth
+    # elif flow == flow_lib[2]:
+        # print("\nProvide the following synthesis parameters - \n-----------------------------------------")
+        # node = int(input("Specify tech node size in  %d format; Available node sizes: 45, 7 : ") or '45')
+        # console.print("[bold blue]-> Selected node: "+str(node))
+        # print("Specify the library model", end = "")
+        # if node == 45:
+            # model = input(" ccs, ecsm, nldm : ") or 'ccs'
+            # console.print("[bold blue]-> Selected model: "+model)
+            # corner = input("Specify the process corner for the tech node, available are - typical, fast, slow, low_temp, worst_low : ") or 'typical'
+            # console.print("[bold blue]-> Selected process corner: "+corner)
+
+        # else:
+            # model = input("ccs, nldm : ") or 'ccs'
+            # console.print("[bold blue]-> Selected model: "+model)
+            # corner = input("Specify the corner for the tech node, available are rvt, lvt, slvt, sram : ") or 'rvt'
+            # console.print("[bold blue]-> Selected process corner: "+corner)
+        # synth_verilog(obj = obj, node = 45, corner = corner, model = model, tool = tool, tcl = tcl, file_v = gen_file, clk_name = clk_name)
+
+
+
     elif flow == flow_lib[2]:
-        print("\nProvide the following synthesis parameters - \n-----------------------------------------")
-        node = int(input("Specify tech node size in  %d format; Available node sizes: 45, 7 : ") or '45')
-        console.print("[bold blue]-> Selected node: "+str(node))
-        print("Specify the library model", end = "")
-        if node == 45:
-            model = input(" ccs, ecsm, nldm : ") or 'ccs'
-            console.print("[bold blue]-> Selected model: "+model)
-            corner = input("Specify the process corner for the tech node, available are - typical, fast, slow, low_temp, worst_low : ") or 'typical'
-            console.print("[bold blue]-> Selected process corner: "+corner)
-
-        else:
-            model = input("ccs, nldm : ") or 'ccs'
-            console.print("[bold blue]-> Selected model: "+model)
-            corner = input("Specify the corner for the tech node, available are rvt, lvt, slvt, sram : ") or 'rvt'
-            console.print("[bold blue]-> Selected process corner: "+corner)
-        synth_verilog(obj = obj, node = 45, corner = corner, model = model, tool = tool, tcl = tcl, file_v = gen_file, clk_name = clk_name)
-
-
-
-
+        synth_verilog(obj, gen_file, clk_name, p, q, thres, freq, gen_eff = 'high', map_opt_eff = 'high', lib_path = './lib', tcl_path = './synthesis/', hdl_path = './out_rtl')
+        
 
 
 

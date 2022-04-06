@@ -1,0 +1,22 @@
+### Argument file for TNNGen
+ 
+# Use as - 
+# python3 main.py args.txt
+
+#--------------------------------------
+
+### RTL Arguments
+
+# rtl --top column --p 4 --q 2 --thres 12 --tb no --print no
+
+### SIM Arguments
+
+# sim --top column --p 4 --q 2 --thres 12 
+
+
+### SYNTH Arguments
+
+# synth --top column --p 4 --q 2 --thres 12 --freq 10000.00 --gen_eff high --map_opt_eff high 
+
+
+### PNR Arguments

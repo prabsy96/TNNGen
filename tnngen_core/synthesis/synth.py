@@ -22,33 +22,49 @@ import shlex
 
 
 class synth_support:
-    
-    def __init__(self, file=None, synth_out='SYNTH'):# name = None):
+	
+	
+	def __init__(self, obj, file_v, clk, p, q, thres,  freq, gen_eff, map_opt_eff, lib_path, tcl_path, hdl_path):# name = None):
+	
+		self.obj = obj
+		self.clk = clk
+		self.p = p
+		self.q = q
+		self.thres = thres
+		self.freq  = freq
+		
         
-        if file is None:
-            raise ValueError("Arg .tcl file is missing")
-        else:
-            self.file = file
+		if isinstance(file_v, str) is False:
+			raise TypeError("verilog file should be of type %s")
+		else:
+			self.file_v = file_v
+			
+		if gen_eff, map_opt_eff not in ('low', 'medium', 'high'):
+			raise ValueError ("Effort variables have to be low, medium or high")
+		else:
+			self.gen_eff = gen_eff
+			self.map_opt_eff = map_opt_eff
+		
+		if isinstance(lib_path, str) or isinstance(tcl_path, str) or isinstance(hdl_path, str) is False:
+			raise TypeError("Paths should be of type %s")
+		else:
+			self.lib_path = lib_path
+			self.tcl_path = tcl_path
+			self.hdl_path = hdl_path
             
-#         if file is None:
-#             raise ValueError("Arg 'name' is missing")
-#         elif isinstance(name, str) is False:
-#             raise TypeError("Arg 'synth_out' needs to be type %s")
-#         else:
-#             self.name = name
-            
-        if isinstance(synth_out, str) is False:
-            raise TypeError("Arg output synth directory needs to be type %s")
-        else:
-            self.synth_out = synth_out
-            self.synth_out = os.path.join(pathlib.Path.cwd(), self.synth_out)
+		# if isinstance(synth_out, str) is False:
+			# raise TypeError("Arg output synth directory needs to be type %s")
+		# else:
+			# self.synth_out = synth_out
+			# self.synth_out = os.path.join(pathlib.Path.cwd(), self.synth_out)
+			
+		gen_genus_tcl()
 
 
 # In[3]:
 
 
-def gen_genus_tcl(self, p, q, thres, freq, if_clk=None, gen_eff='medium', map_opt_eff='medium', lp_clk_gate='yes',
-                 lp_power_eff='medium', max_cpu= 8, lec='yes'):
+def gen_genus_tcl():
     
     # Column specific params
     # -------
@@ -65,25 +81,39 @@ def gen_genus_tcl(self, p, q, thres, freq, if_clk=None, gen_eff='medium', map_op
     # max_cpu: maximum # of CPUs per server
     # lec: produce .lec files for conformal checks? (yes/no)
     
-    
-    if not os.path.exists(self.synth_out):
-        os.makedirs(self.synth_out)
+	
+	s
+	
+	if not os.path.exists('./SYNTH'):
+		os.makedirs('./SYNTH')
         
-    print("\nInitiating Genus Synthesis")
-    cmd = []
-    cmd.append("genus -del_scale 10 -execute \"set P\" ")
-    cmd.append(p)
-    cmd.append("; set Q ")
-    cmd.append(q)
-    cmd.append("; set THRESHOLD ")
-    cmd.append(thres)
-    cmd.append("; set ACLKP ")
-    cmd.append(freq)
-    cmd.append(" -f ")
-    cmd.append(self.files)
-    cmd = ' '.join(cmd)
-    proc = subprocess.Popen(cmd, shell = True, cwd = self.output, stdout = subprocess.PIPE)
-    dis = []
+	print("\nInitiating Genus Synthesis")
+	cmd = []
+	cmd.append("genus -del_scale 10 -execute \"set P\" ")
+	cmd.append(self.p)
+	cmd.append("; set Q ")
+	cmd.append(self.q)
+	cmd.append("; set THRESHOLD ")
+	cmd.append(self.thres)
+	cmd.append("; set ACLKP ")
+	cmd.append(self.freq)
+	cmd.append("; set TOP ")
+	cmd.append(self.obj.name)
+	cmd.append("; set GEN_EFF ")
+	cmd.append(self.gen_eff)
+	cmd.append("; set MAP_OPT_EFF ")
+	cmd.append(self.map_opt_eff)
+	cmd.append("; set LIB_PATH ")
+	cmd.append(self.lib_path)
+	cmd.append("; set TCL_PATH ")
+	cmd.append(self.tcl_path)
+	cmd.append("; set HDL_PATH ")
+	cmd.append(self.hdl_path)
+	cmd.append(" -f ")
+	cmd.append(self.files)
+	cmd = ' '.join(cmd)
+	proc = subprocess.Popen(cmd, shell = True, cwd = self.output, stdout = subprocess.PIPE)
+	dis = []
     
     while True:
         data = proc.stdout.readline()
