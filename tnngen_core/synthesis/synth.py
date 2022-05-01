@@ -39,7 +39,7 @@ class synth_support:
 		else:
 			self.file_v = file_v
 			
-		if gen_eff, map_opt_eff not in ('low', 'medium', 'high'):
+		if gen_eff not in ('low', 'medium', 'high') or map_opt_eff not in ('low', 'medium', 'high'):
 			raise ValueError ("Effort variables have to be low, medium or high")
 		else:
 			self.gen_eff = gen_eff
@@ -80,10 +80,7 @@ def gen_genus_tcl():
     # lp_power_eff: low power analysis effort value (low, medium, high)
     # max_cpu: maximum # of CPUs per server
     # lec: produce .lec files for conformal checks? (yes/no)
-    
-	
-	s
-	
+
 	if not os.path.exists('./SYNTH'):
 		os.makedirs('./SYNTH')
         
@@ -114,19 +111,17 @@ def gen_genus_tcl():
 	cmd = ' '.join(cmd)
 	proc = subprocess.Popen(cmd, shell = True, cwd = self.output, stdout = subprocess.PIPE)
 	dis = []
-    
-    while True:
-        data = proc.stdout.readline()
-        out = data.decode(sys.getdefaultencoding())
-        dis.append(out)
-        print(out, end = '')
-        if not data:
-            break
-    proc.communicate()
-    proc.stdout.close()
-    dis = ''.join(dis)
-    
-    
+  
+	while True:
+		data = proc.stdout.readline()
+		out = data.decode(sys.getdefaultencoding())
+		dis.append(out)
+		print(out, end = '')
+		if not data:
+			break
+		proc.communicate()
+		proc.stdout.close()
+		dis = ''.join(dis)
         
     
     
