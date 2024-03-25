@@ -19,16 +19,16 @@ if __name__=='__main__':
     console.print("[bold magenta]  \\-----------------------------------------------------------/")
 
     console.print("[bold magenta]    TNNGen framework incorporates TNNSim[1] + TNNSyn[2]")
-    console.print("[bold magenta]    Provide specifications in args.txt in_file")
-    console.print("[bold magenta]    For help using framework, refer to ./Doc folder")
+    console.print("[bold magenta]    Provide specifications in args.txt in_file (refer to README for more information)")
     console.print("[bold magenta]    ")
     console.print("[bold magenta]    [1] Prabhu Vellaisamy <pvellais@andrew.cmu.edu>")
     console.print("[bold magenta]    [2] Harideep Nair <hpnair@sv.cmu.edu>")
+    console.print("[bold magenta]    [3] YoungSeok Na <youngsen@andrew.cmu.edu>")
 
-    #parse command line arguments
+    # parse command line arguments
 
     parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
-    parser.add_argument('-f', type=str, required=True, help='Provide text file containing arguments (e.g. args.txt)')
+    parser.add_argument('-f', type=str, required=True, help='Provide text file containing arguments.')
 
     args = parser.parse_args()
     in_file = args.f
