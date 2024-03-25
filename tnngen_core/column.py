@@ -22,11 +22,12 @@ import os
 
 class TNN_Col():
 
-    def __init__(self, p = 4, q = 3, thres = 13):
+    def __init__(self, p = 4, q = 3, thres = 13, wres = 3):
 
         self.p = p
         self.q = q
         self.thres = thres
+        self.wres = wres
 
 
 # In[ ]:
@@ -34,86 +35,98 @@ class TNN_Col():
 
     def col_v(self):
 
-        m = Module('column')
-        p = m.Parameter('P', self.p)
-        q = m.Parameter('Q', self.q)
-        thres = m.Parameter('THRESHOLD', self.thres)
-        
-        minus, capture, search, backoff, min_v, f, weight, inc, dec = [], [], [], [], [], [], [], [], []
-        
-        # inputs and outputs
-        in_spike = m.Input('input_spikes', p.value)
-        for i in range(q.value):
-            capture.append(m.Input('capture_'+str(i), p.value))
-            minus.append(m.Input('minus_'+str(i), p.value))
-            search.append(m.Input('search_'+str(i), p.value))
-            backoff.append(m.Input('backoff_'+str(i), p.value))
-            min_v.append(m.Input('min_'+str(i), p.value))
-            inc.append(m.Wire('inc'+str(i), p.value))
-            dec.append(m.Wire('dec'+str(i), p.value))
-            f.append(m.Input('F_'+str(i), 6))
+        m = Module('column_'+str(self.p)+'_'+str(self.q)+'_'+str(self.thres))
+        p = m.Parameter('P', int(self.p))
+        q = m.Parameter('Q', int(self.q))
+        wres = m.Localparam('wres', int(self.wres))
+        thres = m.Parameter('THRESHOLD', int(self.thres))
+
+        # Inputs/Outputs
+        input_spikes = m.Input('input_spikes', p.value)
+        w_init, capture_brv, minus_brv, search_brv, backoff_brv, min_brv, F_brv = [], [], [], [], [], [], []
+        for i in range(int(q.value)):
+            for j in range(p.value):
+                w_init.append(m.Input('w_init_'+str(i)+'_'+str(j), wres.value))
+            capture_brv.append(m.Input('capture_brv_'+str(i), p.value))
+            minus_brv.append(m.Input('minus_brv'+str(i), p.value))
+            search_brv.append(m.Input('search_brv'+str(i), p.value))
+            backoff_brv.append(m.Input('backoff_brv'+str(i), p.value))
+            min_brv.append(m.Input('min_brv'+str(i), p.value))
+            F_brv.append(m.Input('F_brv'+str(i), (1<<wres.value)-3 + 1))
         weight_en = m.Input('weight_update_en', 1)
         aclk = m.Input('aclk', 1)
         gclk = m.Input('gclk', 1)
         rst = m.Input('rst', 1)
         out_spike = m.Output('output_spikes', q.value)
-        
-        
-        eout = m.Wire('eout', q.value)
+
+        # Wires/Regs
         ein = m.Wire('ein', p.value)
+        eout = m.Wire('eout', q.value)
         ec_spikes = m.Wire('ec_spikes', q.value)
-    
-        for k in range(q.value):
-            for l in range(p.value):
-                weight.append(m.Wire('weights_'+str(k)+'_'+str(l), 3))
-    
+        inc, dec, weights = [], [], []
+        for i in range(q.value):
+            inc.append(m.Wire('inc_'+str(i), p.value))
+            dec.append(m.Wire('dec_'+str(i), p.value))
+            for j in range(p.value):
+                weights.append(m.Wire('weights_'+str(i)+'_'+str(j), wres.value))
+
         gclk_pulse = m.Wire('gclk_pulse', 1)
     
         tnn_func = TNN_Functions()
-    
-        edge, edge_clk = tnn_func.Edge2pulse()
+
         pulse, pulse_clk = tnn_func.Pulse2edge()
-        n_rnl, n_rnl_clk = tnn_func.NeuronRNL(p.value, thres.value)
+        edge, edge_clk = tnn_func.Edge2pulse()
+        n_rnl, n_rnl_clk = tnn_func.NeuronRNL( p.value, thres.value, wres.value)
         wta, wta_clk = tnn_func.Wta(q.value)
-        stdp, stdp_clk = tnn_func.Stdp()
-    
+        stdp, stdp_clk = tnn_func.Stdp(wres.value)
+
         m.Instance(edge, 'ep', ports = [gclk, aclk, gclk_pulse])
-    
+
         for i in range(p.value):
-        	m.Instance(pulse, 'in_pe_'+str(i), ports = [aclk, in_spike[i], gclk_pulse, ein[i]] )
-    
-        rnl_param = [p.value, thres.value]
-    
-        for j in range(q.value):
-        	m.Instance(n_rnl, 'ec_'+str(j), params = rnl_param, ports = [in_spike, inc[j], dec[j], weight_en, aclk, gclk, gclk_pulse, rst, ec_spikes[j], weight[j]])
-        	m.Instance(pulse, 'out_pe_'+str(j), ports = [aclk, out_spike[j], gclk_pulse, eout[j]] )
-    
-        	for z in range(p.value):
-        		m.Instance(stdp, 's0_'+str(z)+str(j)+str(z), ports = [ein[z], 
-        			eout[j], 
-        			capture[j][z], 
-        			minus[j][z], 
-        			search[j][z], 
-        			backoff[j][z], 
-        			min_v[j][z], 
-        			aclk, 
-        			gclk_pulse, 
-                    weight[j], 
-                    f[j], 
-                    inc[j][z], 
-                    dec[j][z]])
-    
-        m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, aclk, gclk_pulse, out_spike])
-    
+            m.Instance(pulse, 'in_pe_'+str(i), ports = [aclk, input_spikes[i], gclk_pulse, rst, ein[i]])
+        
+        rnl_param = [p.value, thres.value, wres.value]
+
+        for i in range(q.value):
+            rnl_ports = [input_spikes, inc[i], dec[i], weight_en, aclk, gclk, gclk_pulse, rst, ec_spikes[i]]
+            for j in range(p.value):
+                rnl_ports.append(weights[i*p.value+j])
+            m.Instance(n_rnl, 'nueron_rnl_'+str(i), params = rnl_param, 
+                       ports = rnl_ports)
+            
+        m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, aclk, gclk_pulse, rst, out_spike])
+
+        for i in range(q.value):
+            m.Instance(pulse, 'out_pe_'+str(i), ports = [aclk, out_spike[i], gclk_pulse, rst, eout[i]])
+
+        for i in range(q.value):
+            for j in range(p.value):
+                m.Instance(stdp, 'stdp_'+str(i)+'_'+str(j), params = [wres.value],
+                    ports = [
+                    weights[i*p.value+j],
+                    ein[j],
+                    eout[i],
+                    capture_brv[i][j],
+                    minus_brv[i][j],
+                    search_brv[i][j],
+                    backoff_brv[i][j],
+                    min_brv[i][j],
+                    F_brv[i],
+                    aclk,
+                    gclk_pulse,
+                    rst,
+                    inc[i][j],
+                    dec[i][j]
+                    ])
+
         return m, (aclk.name, gclk.name)
-    
-    
     
     def col_tb(self):
     
             m = Module('test_column')
             p = m.Parameter('P', self.p)
             q = m.Parameter('Q', self.q)
+            wres = m.Localparam('wres', int(self.wres))
             thres = m.Parameter('THRESHOLD', self.thres)
     
             col, col_clk = self.col_v()
