@@ -881,7 +881,7 @@ class TNN_Functions:
         in_size_prox = m.Parameter('INP_PROX', ip_size_prox)
         wres_dist = m.Parameter('WRES_DIST', wres_dist)
         wres_prox = m.Parameter('WRES_PROX', wres_prox)
-        thres = m.parameter('THRESHOLD', thres)
+        thres = m.Parameter('THRESHOLD', thres)
 
         # inputs and outputs
         input_spikes_dist = m.Input('input_spikes_dist', in_size_dist.value)

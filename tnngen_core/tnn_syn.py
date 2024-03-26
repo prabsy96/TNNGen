@@ -69,11 +69,11 @@ def tnn_syn(args):
     col = TNN_Col(p, q, theta, wres)
 
     if flow == 'syn' or flow == 'pnr': 
-        obj, clk_name = col.col_v()
+        obj, clk_name = col.col_active_v()
     elif flow == 'sim':
         obj = col.col_tb()
     elif flow == 'rtl':
-        obj, clk_name = col.col_v()
+        obj, clk_name = col.col_active_v()
 
     """ Commenting out submodule support
     else:
