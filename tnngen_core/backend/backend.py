@@ -50,17 +50,15 @@ class sim_support:
     dis = ''.join(dis)
     return dis
 
-"""
-  def simvision(self):
-      cmd = []
-      cmd.append('simvision')
-      if sys.maxsize > 2**32:
-          cmd.append('-64BIT')
-      cmd = ' '.join(cmd)
-      proc = subprocess.Popen(cmd, shell = True, cwd = './sim_out', stdout = subprocess.PIPE)
-      proc.wait()
-      proc.stdout.close()
-"""
+#   def simvision(self):
+#       cmd = []
+#       cmd.append('simvision')
+#       if sys.maxsize > 2**32:
+#           cmd.append('-64BIT')
+#       cmd = ' '.join(cmd)
+#       proc = subprocess.Popen(cmd, shell = True, cwd = './sim_out', stdout = subprocess.PIPE)
+#       proc.wait()
+#       proc.stdout.close()
 
 class synth_support:
 	
@@ -117,7 +115,7 @@ class synth_support:
     print("\nInitiating Genus Synthesis")
     print("\n--------------------------")
     cmd = []
-    cmd.append("genus")
+    cmd.append("/afs/ece.cmu.edu/support/cds/share/image/usr/cds/genus-20.11/tools.lnx86/bin/genus")
     cmd.append("-del_scale")
     cmd.append(str(10))
     cmd.append("-execute")

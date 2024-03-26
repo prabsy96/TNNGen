@@ -5,3 +5,9 @@ simv/
 synth/
 
 __pycache__/
+lef/
+lib/
+syn_out/
+pnr_out/
+stats.csv
+out_rtl/
