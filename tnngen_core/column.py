@@ -22,12 +22,19 @@ import os
 
 class TNN_Col():
 
-    def __init__(self, p = 4, q = 3, thres = 13, wres = 3):
+    def __init__(self, p_dist = 3, p_prox = 1, q = 2, wres_dist = 3, wres_prox = 3, thres = 13):
 
-        self.p = p
+        # self.p = p
+        # self.q = q
+        # self.thres = thres
+        # self.wres = wres
+
+        self.p_dist = p_dist
+        self.p_prox = p_prox
         self.q = q
+        self.wres_dist = wres_dist
+        self.wres_prox = wres_prox
         self.thres = thres
-        self.wres = wres
 
 
 # In[ ]:
@@ -118,7 +125,26 @@ class TNN_Col():
         for i in range(p_prox.value):
             m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [clk, input_spikes_prox[i], grst, rstb, ein_prox[i]])
 
-        # TODO: sengment
+        # segment
+        n_seg, _ = tnn_func.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres)
+        for i in range(q.value):
+            m.Instance(n_seg, 'ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
+                       ports = [
+                           input_spikes_dist,
+                           input_spikes_prox,
+                           inc_dist[i],
+                           inc_prox[i],
+                           dec_dist[i],
+                           dec_prox[i],
+                           clk,
+                           grst,
+                           rstb,
+                           ec_spikes[i],
+                           w_init_dist[i],
+                           w_init_prox[i],
+                           weights_dist[i],
+                           weights_prox[i]
+                       ])
             
         # WTA
         wta, _ = tnn_func.Wta(q.value)

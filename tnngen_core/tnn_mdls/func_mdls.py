@@ -871,6 +871,71 @@ class TNN_Functions:
 
 
 # In[29]:
+    
+    # Segment
+    def segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
+
+        m = Module('segment')
+        # parameters
+        in_size_dist = m.Parameter('INP_DIST', ip_size_dist)
+        in_size_prox = m.Parameter('INP_PROX', ip_size_prox)
+        wres_dist = m.Parameter('WRES_DIST', wres_dist)
+        wres_prox = m.Parameter('WRES_PROX', wres_prox)
+        thres = m.parameter('THRESHOLD', thres)
+
+        # inputs and outputs
+        input_spikes_dist = m.Input('input_spikes_dist', in_size_dist.value)
+        input_spikes_prox = m.Input('input_spikes_prox', in_size_prox.value)
+        inc_dist = m.Input('inc_dist', in_size_dist.value)
+        inc_prox = m.Input('inc_prox', in_size_prox.value)
+        dec_dist = m.Input('dec_dist', in_size_dist.value)
+        dec_prox = m.Input('dec_prox', in_size_prox.value)
+        clk = m.Input('clk', 1)
+        grst = m.Input('grst', 1)
+        rstb = m.Input('rstb', 1)
+        output_spike = m.Output('output_spike', 1)
+
+        w_init_dist = []
+        for i in range(in_size_dist.value):
+            w_init_dist.append(m.Input('w_init_dist_'+str(i), wres_dist.value))
+
+        w_init_prox = []
+        for i in range(in_size_prox.value):
+            w_init_prox.append(m.Input('w_init_prox_'+str(i), wres_prox.value))
+
+        weights_dist = []
+        for i in range(in_size_dist.value):
+            weights_dist.append(m.Input('weights_dist_'+str(i), wres_dist.value))
+
+        weights_prox = []
+        for i in range(in_size_prox.value):
+            weights_prox.append(m.Input('weights_prox_'+str(i), wres_prox.value))
+
+        # wires/regs
+        resp_func_dist = m.Wire('resp_func_dist', in_size_dist.value)
+        resp_func_prox = m.Wire('resp_func_prox', in_size_prox.value)
+            
+        # submodules
+        # Distal: Synaptic weight + readout logic FSM
+        fsm_s_dist, fsm_clk_dist = self.Fsm_synapse(wres_dist.value)
+        for i in range(in_size_dist.value):
+            ### TODO: investigate fsm_synapse module ###
+            m.Instance(fsm_s_dist, 'syn_dist_'+str(i), params=None,
+                       ports=[input_spikes_dist[i], 0, inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
+
+        # Proximal: Synaptic weight + readout logic FSM
+        fsm_s_prox, fsm_clk_prox = self.Fsm_synapse(wres_prox.value)
+        for i in range(in_size_prox.value):
+            ### TODO: investigate fsm_synapse module ###
+            m.Instance(fsm_s_prox, 'syn_prox_'+str(i), params=None,
+                       ports=[input_spikes_prox[i], 0, inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
+
+        # Neuron body
+        soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
+        m.Instance(soma, 'soma', params=[in_size_dist.value+in_size_prox.value, thres.value, wres_dist.value],
+                   ports=[(resp_func_prox+resp_func_dist), clk, grst, rstb, output_spike])
+        
+        return m, ('clk')
 
 
 # Testbench class
