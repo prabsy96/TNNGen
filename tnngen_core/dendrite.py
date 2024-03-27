@@ -100,16 +100,16 @@ class ActiveDendrite():
         # edge_input_gen_dist
         pulse_dist, pulse_clk_dist = tnn_func.Pulse2edge()
         for i in range(p_dist.value):
-            m.Instance(pulse_dist, 'pe_in_dist_'+str(i), ports = [input_spikes_dist[i], clk, grst, rstb, ein_dist[i]])
+            m.Instance(pulse_dist, 'pe_in_dist_'+str(i), ports = [clk, input_spikes_dist[i], grst, rstb, ein_dist[i]])
 
         # edge_input_gen_prox
         pulse_prox, pulse_clk_prox = tnn_func.Pulse2edge()
         for i in range(p_prox.value):
-            m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [input_spikes_prox[i], clk, grst, rstb, ein_prox[i]])
+            m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [clk, input_spikes_prox[i], grst, rstb, ein_prox[i]])
 
         # segment
         # [YoungSeok] better way to do w_init_dist*?
-        n_seg, _ = tnn_func.segment(16, p_prox.value, wres_dist.value, wres_prox.value, thres)
+        n_seg, _ = tnn_func.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres)
         for i in range(q.value):
             m.Instance(n_seg, 'ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
                        ports = [
