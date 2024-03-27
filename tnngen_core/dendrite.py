@@ -131,7 +131,7 @@ class ActiveDendrite():
 
         # WTA
         wta, _ = tnn_func.Wta(q.value)
-        m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, clk, grst, rstb, out_spike])
+        m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, clk, grst, rstb, li_spikes])
 
         # edge_output_gen
         pulse, pulse_clk = tnn_func.Pulse2edge()
