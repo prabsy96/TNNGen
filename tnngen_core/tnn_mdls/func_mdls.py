@@ -551,8 +551,7 @@ class TNN_Functions:
 
     # synapse implementation
     def Fsm_synapse(self, wres=3):
-
-        #if default == str(1):
+        """
         m = Module('fsm_synapse')
 
         wres_v = m.Parameter('WRES', wres)
@@ -588,74 +587,76 @@ class TNN_Functions:
 
         #code2 = m.EmbeddedCode("fsm_output fsm_output_inst(out, input_spike, store_weight, aclk,gclk,nxt_weight,grst);")
 
-        code3 = m.EmbeddedCode("register #(.WL(1)) gclk_next(.clk(aclk), .rst_b(~rst), .d(gclk), .q(nxt_gclk), .wen(1));")
+        #code3 = m.EmbeddedCode("register #(.WL(1)) gclk_next(.clk(aclk), .rst_b(~rst), .d(gclk), .q(nxt_gclk), .wen(1));")
 
-        code4 = m.EmbeddedCode("register #(.WL(3)) inst_reg_weight (.clk(aclk), .rst_b(~rst), .d(nxt_weight), .q(store_weight), .wen(1'd1));")
+        #code4 = m.EmbeddedCode("register #(.WL(3)) inst_reg_weight (.clk(aclk), .rst_b(~rst), .d(nxt_weight), .q(store_weight), .wen(1'd1));")
 
             
         #out_v.assign(input_spike & w_nonzero)
-        w_out.assign(store_weight)
+        #w_out.assign(store_weight)
 
         return m, ('aclk', 'gclk')
         """
-        elif default == str(0):
-            m = Module('fsm_synapse')
+        m = Module('fsm_synapse')
 
-            wres_v = m.Parameter('WRES', wres)
+        wres_v = m.Parameter('WRES', wres)
 
-            # inputs and outputs
-            input_spike = m.Input('input_spike', 1)
-            w_init = m.Input('w_init', wres_v)
-            inc = m.Input('inc', 1)
-            dec = m.Input('dec', 1)
-            aclk = m.Input('aclk', 1)
-            gclk = m.Input('gclk', 1)
-            rst = m.Input('rst', 1)
-            w_out = m.Output('w_out', wres_v)
-            out_v = m.Output('out', 1)
+        # inputs and outputs
+        input_spike = m.Input('input_spike', 1)
+        w_init = m.Input('w_init', wres_v)
+        inc = m.Input('inc', 1)
+        dec = m.Input('dec', 1)
+        clk = m.Input('clk', 1)
+        grst = m.Input('grst', 1)
+        rstb = m.Input('rstb', 1)
+        w_out = m.Output('w_out', wres_v)
+        syn_out_v = m.Output('syn_out', 1)
 
-            weight = m.Reg('weight', wres_v)
-            w_nonzero = m.Reg('w_nonzero', wres_v)
+        weight = m.Reg('weight', wres_v)
+        w_nonzero = m.Reg('w_nonzero', 1)
 
-            m.Always(Posedge(aclk)) (
-                If(rst)(
-                    weight(w_init),
-                    w_nonzero(w_init > 0)
+        m.Always(Posedge(clk)) (
+            # Global reset to initialize weight to zero
+            If(~rstb)(
+                weight(w_init),
+                w_nonzero(w_init > 0)
+            )
+            # STDP update
+            .Elif(grst)(
+                If((inc == Int(1, width=1, base=2)) & (weight < Int(2**wres_v.value - 1, width=wres_v.value, base=2))) (
+                    weight(weight + 1),
+                    w_nonzero(Int(1, width=1, base=2))
                 )
-                .Elif(gclk)(
-                    If((inc == Int(1, width=1, base=2)) & (weight < Int(2**wres_v.value - 1, width=wres_v.value, base=2))) (
-                        weight(weight + 1),
-                        w_nonzero(Int(1, width=1, base=2))
-                    )
-                    .Elif((dec == Int(1, width=1, base=2)) & (weight > 0)) (
-                        weight(weight - 1),
-                        w_nonzero(Slice(weight, wres_v.value-1, 1) != 0)
-                    )
-                    .Else(
-                        w_nonzero(weight > 0)
-                    )
-                )
-                .Elif(input_spike) (
+                .Elif((dec == Int(1, width=1, base=2)) & (weight > 0)) (
                     weight(weight - 1),
-                    If(w_nonzero == Int(0, width=1, base=2)) (
+                    w_nonzero(Slice(weight, wres_v.value-1, 1) != 0)
+                )
+                .Else(
+                    w_nonzero(weight > 0)
+                )
+            )
+            # RNL readout
+            .Elif(input_spike) (
+                weight(weight - 1),
+                If(w_nonzero == Int(0, width=1, base=2)) (
+                    w_nonzero(Int(0, width=1, base=2))
+                )
+                .Else(
+                    If(Slice(weight, wres_v.value-1, 1) != 0) (
                         w_nonzero(Int(0, width=1, base=2))
                     )
                     .Else(
-                        If(Slice(weight, wres_v.value-1, 1) != 0) (
-                            w_nonzero(Int(0, width=1, base=2))
-                        )
-                        .Else(
-                            w_nonzero(Int(1, width=1, base=2))
-                        )
+                        w_nonzero(Int(1, width=1, base=2))
                     )
                 )
             )
+        )
 
-            out_v.assign(input_spike & w_nonzero)
-            w_out.assign(weight)
+        syn_out_v.assign(input_spike & w_nonzero)
+        w_out.assign(weight)
 
-            return m, ('aclk', 'gclk')
-        """
+        return m, ('clk')
+
     
     # STDP top module
     def Stdp(self, wres=3):
