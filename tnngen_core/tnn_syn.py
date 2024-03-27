@@ -1,4 +1,5 @@
 from column import TNN_Col
+from dendrite import ActiveDendrite
 from backend.backend import * 
 import argparse
 import os
@@ -14,8 +15,6 @@ def tnn_syn(args):
     console = Console()
     console.print("[bold magenta]   --> Starting TNN Syn!")
 
-    # top_lvl_mdl = 'column_'+rfsize+'_'+neuron+'_'+theta
-
     flow = args['flow']
 
     if isinstance(flow, str) is False:
@@ -25,10 +24,8 @@ def tnn_syn(args):
 
     if flow == 'rtl':
         pass
-
     elif flow == 'sim':
         tb = 'yes'
-
     elif flow  == 'syn' or flow == 'pnr': 
         aclk_freq= args['aclk_freq']
         gclk_freq= args['gclk_freq']	
@@ -66,14 +63,18 @@ def tnn_syn(args):
     if not isinstance(wres, int):
         raise TypeError('Invalid type for wres value; provide in %d format')
 
-    col = TNN_Col(p, q, theta, wres)
+    # Column
+    # col = TNN_Col(p, q, theta, wres)
+
+    # Active Dendrite
+    col = ActiveDendrite()
 
     if flow == 'syn' or flow == 'pnr': 
-        obj, clk_name = col.col_active_v()
+        obj, clk_name = col.col_v()
     elif flow == 'sim':
         obj = col.col_tb()
     elif flow == 'rtl':
-        obj, clk_name = col.col_active_v()
+        obj, clk_name = col.col_v()
 
     """ Commenting out submodule support
     else:
@@ -316,7 +317,15 @@ def tnn_syn(args):
     """	
     # generate verilog
 
-    filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
+    # Column
+    # filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
+
+    # Active Dendrite
+    # - TODO: fix parameters later. currently hard-code to default
+    p_dist = 3
+    q = 2
+    theta = 13
+    filename = 'dendrite_'+str(p_dist)+'_'+str(q)+'_'+str(theta)+'.v'
 
     gen_file, rtl_path = gen_verilog(module = obj, filename = filename)
     console.print("\n[bold blue]  -> RTL Generated! \n  -----------------------------------------")
