@@ -1,5 +1,6 @@
 from column import TNN_Col
 from dendrite import ActiveDendrite
+# from dendrite_new import ActiveDendrite
 from backend.backend import * 
 import argparse
 import os
@@ -11,7 +12,7 @@ FLOW = ('rtl', 'sim', 'syn', 'pnr')
 TOOL = ('synopsys', 'cadence')
 NODE = (45, 7)
 
-def tnn_syn(args):
+def tnn_syn(module_name, args):
     console = Console()
     console.print("[bold magenta]   --> Starting TNN Syn!")
 
@@ -64,10 +65,14 @@ def tnn_syn(args):
         raise TypeError('Invalid type for wres value; provide in %d format')
 
     # Column
-    # col = TNN_Col(p, q, theta, wres)
-
+    if module_name == 'column':
+      col = TNN_Col(p, q, theta, wres)
     # Active Dendrite
-    col = ActiveDendrite()
+    elif module_name == 'dendrite':
+      col = ActiveDendrite()
+    # default to column
+    else:
+      col = TNN_Col(p, q, theta, wres)
 
     if flow == 'syn' or flow == 'pnr': 
         obj, clk_name = col.col_v()
@@ -318,14 +323,18 @@ def tnn_syn(args):
     # generate verilog
 
     # Column
-    # filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
-
+    if module_name == 'column':
+        filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
     # Active Dendrite
-    # - TODO: fix parameters later. currently hard-code to default
-    p_dist = 3
-    q = 2
-    theta = 13
-    filename = 'dendrite_'+str(p_dist)+'_'+str(q)+'_'+str(theta)+'.v'
+    elif module_name == 'dendrite':
+        # - TODO: fix parameters later. currently hard-code to default
+        p_dist = 3
+        q = 2
+        theta = 13
+        filename = 'dendrite_'+str(p_dist)+'_'+str(q)+'_'+str(theta)+'.v'
+    # default to column
+    else:
+        filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
 
     gen_file, rtl_path = gen_verilog(module = obj, filename = filename)
     console.print("\n[bold blue]  -> RTL Generated! \n  -----------------------------------------")
@@ -349,7 +358,7 @@ def tnn_syn(args):
         start_time = time.process_time()
 
         # syn = synth_support(obj, aclk_freq, rtl_path, gclk_freq, lib_path, lef_path, qrc_file, cap_file)
-        syn = synth_support(obj, aclk_freq, rtl_path, gclk_freq)
+        syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq)
         
         if args['tool'] == 'Cadence':
           netlist_path = syn.gen_genus_tcl()
@@ -367,7 +376,7 @@ def tnn_syn(args):
         start_time = time.process_time()
 
         # syn = synth_support(obj, aclk_freq, rtl_path, gclk_freq, lib_path, lef_path, qrc_file, cap_file)
-        syn = synth_support(obj, aclk_freq, rtl_path, gclk_freq)
+        syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq)
         
         if args['tool'] == 'Cadence':
           netlist_path = syn.gen_genus_tcl()

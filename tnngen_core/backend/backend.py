@@ -62,7 +62,8 @@ class sim_support:
 
 class synth_support:
 	
-  def __init__(self, obj, aclk_freq, rtl_path, gclk_freq):
+  def __init__(self, mname, obj, aclk_freq, rtl_path, gclk_freq):
+    self.mname = mname
     self.obj = obj
     self.aclk_freq  = aclk_freq
     self.gclk_freq = gclk_freq
@@ -104,6 +105,8 @@ class synth_support:
     
     cwd = os.getcwd()
     files = cwd+'/templates/syn.tcl'
+    if (self.mname == 'dendrite'):
+        files = cwd+'/templates/syn_dendrite.tcl'
     work_path = cwd+'/syn_out'
     lib_path = cwd+'/lib/'
     lef_path = cwd+'/lef/'

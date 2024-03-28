@@ -97,18 +97,18 @@ check_design -unresolved
 ####################################################################
 ## Constraints Setup
 ####################################################################
-create_clock [get_ports aclk]  -period $ACLKP -name aclk
-create_clock [get_ports gclk]  -period $GCLKP -name gclk
+create_clock [get_ports clk]  -period $ACLKP -name clk
+#create_clock [get_ports gclk]  -period $GCLKP -name gclk
 
-set_clock_uncertainty 100 [get_clocks aclk]
-set_clock_transition -fall 150 [get_clocks aclk]
-set_clock_transition -rise 150 [get_clocks aclk]
-set_clock_uncertainty 100 [get_clocks gclk]
-set_clock_transition -fall 150 [get_clocks gclk]
-set_clock_transition -rise 150 [get_clocks gclk]
+set_clock_uncertainty 100 [get_clocks clk]
+set_clock_transition -fall 150 [get_clocks clk]
+set_clock_transition -rise 150 [get_clocks clk]
+#set_clock_uncertainty 100 [get_clocks gclk]
+#set_clock_transition -fall 150 [get_clocks gclk]
+#set_clock_transition -rise 150 [get_clocks gclk]
 
-set_input_delay 2000 -clock aclk [remove_from_collection [all_inputs] aclk]
-set_output_delay 2000 -clock aclk [all_outputs]
+#set_input_delay 2000 -clock clk [remove_from_collection [all_inputs] clk]
+set_output_delay 2000 -clock clk [all_outputs]
 #set_load 15 [all_outputs]
 
 puts "The number of exceptions is [llength [vfind "design:$DESIGN" -exception *]]"
