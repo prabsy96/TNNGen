@@ -69,7 +69,7 @@ def tnn_syn(module_name, args):
       col = TNN_Col(p, q, theta, wres)
     # Active Dendrite
     elif module_name == 'dendrite':
-      col = ActiveDendrite()
+      col = ActiveDendrite(p_dist=p, p_prox=1, q=q, wres_dist=wres, wres_prox=wres, thres=theta)
     # default to column
     else:
       col = TNN_Col(p, q, theta, wres)
@@ -327,11 +327,8 @@ def tnn_syn(module_name, args):
         filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
     # Active Dendrite
     elif module_name == 'dendrite':
-        # - TODO: fix parameters later. currently hard-code to default
-        p_dist = 3
-        q = 2
-        theta = 13
-        filename = 'dendrite_'+str(p_dist)+'_'+str(q)+'_'+str(theta)+'.v'
+        # - TODO: fix parameters later
+        filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
     # default to column
     else:
         filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
