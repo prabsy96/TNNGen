@@ -191,7 +191,7 @@ class TNN_Functions:
 
         #code = m.EmbeddedCode("register edge_pulse_reg(.clk(clk_in),.rst_b(~rst),.d(edge_in),.q(temp2),.wen(1));")
         reg = self.Register()
-        reg_inst = m.Instance(reg, 'reg_inst', params = None, ports = [clk_in, ~rst, edge_in, temp2, 1]) 
+        reg_inst = m.Instance(reg, 'reg_inst', params = None, ports = [clk_in, ~rst, edge_in, temp2, Int(1, width=1, base=2)]) 
         
 
         pulse_out.assign(edge_in & ~temp2)
@@ -341,7 +341,7 @@ class TNN_Functions:
         # flogic_inst = m.Instance(flogic_mac, 'flogic_inst', params=None, ports=[out, 0, F[0], F[1], F[2], F[3]
         # , F[4], F[5],1, input_weight[0], input_weight[1], input_weight[2]])
 
-        code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(0), .F_1(F[0]), .F_2(F[1]), .F_3(F[2]), .F_4(F[3]), .F_5(F[4]), .F_6(F[5]), .F_7(1), .SEL_0(input_weight[0]), .SEL_1(input_weight[1]), .SEL_2(input_weight[2])); """)
+        code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F[0]), .F_2(F[1]), .F_3(F[2]), .F_4(F[3]), .F_5(F[4]), .F_6(F[5]), .F_7(1'b1), .SEL_0(input_weight[0]), .SEL_1(input_weight[1]), .SEL_2(input_weight[2])); """)
         
         return m, None
         """
@@ -496,7 +496,7 @@ class TNN_Functions:
         #code2 = m.EmbeddedCode("register #(3) inst_state_reg(.clk(aclk),.rst_b(~rst),.d(next_state),.q(state),.wen(1));")
         
         reg = self.Register()
-        reg_inst = m.Instance(reg, 'reg_inst', params = [wres_v], ports = [aclk, ~rst, next_state, state, 1]) 
+        reg_inst = m.Instance(reg, 'reg_inst', params = [wres_v], ports = [aclk, ~rst, next_state, state, Int(1, width=1, base=2)]) 
         
 
         # INSERT TNN7 fsm_simple module
@@ -624,11 +624,11 @@ class TNN_Functions:
             # STDP update
             .Elif(grst)(
                 If((inc == Int(1, width=1, base=2)) & (weight < Int(2**wres_v.value - 1, width=wres_v.value, base=2))) (
-                    weight(weight + 1),
+                    weight(weight + Int(1, width=wres_v.value, base=2)),
                     w_nonzero(Int(1, width=1, base=2))
                 )
                 .Elif((dec == Int(1, width=1, base=2)) & (weight > 0)) (
-                    weight(weight - 1),
+                    weight(weight - Int(1, width=wres_v.value, base=2)),
                     w_nonzero(Slice(weight, wres_v.value-1, 1) != 0)
                 )
                 .Else(
@@ -637,7 +637,7 @@ class TNN_Functions:
             )
             # RNL readout
             .Elif(input_spike) (
-                weight(weight - 1),
+                weight(weight - Int(1, width=wres_v.value, base=2)),
                 If(w_nonzero == Int(0, width=1, base=2)) (
                     w_nonzero(Int(0, width=1, base=2))
                 )
@@ -758,7 +758,7 @@ class TNN_Functions:
                    'adder2_in_pac', 
                    params=[maxres.value], 
                    ports=[
-                          parallel_out,
+                          Cat(Int(value=0, width=maxres.value-p_res.value, base=2), parallel_out),
                           regout,
                           Slice(padded_in, in_size.value-1 , in_size.value-1),
                           body_pot
@@ -766,12 +766,12 @@ class TNN_Functions:
 
         m.Always(Posedge(aclk))(
             If(grst | rst)(
-                regout(-1*thres.value),
-                poutlatch(0)
+                regout(Int(-1*thres.value, width=maxres.value, base=2)),
+                poutlatch(Int(0, width=1, base=2))
             )
             .Else(
                 If(out_v)(
-                    regout(-1*thres.value)
+                    regout(Int(-1*thres.value, width=maxres.value, base=2))
                 )
                 .Else(
                     regout(Slice(body_pot, maxres.value-1 , 0))
@@ -797,34 +797,39 @@ class TNN_Functions:
         thres_v = m.Parameter('THRESHOLD', thres)
         wres_v = m.Parameter('WRES', wres)
 
-        clog2_input_size = np.ceil(np.log2(int(in_size_v.value)))
-        p_res = m.Localparam('p_res', int(clog2_input_size))
-        in_size = m.Localparam('IN_SIZE', int(1 << p_res.value))
+        #clog2_input_size = np.ceil(np.log2(int(in_size_v.value)))
+        #p_res = m.Localparam('p_res', int(clog2_input_size))
+        #in_size = m.Localparam('IN_SIZE', int(1 << p_res.value))
     
         # inputs and outputs
         acc_in = m.Input('acc_in', in_size_v.value)
-        aclk = m.Input('aclk', 1)
-        pac_rst = m.Input('pac_rst', 1)
-        rst = m.Input('rst', 1)
-        out_v = m.Output('out_spike', 1)
+        clk = m.Input('clk', 1)
+        grst = m.Input('grst', 1)
+        rstb = m.Input('rstb', 1)
+        out_v = m.Output('output_spike', 1)
     
-        temp = m.Wire('temp_spike', 1)
+        edge_v = m.Wire('edge_spike', 1)
+        pulse_v = m.Wire('pulse_spike', 1)
 
-        get_cat = Cat(Int(value=0, width=in_size.value - in_size_v.value, base=2), acc_in)
-    
+        #get_cat = Cat(Int(value=0, width=in_size.value - in_size_v.value, base=2), acc_in)
+        #get_cat = acc_in
+
         # submodule
         pac, pac_clk = self.Pac(ip_size=in_size_v.value, thres=thres_v.value)
-        fsm_c, fsm_c_clk = self.Fsm_convert( wres_v.value)
+        fsm_c, fsm_c_clk = self.Fsm_convert(wres_v.value)
+        edge, _ = self.Edge2pulse()
     
         par_pac = [in_size_v.value, thres_v.value]
     
-        pac_inst = m.Instance(pac, 'p1', params=par_pac, ports=[
-                              get_cat, aclk, pac_rst, rst, temp])
+        pac_inst = m.Instance(pac, 'acc', params=par_pac, ports=[
+                              acc_in, clk, grst, rstb, edge_v])
+        
+        edge_inst = m.Instance(edge, 'epn', ports=[edge_v, clk, rstb, pulse_v])
     
-        fsm_convert_inst = m.Instance(fsm_c, 'fs', params=[wres_v.value], ports=[
-                                      aclk, rst, temp, out_v])
+        fsm_convert_inst = m.Instance(fsm_c, 'conv', params=[wres_v.value], ports=[
+                                      clk, rstb, pulse_v, out_v])
     
-        return m, ('aclk')
+        return m, ('clk')
 
 
 # In[28]:
@@ -932,18 +937,10 @@ class TNN_Functions:
                        ports=[input_spikes_prox[i], w_init_prox[i], inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
 
         # Neuron body
-        m.EmbeddedCode("""
-            neuron_body #(INP_DIST+INP_PROX, WRES_DIST, THRESHOLD) soma (.acc_in({resp_func_prox,resp_func_dist}),
-                                              .clk(clk),
-                                              .grst(grst),
-                                              .rstb(rstb),
-                                              .output_spike(output_spike)
-                                             );
-        """)
-        #soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
-        #m.Instance(soma, 'soma', params=[in_size_dist.value+in_size_prox.value, thres.value, wres_dist.value],
-        #           ports=[(resp_func_prox+resp_func_dist), clk, grst, rstb, output_spike])
-        
+        soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
+        m.Instance(soma, 'soma', params=[in_size_dist.value+in_size_prox.value, thres.value, wres_dist.value],
+                  ports=[Cat(resp_func_prox,resp_func_dist), clk, grst, rstb, output_spike])
+
         return m, ('clk')
 
 
