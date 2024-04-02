@@ -100,12 +100,12 @@ class ActiveDendrite():
         # edge_input_gen_dist
         pulse_dist, pulse_clk_dist = tnn_func.Pulse2edge()
         for i in range(p_dist.value):
-            m.Instance(pulse_dist, 'pe_in_dist_'+str(i), ports = [clk, input_spikes_dist[i], grst, rstb, ein_dist[i]])
+            m.Instance(pulse_dist, 'pe_in_dist_'+str(i), ports = [input_spikes_dist[i], clk, grst, rstb, ein_dist[i]])
 
         # edge_input_gen_prox
         pulse_prox, pulse_clk_prox = tnn_func.Pulse2edge()
         for i in range(p_prox.value):
-            m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [clk, input_spikes_prox[i], grst, rstb, ein_prox[i]])
+            m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [input_spikes_prox[i], clk, grst, rstb, ein_prox[i]])
 
         # segment
         # [YoungSeok] better way to do w_init_dist*?
@@ -136,7 +136,7 @@ class ActiveDendrite():
         # edge_output_gen
         pulse, pulse_clk = tnn_func.Pulse2edge()
         for i in range(q.value):
-            m.Instance(pulse, 'pe_out_'+str(i), ports = [clk, li_spikes[i], grst, rstb, eout[i]])
+            m.Instance(pulse, 'pe_out_'+str(i), ports = [li_spikes[i], clk, grst, rstb, eout[i]])
 
         # stdp_dist
         stdp_dist, _ = tnn_func.Stdp(wres_dist.value)

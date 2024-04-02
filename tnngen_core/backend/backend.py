@@ -23,7 +23,7 @@ class sim_support:
     if not os.path.exists('./sim_out'):
       os.makedirs('./sim_out')
     cmd = []
-    cmd.append('xrun')
+    cmd.append('/afs/ece.cmu.edu/support/cds/share/image/usr/cds/xcelium-23.09/tools.lnx86/bin/xrun')
     cmd.append('-clean')
     if nospecify == 'yes':
         cmd.append('-nospecify')
