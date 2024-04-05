@@ -75,11 +75,11 @@ def tnn_syn(module_name, args):
       col = TNN_Col(p, q, theta, wres)
 
     if flow == 'syn' or flow == 'pnr': 
-        obj, clk_name = col.Comp_neuron()
+        obj, clk_name = col.Comp_column()
     elif flow == 'sim':
         obj = col.col_tb()
     elif flow == 'rtl':
-        obj, clk_name = col.Comp_neuron()
+        obj, clk_name = col.Comp_column()
 
     """ Commenting out submodule support
     else:
@@ -329,7 +329,7 @@ def tnn_syn(module_name, args):
     elif module_name == 'dendrite':
         # - TODO: fix parameters later
         #filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
-        filename = 'comp_neuron.v'
+        filename = 'comp_column.v'
     # default to column
     else:
         filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'

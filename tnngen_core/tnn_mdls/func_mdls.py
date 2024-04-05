@@ -189,7 +189,36 @@ class TNN_Functions:
     
         return m, ('clk')
 
+    # t-Winner Take All Operator
+    def t_wta(self, Q=10):
 
+        m = Module('wta')
+        q = m.Parameter('Q', Q)
+
+        # Input/output ports
+        ec_spikes = m.Input('ec_spikes', q)
+        clk = m.Input('clk', 1)
+        grst = m.Input('grst', 1)
+        rstb = m.Input('rstb', 1)
+        li_out = m.Output('li_out', q)
+
+        first_spike = m.Wire('first_spike', 1)
+        first_spike_edge = m.Wire('first_spike_edge', 1)
+
+        m.EmbeddedCode("""assign first_spike = |ec_spikes;""")
+
+        # Submodules
+        pulse, _ = self.Pulse2edge()
+        pulse_inst = m.Instance(pulse, 'pe_wta', params=None, ports=[
+                                first_spike, clk, grst, rstb, first_spike_edge])
+        
+        less_than_or_equal, _ = self.Less_equal()
+    
+        for i in range(q.value):
+            lq_inst = m.Instance(less_than_or_equal, 'l1_'+str(i), params=None,
+            ports=[ec_spikes[i], first_spike_edge, clk, grst, rstb, li_out[i]])
+    
+        return m, ('clk')
 
     # block to select appropriate BRVs
     def Stabilize_func(self,  wres=3):

@@ -42,7 +42,7 @@ inc_learn       = 0          	  # Enable/disable unsupervised STDP incremental l
 weights_save    = 1               # Save weights after training
 
 ### Frequency
-flow            = syn             # Hardware process flow
+flow            = rtl             # Hardware process flow
 aclk_freq       = 10000000.00     # System Clock period in ps
 gclk_freq       = 240000000.00    # Gamma Clock period in ps
 tool            = Cadence         # Synopsys/Cadence
