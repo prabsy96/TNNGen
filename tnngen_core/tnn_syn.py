@@ -37,7 +37,7 @@ def tnn_syn(module_name, args):
     f = TNN_Functions()
     tb_f = Test_TNN_Functions()
 
-    p, q, theta, wres = 1, 1, 1, 1
+    p, q, theta, wres = 4, 3, 6, 3
 
     # generate verilog
     for i in args:
@@ -69,17 +69,17 @@ def tnn_syn(module_name, args):
       col = TNN_Col(p, q, theta, wres)
     # Active Dendrite
     elif module_name == 'dendrite':
-      col = ActiveDendrite(p_dist=p, p_prox=1, q=q, wres_dist=wres, wres_prox=wres, thres=theta)
+      col = ActiveDendrite(num_neurons=10, num_dend=16, p_dist=p, p_prox=1, q=q, wres_dist=wres, wres_prox=wres, thres=theta)
     # default to column
     else:
       col = TNN_Col(p, q, theta, wres)
 
     if flow == 'syn' or flow == 'pnr': 
-        obj, clk_name = col.col_v()
+        obj, clk_name = col.Comp_neuron()
     elif flow == 'sim':
         obj = col.col_tb()
     elif flow == 'rtl':
-        obj, clk_name = col.col_v()
+        obj, clk_name = col.Comp_neuron()
 
     """ Commenting out submodule support
     else:
@@ -328,7 +328,8 @@ def tnn_syn(module_name, args):
     # Active Dendrite
     elif module_name == 'dendrite':
         # - TODO: fix parameters later
-        filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
+        #filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
+        filename = 'comp_neuron.v'
     # default to column
     else:
         filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'

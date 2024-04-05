@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[14]:
-
-
 # Author = Prabhu Vellaisamy
 
 # TNN Column Submodule VerilogGen library for Verilog RTL creation
