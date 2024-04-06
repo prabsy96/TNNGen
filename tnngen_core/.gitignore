@@ -11,3 +11,5 @@ syn_out/
 pnr_out/
 stats.csv
 out_rtl/
+waveform*
+args*.txt

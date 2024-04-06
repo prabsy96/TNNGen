@@ -325,7 +325,7 @@ def tnn_syn(module_name, args):
 
     # Column
     if module_name == 'column':
-        filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
+        filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.sv'
     # Active Dendrite
     elif module_name == 'dendrite':
         # - TODO: fix parameters later
@@ -343,10 +343,10 @@ def tnn_syn(module_name, args):
         # sim = sim_support(file = gen_file, args['tool'])
         sim = sim_support(file = gen_file)
         
-        if args['tool'] == 'cadence':
+        if args['tool'] == 'Cadence':
           sim_v = sim.run_xrun()
           console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
-        elif args['tool'] == 'synopsys':
+        elif args['tool'] == 'Synopsys':
           sim_v = sim.run_vcs()
           console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
 
@@ -361,9 +361,9 @@ def tnn_syn(module_name, args):
         
         if args['tool'] == 'Cadence':
           netlist_path = syn.gen_genus_tcl()
-        elif args['tool'] == 'synopsys':
+        elif args['tool'] == 'Synopsys':
           netlist_path = syn.gen_dc_tcl()
-          
+
         end_time = time.process_time()
 
         console.print("[bold magenta]   --> Ending TNN Synthesis!, Total Time: {}".format(end_time - start_time))

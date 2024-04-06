@@ -273,7 +273,7 @@ class pnr_support:
     print("\n--------------------------")
     
     cmd = []
-    cmd.append("innovus")
+    cmd.append("/afs/ece.cmu.edu/support/cds/share/image/usr/cds/innovus-21.16/tools.lnx86/bin/innovus")
 
     cmd.append(" -execute")
     
