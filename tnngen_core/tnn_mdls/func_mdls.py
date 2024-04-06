@@ -292,11 +292,11 @@ class TNN_Functions:
             .Else(
                 If(state == Int(0, width=wres_v.value, base=2)) (
                     If(in_v)(
-                        state(state + 1)
+                        state(state + Int(1, width=wres_v.value, base=2))
                     )
                 )
                 .Else(
-                    state(state + 1)
+                    state(state + Int(1, width=wres_v.value, base=2))
                 )
             )
         )

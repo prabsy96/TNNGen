@@ -141,7 +141,7 @@ class ActiveDendrite():
         ##################
         comp_neuron, _ = self.Comp_neuron(num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for n in range(num_neurons.value):
-            neuron_ports = [clk, grst, rstb, output_spikes[n], input_spikes_dist[n]]
+            neuron_ports = [clk, grst, rstb, prewta_spikes[n], input_spikes_dist[n]]
             for i in range(num_dend.value):
                 neuron_ports.append(input_spikes_prox[i])
             # w_init_dist
@@ -177,8 +177,8 @@ class ActiveDendrite():
                        ports = neuron_ports)
             
         tnn_func = TNN_Functions()
-        t_wta, _ = tnn_func.t_wta(num_seg.value)
-        m.Instance(t_wta, 'l1', params=[num_seg.value], ports=[prewta_spikes, clk, grst, rstb, output_spikes])
+        t_wta, _ = tnn_func.t_wta(num_neurons.value)
+        m.Instance(t_wta, 'l1', params=[num_neurons.value], ports=[prewta_spikes, clk, grst, rstb, output_spikes])
 
         return m, clk.name
     
