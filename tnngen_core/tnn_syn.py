@@ -6,6 +6,7 @@ import argparse
 import os
 from rich.console import Console
 from tnn_mdls.func_mdls import *
+from tnn_mdls.tb_func_mdls import *
 import time
 
 FLOW = ('rtl', 'sim', 'syn', 'pnr')

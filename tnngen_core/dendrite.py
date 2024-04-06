@@ -4,7 +4,8 @@
 # Veriloggen-translation of Active Dendrite in RTL
 
 from veriloggen import *
-from tnn_mdls.func_mdls import TNN_Functions, Test_TNN_Functions
+from tnn_mdls.func_mdls import TNN_Functions
+from tnn_mdls.tb_func_mdls import Test_TNN_Functions
 from backend import backend
 import os
 

@@ -1,27 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 # Author: Prabhu Vellaisamy
 # TNN Column VerilogGen code for Verilog RTL creation
 
-
-# In[1]:
-
-
 from veriloggen import *
-from tnn_mdls.func_mdls import TNN_Functions, Test_TNN_Functions
+from tnn_mdls.func_mdls import TNN_Functions
+from tnn_mdls.tb_func_mdls import Test_TNN_Functions
 from backend import backend
 import os
 
-
-# In[2]:
-
-
 class TNN_Col():
-
     def __init__(self, p = 4, q = 3, thres = 13, wres = 3):
 
         self.p = p
@@ -29,9 +18,9 @@ class TNN_Col():
         self.thres = thres
         self.wres = wres
 
-
-# In[ ]:
-    
+    """
+    Column Implementation
+    """
     def col_v(self):
 
         m = Module('column_'+str(self.p)+'_'+str(self.q)+'_'+str(self.thres))
@@ -119,7 +108,10 @@ class TNN_Col():
                     ])
 
         return m, (aclk.name, gclk.name)
-    
+
+    """
+    Testbench for column
+    """
     def col_tb(self):
     
             m = Module('test_column')
@@ -141,12 +133,12 @@ class TNN_Col():
             input_spikes = ports['input_spikes']
     
             for j in range(q.value):
-                capture.append(ports['capture_'+str(j)])
-                minus.append(ports['minus_'+str(j)])
-                search.append(ports['search_'+str(j)])
-                backoff.append(ports['backoff_'+str(j)])
-                min_v.append(ports['min_'+str(j)])
-                f.append(ports['F_'+str(j)])
+                capture.append(ports['capture_brv_'+str(j)])
+                minus.append(ports['minus_brv'+str(j)])
+                search.append(ports['search_brv'+str(j)])
+                backoff.append(ports['backoff_brv'+str(j)])
+                min_v.append(ports['min_brv'+str(j)])
+                f.append(ports['F_brv'+str(j)])
     
             weight_en = ports['weight_update_en']
             gclk = ports['gclk']
