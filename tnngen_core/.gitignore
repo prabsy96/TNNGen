@@ -7,9 +7,11 @@ synth/
 __pycache__/
 lef/
 lib/
+sim_out/
 syn_out/
 pnr_out/
 stats.csv
 out_rtl/
 waveform*
 args*.txt
+.simvision/

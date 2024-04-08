@@ -25,17 +25,19 @@ if __name__=='__main__':
     console.print("[bold magenta]    [2] Harideep Nair <hpnair@sv.cmu.edu>")
     console.print("[bold magenta]    [3] YoungSeok Na <youngsen@andrew.cmu.edu>")
     console.print("[bold magenta]    [3] Wei-Che Huang <weichehu@andrew.cmu.edu>")
-    console.print("[bold magenta]    [3] Yuyang Kang <yuyangk@andrew.cmu.edu>")
 
     # parse command line arguments
 
     parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
     parser.add_argument('-f', type=str, required=True, help='Provide text file containing arguments.')
-    parser.add_argument('-m', type=str, required=True, help='Module name of interest - Available options: column, dendrite')
+    module_group = parser.add_mutually_exclusive_group(required=True)
+    module_group.add_argument('-m', type=str, help='Module name of interest - Available options: column (default), dendrite')
+    module_group.add_argument('-sm', type=str, help='Submodule of interest')
 
     args = parser.parse_args()
     in_file = args.f
     module_name = args.m
+    submodule_name = args.sm
 
     args = text_parser(in_file)
 
@@ -62,7 +64,7 @@ if __name__=='__main__':
                 raise ValueError('Only on/off allowed')
         elif y == 'syn_switch':
             if args[y] == 'on':
-                tnn_syn(module_name, syn_dict)
+                tnn_syn(module_name, submodule_name, syn_dict)
             elif args[y] == 'off':
                 pass
             else:
