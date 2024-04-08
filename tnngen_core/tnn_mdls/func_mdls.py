@@ -228,7 +228,7 @@ class TNN_Functions:
 
         # Input/output ports
         weight = m.Input('weight', wres_v)
-        F_brv = m.Input('F', (1<<wres_v.value)-3 + 1)
+        F_brv = m.Input('F_brv', (1<<wres_v.value)-3 + 1)
         out = m.Output('out', 1)
 
         # code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F[0]), .F_2(F[1]), .F_3(F[2]), .F_4(F[3]), .F_5(F[4]), .F_6(F[5]), .F_7(1'b1), .SEL_0(weight[0]), .SEL_1(weight[1]), .SEL_2(weight[2])); """)
