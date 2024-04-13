@@ -1519,6 +1519,7 @@ class Test_TNN_Functions(TNN_Functions):
     # segment - TODO
     #############################################
     def Tb_Segment(self, ip_dist=16, ip_prox=1, wres_dist=3, wres_prox=3, thres=13):
+        
         m = Module('test_segment')
         inp_dist = m.Parameter('INP_DIST', ip_dist)
         inp_prox = m.Parameter('INP_PROX', ip_prox)
@@ -1526,27 +1527,56 @@ class Test_TNN_Functions(TNN_Functions):
         wres_prox = m.Parameter('WRES_PROX', wres_prox)
         thres = m.Parameter('THRESHOLD', thres)
 
-        rnl, rnl_clk = self.tnn.segment(ip_size_dist=ip_dist.value, ip_size_prox=ip_prox.value, wres_dist=wres_dist.value, wres_prox=wres_prox.value, thres=thres.value)
-    
-        here = m.copy_sim_ports(rnl)
-    
-        input_spikes = here['input_spikes']
-        inc = here['inc']
-        dec = here['dec']
-        weight_en = here['weight_update_en']
-        aclk = here['aclk']
-        gclk = here['gclk']
+        segment_mod, segment_clk = self.tnn.segment(ip_size_dist=inp_dist.value, ip_size_prox=inp_prox.value, wres_dist=wres_dist.value, wres_prox=wres_prox.value, thres=thres.value)
+        
+        here = m.copy_sim_ports(segment_mod)
+        
+        input_spikes_dist = here['input_spikes_dist']
+        input_spikes_prox = here['input_spikes_prox']
+        inc_dist = here['inc_dist']
+        inc_prox = here['inc_prox']
+        dec_dist = here['dec_dist']
+        dec_prox = here['dec_prox']
+        clk = here['clk']
         grst = here['grst']
-        rst = here['rst']
-        out_v = here['out_spike']
-    
-        dut = m.Instance(rnl, 'dut', ports=m.connect_ports(rnl))
-    
-        i = m.Integer('i', 32, value=0)
-        j = m.Integer('j', 32, value=0)
-    
-        dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(rnl))
-        clock = simulation.setup_clock(m, aclk, hperiod=0.5)
+        rstb = here['rstb']
+        output_spike = here['output_spike']
 
-        # TODO
+        dut = m.Instance(segment_mod, 'dut', ports=m.connect_ports(segment_mod))
+
+        # Setup the clock and simulation environment
+        i = m.Integer('i', 32, value=0)
+        dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(segment_mod))
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        # Simulation events(simple one for test)
+        dump.add(
+            rstb(0),
+            Delay(10),
+            rstb(1),
+            Delay(10),
+        )
+
+        # Example test sequence
+        dump.add(
+            input_spikes_dist(0b1010101010101010),
+            input_spikes_prox(1),
+            inc_dist(0b1111000011110000),
+            inc_prox(1),
+            dec_dist(0b0000111100001111),
+            dec_prox(0),
+            Delay(100),
+            simulation.finish()
+        )
+
+        # Clock toggle logic
+        m.Initial(i(0))
+        m.Always(Posedge(clk))(
+            EmbeddedCode('i = i%2;'),
+            If(i == 0)(
+                EmbeddedCode('clk = ~clk;')
+            ),
+            EmbeddedCode('i = i+1;')
+        )
+
         return m
