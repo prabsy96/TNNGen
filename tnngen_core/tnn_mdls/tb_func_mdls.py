@@ -1557,17 +1557,17 @@ class Test_TNN_Functions(TNN_Functions):
             Delay(10),
         )
 
-        # Example test sequence
-        dump.add(
-            input_spikes_dist(0b1010101010101010),
-            input_spikes_prox(1),
-            inc_dist(0b1111000011110000),
-            inc_prox(1),
-            dec_dist(0b0000111100001111),
-            dec_prox(0),
-            Delay(100),
-            simulation.finish()
-        )
+        # Computational Waves
+        for wave in range(10):
+            dump.add(
+                here['input_spikes_dist'](0b1010101010101010 >> (wave % ip_dist)),
+                here['input_spikes_prox'](1 if wave % 2 == 0 else 0),
+                here['inc_dist'](0b1111000011110000 >> (wave % ip_dist)),
+                here['inc_prox'](1 if wave % 3 == 0 else 0),
+                here['dec_dist'](0b0000111100001111 >> (wave % ip_dist)),
+                here['dec_prox'](1 if wave % 4 == 0 else 0),
+                Delay(100),
+            )
 
         # Clock toggle logic
         m.Initial(i(0))
