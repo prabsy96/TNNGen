@@ -37,7 +37,7 @@ def tnn_syn(module_name, submodule_name, args):
     # Synthesis of modules
     if module_name != None:
         # Default parameter values
-        p, q, theta, wres = 4, 3, 6, 3
+        p, q, theta, wres = 18, 8, 6, 3
 
         # generate verilog
         for i in args:
@@ -69,21 +69,21 @@ def tnn_syn(module_name, submodule_name, args):
           col = TNN_Col(p, q, theta, wres)
         # Active Dendrite
         elif module_name == 'dendrite':
-          col = ActiveDendrite(num_neurons=10, num_dend=16, p_dist=p, p_prox=1, q=q, wres_dist=wres, wres_prox=wres, thres=theta)
+          col = ActiveDendrite(num_col=1, num_neurons=5, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
         # default to column
         else:
           col = TNN_Col(p, q, theta, wres)
 
         if flow == 'syn' or flow == 'pnr': 
             if module_name == 'dendrite':
-                obj, clk_name = col.Comp_column()
+                obj, clk_name = col.TNN_Layer()
             else:
                 obj, clk_name = col.col_v()
         elif flow == 'sim':
             obj = col.col_tb()
         elif flow == 'rtl':
             if module_name == 'dendrite':
-                obj, clk_name = col.Comp_column()
+                obj, clk_name = col.TNN_Layer()
             else:
                 obj, clk_name = col.col_v()
     elif submodule_name != None:
@@ -107,7 +107,7 @@ def tnn_syn(module_name, submodule_name, args):
         elif module_name == 'dendrite':
             # - TODO: fix parameters later
             #filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
-            filename = 'comp_column.v'
+            filename = 'TNN_Layer.v'
     # Submodule
     elif submodule_name != None:
         filename = submodule_name+'.sv'
