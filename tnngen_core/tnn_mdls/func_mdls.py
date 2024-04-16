@@ -231,17 +231,31 @@ class TNN_Functions:
         F_brv = m.Input('F_brv', (1<<wres_v.value)-3 + 1)
         out = m.Output('out', 1)
 
-        # code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F[0]), .F_2(F[1]), .F_3(F[2]), .F_4(F[3]), .F_5(F[4]), .F_6(F[5]), .F_7(1'b1), .SEL_0(weight[0]), .SEL_1(weight[1]), .SEL_2(weight[2])); """)
-        code = m.EmbeddedCode("""
-    always @*
-    begin
-        out = 0;
-        if ((weight == 0) | (weight == ((1<<WRES)-1))) out = 0;
-        for (int i = 1; i < ((1<<WRES)-1); i++)
-        begin
-            if (weight == i) out = F_brv[i-1];
-        end
-    end""")
+        code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F_brv[0]), .F_2(F_brv[1]), .F_3(F_brv[2]), .F_4(F_brv[3]), .F_5(F_brv[4]), .F_6(F_brv[5]), .F_7(1'b1), .SEL_0(weight[0]), .SEL_1(weight[1]), .SEL_2(weight[2])); """)
+        # code = m.EmbeddedCode("""
+        #     reg [1-1:0] out_reg;
+        #     always_comb
+        #     begin
+        #         out_reg = 0;
+        #         if ((weight == 0) | (weight == ((1<<WRES)-1))) out_reg = 0;
+        #         for (int i = 1; i < ((1<<WRES)-1); i++)
+        #         begin
+        #             if (weight == i) out_reg = F[i-1];
+        #         end
+        #     end
+        #     assign out = out_reg;""")
+        # code = m.EmbeddedCode("""
+        #     reg out_reg;
+        #     always @*
+        #     begin
+        #         out_reg = 0;
+        #         if ((weight == 0) | (weight == ((1<<WRES)-1))) out_reg = 0;
+        #         for (int i = 1; i < ((1<<WRES)-1); i++)
+        #         begin
+        #             if (weight == i) out_reg = F_brv[i-1];
+        #         end
+        #     end
+        #     assign out = out_reg;""")
 
         return m, None
 

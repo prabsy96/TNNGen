@@ -17,6 +17,7 @@ def tnn_syn(module_name, submodule_name, args):
     console = Console()
     console.print("[bold magenta]   --> Starting TNN Syn!")
 
+    # Flow specification check
     flow = args['flow']
 
     if isinstance(flow, str) is False:
@@ -24,17 +25,12 @@ def tnn_syn(module_name, submodule_name, args):
     if flow not in FLOW:
         raise ValueError('Incorrect flow name')
 
-    if flow == 'rtl':
-        pass
-    elif flow == 'sim':
-        tb = 'yes'
-    elif flow  == 'syn' or flow == 'pnr': 
+    # Get clk frequencies if synthesis or PNR
+    if flow  == 'syn' or flow == 'pnr': 
         aclk_freq = args['aclk_freq']
         gclk_freq = args['gclk_freq']	
-    else:
-        raise ValueError('Need flow value to be (rtl, sim, syn, pnr)')
 
-    # Synthesis of modules
+    # Large modules
     if module_name != None:
         # Default parameter values
         p, q, theta, wres = 18, 8, 6, 3
@@ -86,11 +82,12 @@ def tnn_syn(module_name, submodule_name, args):
                 obj, clk_name = col.TNN_Layer()
             else:
                 obj, clk_name = col.col_v()
+    # Submodules
     elif submodule_name != None:
-        tnn_sm = TNN_Submod()
+        tnn_sm = TNN_Submod(args)
         if flow == 'sim':
             obj = tnn_sm.sm_testbench(submodule_name)
-        elif flow == 'rtl':
+        else:
             obj, clk_name = tnn_sm.sm_rtl(submodule_name)
     else:
         raise ValueError('No valid model name to generate RTL for')
@@ -125,10 +122,9 @@ def tnn_syn(module_name, submodule_name, args):
 
         if args['tool'] == 'Cadence':
           sim_v = sim.run_xrun()
-          console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
         elif args['tool'] == 'Synopsys':
           sim_v = sim.run_vcs()
-          console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
+        console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
 
     #############################################
     # run synth
@@ -156,7 +152,7 @@ def tnn_syn(module_name, submodule_name, args):
 
         if args['tool'] == 'Cadence':
             netlist_path = syn.gen_genus_tcl()
-        elif args['tool'] == 'synopsys':
+        elif args['tool'] == 'Synopsys':
             netlist_path = syn.gen_dc_tcl()
 
         end_time = time.process_time()
@@ -166,9 +162,9 @@ def tnn_syn(module_name, submodule_name, args):
         start_time = time.process_time()
         pnr = pnr_support(obj, aclk_freq, gclk_freq, netlist_path)
 
-        if args['tool'] == 'cadence':
+        if args['tool'] == 'Cadence':
             pnr.gen_innovus_tcl()
-        elif args['tool'] == 'synopsys':
+        elif args['tool'] == 'Synopsys':
             pnr.gen_primetime_tcl()
 
         end_time = time.process_time()

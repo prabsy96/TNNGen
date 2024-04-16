@@ -542,7 +542,7 @@ class Test_TNN_Functions(TNN_Functions):
         dut = Submodule(m, flogic, 'dut')
 
         weight = dut['weight']
-        F = dut['F']
+        F = dut['F_brv']
         out = dut['out']
 
         dump = simulation.setup_waveform(m, dut, [weight, F, out])
