@@ -57,7 +57,7 @@ if __name__=='__main__':
 
     # segregate params
     for x in args:
-        if x in ('neurons', 'rfsize', 'theta', 'nprev', 'wres'):
+        if x in ('neurons', 'rfsize', 'theta', 'nprev', 'wres', 'ip_size_dist', 'ip_size_prox'):
             sim_dict[x] = args[x]
             syn_dict[x] = args[x]
         elif x in sim_only_param:
