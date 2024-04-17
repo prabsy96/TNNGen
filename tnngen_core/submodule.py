@@ -97,6 +97,13 @@ class TNN_Submod():
             wres = self._param_query('wres', 3)
             obj = self.tb_f.Tb_NeuronRNL(ip_size=neurons, thres=theta, wres=wres)
         elif name == 'segment':
-            raise Exception
+            ip_size_dist = self._param_query('ip_size_dist', 16)
+            ip_size_prox = self._param_query('ip_size_prox', 1)
+            wres_dist = self._param_query('wres_dist', 3)
+            wres_prox = self._param_query('wres_prox', 3)
+            thres = self._param_query('threshold', 13)
+            obj = self.tb_f.Tb_Segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
+        else:
+            raise ValueError(f"Unknown testbench name: {name}")
         return obj
 
