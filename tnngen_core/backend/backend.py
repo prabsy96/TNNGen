@@ -16,7 +16,6 @@ class sim_support:
       raise TypeError("Arg .v file needs to be of type %s")
     else:
       self.file = file
- 
 
   def run_xrun (self, nospecify='yes', timescale='1ns/1ps'):
     # check if sim_out exists already
@@ -50,15 +49,15 @@ class sim_support:
     dis = ''.join(dis)
     return dis
 
-#   def simvision(self):
-#       cmd = []
-#       cmd.append('simvision')
-#       if sys.maxsize > 2**32:
-#           cmd.append('-64BIT')
-#       cmd = ' '.join(cmd)
-#       proc = subprocess.Popen(cmd, shell = True, cwd = './sim_out', stdout = subprocess.PIPE)
-#       proc.wait()
-#       proc.stdout.close()
+  # def simvision(self):
+  #   cmd = []
+  #   cmd.append('/afs/ece.cmu.edu/support/cds/share/image/usr/cds/xcelium-23.09/tools.lnx86/simvision/bin/simvision.exe')
+  #   if sys.maxsize > 2**32:
+  #       cmd.append('-64BIT')
+  #   cmd = ' '.join(cmd)
+  #   proc = subprocess.Popen(cmd, shell = True, cwd = './sim_out', stdout = subprocess.PIPE)
+  #   proc.wait()
+  #   proc.stdout.close()
 
 class synth_support:
 	
@@ -277,8 +276,11 @@ class pnr_support:
 
     cmd.append(" -execute")
     
-    cmd.append("\"set HOME_DIR")
+    cmd.append("\"set HOME_DIR ")
     cmd.append(str(cwd))
+
+    cmd.append("; set OUT_DIR ")
+    cmd.append(str(self.obj.name)+"_pnrout")
 
     cmd.append("; set DESIGN ")
     cmd.append(str(self.obj.name))
