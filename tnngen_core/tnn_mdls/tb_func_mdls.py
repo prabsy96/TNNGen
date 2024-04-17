@@ -2,6 +2,8 @@
 #
 # Migrated to separate file <YoungSeok Na>
 #
+# Additional Testbenches <Yuyang Kang>
+#
 # Testbench class
 
 from tnn_mdls.func_mdls import *
@@ -1518,17 +1520,10 @@ class Test_TNN_Functions(TNN_Functions):
     #############################################
     # segment - TODO
     #############################################
-    def Tb_Segment(self):
+    def Tb_Segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
         m = Module('test_segment')
         
         j = m.Integer('j', 32, value=0)
-
-        # Parameters from segment function
-        ip_size_dist = 16
-        ip_size_prox = 1
-        wres_dist = 3
-        wres_prox = 3
-        thres = 13
 
         # Instantiate the segment module
         segment_mod, segment_clk = self.segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
