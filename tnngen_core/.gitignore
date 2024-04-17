@@ -5,8 +5,8 @@ simv/
 synth/
 
 __pycache__/
-lef/
-lib/
+lef/*
+lib/*
 sim_out/
 syn_out/
 pnr_out/
