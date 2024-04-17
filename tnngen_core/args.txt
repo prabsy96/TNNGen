@@ -40,6 +40,8 @@ umin            = 70              # STDP's "min" Bernoulli random variable proba
 inc_learn       = 0          	  # Enable/disable unsupervised STDP incremental learning during testing
 #nprev          = 1               # Number of channels in the first layer
 weights_save    = 1               # Save weights after training
+ip_size_dist    = 16              # Number of distal input synapses
+ip_size_prox    = 1               # Number of proximal input synapses
 
 ### Frequency
 flow            = rtl             # Hardware process flow
