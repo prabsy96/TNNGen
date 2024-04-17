@@ -1518,17 +1518,22 @@ class Test_TNN_Functions(TNN_Functions):
     #############################################
     # segment - TODO
     #############################################
-    def Tb_Segment(self, ip_dist=16, ip_prox=1, wres_dist=3, wres_prox=3, thres=13):
-        
+    def Tb_Segment(self):
         m = Module('test_segment')
-        inp_dist = m.Parameter('INP_DIST', ip_dist)
-        inp_prox = m.Parameter('INP_PROX', ip_prox)
-        wres_dist = m.Parameter('WRES_DIST', wres_dist)
-        wres_prox = m.Parameter('WRES_PROX', wres_prox)
-        thres = m.Parameter('THRESHOLD', thres)
-
-        segment_mod, segment_clk = self.tnn.segment(ip_size_dist=inp_dist.value, ip_size_prox=inp_prox.value, wres_dist=wres_dist.value, wres_prox=wres_prox.value, thres=thres.value)
         
+        j = m.Integer('j', 32, value=0)
+
+        # Parameters from segment function
+        ip_size_dist = 16
+        ip_size_prox = 1
+        wres_dist = 3
+        wres_prox = 3
+        thres = 13
+
+        # Instantiate the segment module
+        segment_mod, segment_clk = self.segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
+
+        # Connect simulation ports
         here = m.copy_sim_ports(segment_mod)
         
         input_spikes_dist = here['input_spikes_dist']
@@ -1541,42 +1546,54 @@ class Test_TNN_Functions(TNN_Functions):
         grst = here['grst']
         rstb = here['rstb']
         output_spike = here['output_spike']
+        
+        weights_dist = [here['weights_dist_'+str(i)] for i in range(ip_size_dist)]
+        weights_prox = [here['weights_prox_'+str(i)] for i in range(ip_size_prox)]
 
         dut = m.Instance(segment_mod, 'dut', ports=m.connect_ports(segment_mod))
 
-        # Setup the clock and simulation environment
-        i = m.Integer('i', 32, value=0)
+        # Setup waveform dump and simulation environment
         dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(segment_mod))
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        # Simulation events(simple one for test)
-        dump.add(
-            rstb(0),
-            Delay(10),
-            rstb(1),
-            Delay(10),
-        )
-
-        # Computational Waves
-        for wave in range(10):
+        # Reset and weight initialization in the simulation sequence
+        # There might be problem here since the output weight does not change with inc/dec
+        dump.add(rstb(1), Delay(1), rstb(0), Delay(1))
+        for index in range(ip_size_dist):
+            dump.add(here['w_init_dist_' + str(index)](1))
+        for index in range(ip_size_prox):
+            dump.add(here['w_init_prox_' + str(index)](1))
+        
+        # Simulate input spikes and control operations for distal synapses
+        for cycle in range(5):
             dump.add(
-                here['input_spikes_dist'](0b1010101010101010 >> (wave % ip_dist)),
-                here['input_spikes_prox'](1 if wave % 2 == 0 else 0),
-                here['inc_dist'](0b1111000011110000 >> (wave % ip_dist)),
-                here['inc_prox'](1 if wave % 3 == 0 else 0),
-                here['dec_dist'](0b0000111100001111 >> (wave % ip_dist)),
-                here['dec_prox'](1 if wave % 4 == 0 else 0),
-                Delay(100),
+                input_spikes_dist(1),
+                inc_dist(1),
+                Delay(10),
+                input_spikes_dist(0),
+                inc_dist(0),
+                dec_dist(1),
+                Delay(10),
+                dec_dist(0),
+                Delay(10)
             )
+            
+        # Extend the simulation time to ensure that there is an extra period at the end of the simulation where no new stimuli are applied
+        additional_time = 50
+        dump.add(Delay(additional_time))
+            
+        dump.add(simulation.finish())
 
-        # Clock toggle logic
-        m.Initial(i(0))
+        m.Initial(j(0))
         m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%2;'),
-            If(i == 0)(
-                EmbeddedCode('clk = ~clk;')
+            EmbeddedCode('j = j%8;'),
+            If(j == 0)(
+                grst(1)
+            )
+            .Else(
+                grst(0)
             ),
-            EmbeddedCode('i = i+1;')
+            EmbeddedCode('j = j+1;')
         )
 
         return m
