@@ -1552,7 +1552,6 @@ class Test_TNN_Functions(TNN_Functions):
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
         # Reset and weight initialization in the simulation sequence
-        # There might be problem here since the output weight does not change with inc/dec
         dump.add(rstb(1), Delay(1), rstb(0), Delay(1))
         for index in range(ip_size_dist):
             dump.add(here['w_init_dist_' + str(index)](1))
@@ -1564,18 +1563,24 @@ class Test_TNN_Functions(TNN_Functions):
             dump.add(
                 input_spikes_dist(1),
                 inc_dist(1),
-                Delay(10),
-                input_spikes_dist(0),
-                inc_dist(0),
+                Delay(15),
                 dec_dist(1),
-                Delay(10),
+                Delay(15),
                 dec_dist(0),
-                Delay(10)
+                Delay(15)
             )
-            
-        # Extend the simulation time to ensure that there is an extra period at the end of the simulation where no new stimuli are applied
-        additional_time = 50
-        dump.add(Delay(additional_time))
+
+        # Simulate input spikes and control operations for proximal synapses
+        for cycle in range(5):
+            dump.add(
+                input_spikes_prox(1),
+                inc_prox(1),
+                Delay(15),
+                dec_prox(1),
+                Delay(15),
+                dec_prox(0),
+                Delay(15)
+            )
             
         dump.add(simulation.finish())
 
