@@ -1,5 +1,5 @@
 from column import TNN_Col
-from dendrite import ActiveDendrite
+from layers import Layers
 from submodule import *
 from backend.backend import * 
 import argparse
@@ -8,6 +8,7 @@ from rich.console import Console
 from tnn_mdls.func_mdls import *
 from tnn_mdls.tb_func_mdls import *
 import time
+from model import Model
 
 FLOW = ('rtl', 'sim', 'syn', 'pnr')
 # TOOL = ('synopsys', 'cadence')
@@ -65,21 +66,29 @@ def tnn_syn(module_name, submodule_name, args):
           col = TNN_Col(p, q, theta, wres)
         # Active Dendrite
         elif module_name == 'dendrite':
-          col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
+            myModel = Model()
+            myModel.add(Layers.TNN_Layer(num_col=2, num_neurons=4, num_dend=2, p_dist=2, p_prox=1, num_seg=3, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layers.TNN_Layer(num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
+            #myModel.add(Layers.TNN_Layer(num_col=1, num_neurons=2, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
+            myModel.summary()
+            myModel.compile()
+          #col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
         # default to column
         else:
           col = TNN_Col(p, q, theta, wres)
 
         if flow == 'syn' or flow == 'pnr': 
             if module_name == 'dendrite':
-                obj, clk_name = col.CV_Layer()
+                #obj, clk_name = col.CV_Layer()
+                obj = myModel.model
             else:
                 obj, clk_name = col.col_v()
         elif flow == 'sim':
             obj = col.col_tb()
         elif flow == 'rtl':
             if module_name == 'dendrite':
-                obj, clk_name = col.CV_Layer()
+                #obj, clk_name = col.CV_Layer()
+                obj = myModel.model
             else:
                 obj, clk_name = col.col_v()
     # Submodules
@@ -104,7 +113,7 @@ def tnn_syn(module_name, submodule_name, args):
         elif module_name == 'dendrite':
             # - TODO: fix parameters later
             #filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
-            filename = 'CV_Layer.v'
+            filename = 'model.v'
     # Submodule
     elif submodule_name != None:
         filename = submodule_name+'.sv'

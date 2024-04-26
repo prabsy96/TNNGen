@@ -6,4 +6,5 @@ tnngen_core/run_test.py
 .ipynb_checkpoints/gentest-checkpoint.ipynb
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 tnngen_core/.ipynb_checkpoints/model-checkpoint.ipynb
-tnngen_core/model.py
+tnngen_core/model.ipynb
+tnngen_core/model.ipynb
