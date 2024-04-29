@@ -10,7 +10,9 @@ from veriloggen import *
 import numpy as np
 import os
 
-class TNN_Functions:
+class TNN_Functions():
+    def __init__(self, layer_id=None):
+        self.layer_id = layer_id
 
     # inhibit operator
     def Less_equal(self):
@@ -155,7 +157,7 @@ class TNN_Functions:
     # Winner Take All Operator
     def Wta(self, Q=10):
 
-        m = Module('wta')
+        m = Module('L'+self.layer_id+'_wta')
         q = m.Parameter('Q', Q)
 
         # Input/output ports
@@ -192,7 +194,7 @@ class TNN_Functions:
     # t-Winner Take All Operator
     def t_wta(self, Q=10):
 
-        m = Module('wta')
+        m = Module('L'+self.layer_id+'_wta')
         q = m.Parameter('Q', Q)
 
         # Input/output ports
@@ -223,7 +225,7 @@ class TNN_Functions:
     # block to select appropriate BRVs
     def Stabilize_func(self,  wres=3):
 
-        m = Module('stabilize_func')
+        m = Module('L'+self.layer_id+'_stabilize_func')
         wres_v = m.Parameter('WRES', wres)
 
         # Input/output ports
@@ -262,7 +264,7 @@ class TNN_Functions:
     # case generator for STDP
     def Stdp_case_gen(self):
         
-        m = Module('stdp_case_gen')
+        m = Module('L'+self.layer_id+'_stdp_case_gen')
     
         # Input/output ports
         ein = m.Input('ein', 1)
@@ -297,7 +299,7 @@ class TNN_Functions:
     # Converts pac single cycle pulse to generate [wmax+1]-cycles wide output spike pulse
     def Fsm_convert(self, wres=3):
 
-        m = Module('fsm_convert')
+        m = Module('L'+self.layer_id+'_fsm_convert')
         wres_v = m.Parameter('WRES', wres)
 
         # Input/output ports
@@ -341,7 +343,7 @@ class TNN_Functions:
     # synapse implementation
     def Fsm_synapse(self, wres=3):
 
-        m = Module('fsm_synapse')
+        m = Module('L'+self.layer_id+'_fsm_synapse')
 
         wres_v = m.Parameter('WRES', wres)
 
@@ -405,7 +407,7 @@ class TNN_Functions:
     # STDP top module
     def Stdp(self, wres=3):
     
-        m = Module('stdp')
+        m = Module('L'+self.layer_id+'_stdp_wres_'+str(wres))
 
         wres_v = m.Parameter('WRES', wres)
 
@@ -444,7 +446,7 @@ class TNN_Functions:
 
     # Parallel Accumulator
     def Pac(self, ip_size = 16, thres = 13):
-        m = Module('pac')
+        m = Module('L'+self.layer_id+'_pac')
 
         INP = m.Parameter('INP', int(ip_size))
         THRESHOLD = m.Parameter('THRESHOLD', int(thres)) 
@@ -529,7 +531,7 @@ class TNN_Functions:
     # Neuron body module
     def Neuronbody(self, ip_size=16, thres=13, wres=3):
     
-        m = Module('neuron_body')
+        m = Module('L'+self.layer_id+'_neuron_body')
     
         in_size_v = m.Parameter('INPUT_SIZE', ip_size)
         thres_v = m.Parameter('THRESHOLD', thres)
@@ -605,7 +607,7 @@ class TNN_Functions:
     # Segment
     def segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('segment')
+        m = Module('L'+self.layer_id+'_segment')
         # parameters
         in_size_dist = m.Parameter('INP_DIST', ip_size_dist)
         in_size_prox = m.Parameter('INP_PROX', ip_size_prox)
@@ -669,8 +671,8 @@ class TNN_Functions:
     
     # Compound Column
     def Comp_column(self, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
-
-        m = Module('comp_column')
+        print(self)
+        m = Module('L'+self.layer_id+'_comp_column_')
         num_neurons = m.Parameter('NUM_NEURONS', int(num_neurons))
         num_dend = m.Parameter('NUM_DEND', int(num_dend))
         p_dist = m.Parameter('P_DIST', int(p_dist))
@@ -822,7 +824,7 @@ class TNN_Functions:
             # F_brv_prox
             neuron_ports = self.append_port2(neuron_ports, F_brv_prox, n, num_dend.value, num_seg.value)
             
-            m.Instance(comp_neuron, 'comp_neuron_inst_'+str(n), params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
+            m.Instance(comp_neuron, str('L')+self.layer_id+'_comp_neuron_inst_'+str(n), params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = neuron_ports)
             
         t_wta, _ = self.t_wta(num_neurons.value)
@@ -963,7 +965,7 @@ class TNN_Functions:
 
     def Comp_neuron(self, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('comp_neuron')
+        m = Module('L'+self.layer_id+'_comp_neuron')
         num_dend = m.Parameter('NUM_DEND', int(num_dend))
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
@@ -1098,7 +1100,7 @@ class TNN_Functions:
             for j in range(num_seg.value):
                 dendrite_ports.append(F_brv_prox[i*num_seg.value+j])
 
-            m.Instance(dendrite, 'dend_inst_'+str(i), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
+            m.Instance(dendrite, str('L')+self.layer_id+'_dend_inst_'+str(i), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = dendrite_ports)
             
         
@@ -1234,7 +1236,7 @@ class TNN_Functions:
 
     def Dendrite(self, p_dist=3, p_prox=1, q=2, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('dendrite_'+str(p_dist)+'_'+str(q)+'_'+str(thres))
+        m = Module('L'+self.layer_id+'_dendrite')
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
         q = m.Parameter('Q', int(q))
@@ -1347,12 +1349,12 @@ class TNN_Functions:
                 segment_ports.append(weights_dist[i*p_dist.value+j])
             for j in range(p_prox.value):
                 segment_ports.append(weights_prox[i*p_prox.value+j])   
-            m.Instance(n_seg, 'ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
+            m.Instance(n_seg, str('L')+self.layer_id+'_ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
                        ports = segment_ports)
 
         # WTA
         wta, _ = self.Wta(q.value)
-        m.Instance(wta, 'li', params = [q.value], ports = [ec_spikes, clk, grst, rstb, li_spikes])
+        m.Instance(wta, str('L')+self.layer_id+'_li', params = [q.value], ports = [ec_spikes, clk, grst, rstb, li_spikes])
 
         # edge_output_gen
         pulse, pulse_clk = self.Pulse2edge()
@@ -1363,7 +1365,7 @@ class TNN_Functions:
         stdp_dist, _ = self.Stdp(wres_dist.value)
         for i in range(q.value):
             for j in range(p_dist.value):
-                m.Instance(stdp_dist, 'stdp_dist_'+str(i)+'_'+str(j), params = [wres_dist.value],
+                m.Instance(stdp_dist, str('L')+self.layer_id+'_stdp_dist_'+str(i)+'_'+str(j), params = [wres_dist.value],
                     ports = [
                     weights_dist[i*p_dist.value+j],
                     ein_dist[j],
@@ -1385,7 +1387,7 @@ class TNN_Functions:
         stdp_prox, _ = self.Stdp(wres_prox.value)
         for i in range(q.value):
             for j in range(p_prox.value):
-                m.Instance(stdp_prox, 'stdp_prox_'+str(i)+'_'+str(j), params = [wres_prox.value],
+                m.Instance(stdp_prox, str('L')+self.layer_id+'_stdp_prox_'+str(i)+'_'+str(j), params = [wres_prox.value],
                     ports = [
                     weights_prox[i*p_prox.value+j],
                     ein_prox[j],

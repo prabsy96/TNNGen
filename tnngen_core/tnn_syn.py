@@ -1,5 +1,5 @@
 from column import TNN_Col
-from layers import Layers
+from layer import Layer
 from submodule import *
 from backend.backend import * 
 import argparse
@@ -67,9 +67,9 @@ def tnn_syn(module_name, submodule_name, args):
         # Active Dendrite
         elif module_name == 'dendrite':
             myModel = Model()
-            myModel.add(Layers.TNN_Layer(num_col=2, num_neurons=4, num_dend=2, p_dist=2, p_prox=1, num_seg=3, wres_dist=3, wres_prox=3, thres=6))
-            myModel.add(Layers.TNN_Layer(num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
-            #myModel.add(Layers.TNN_Layer(num_col=1, num_neurons=2, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=4, num_dend=2, p_dist=2, p_prox=1, num_seg=3, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=1, num_dend=1, p_dist=4, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             myModel.summary()
             myModel.compile()
           #col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)

@@ -9,30 +9,32 @@ from tnn_mdls.tb_func_mdls import Test_TNN_Functions
 from backend import backend
 import os
 
-class Layers():
-    #def __init__(self):
-        # self.num_col = num_col
-        # self.num_neurons = num_neurons
-        # self.num_dend = num_dend
-        # self.p_dist = p_dist
-        # self.p_prox = p_prox
-        # self.num_seg = num_seg
-        # self.wres_dist = wres_dist
-        # self.wres_prox = wres_prox
-        # self.thres = thres
+class Layer():
+    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
+        self.num_col = num_col
+        self.num_neurons = num_neurons
+        self.num_dend = num_dend
+        self.p_dist = p_dist
+        self.p_prox = p_prox
+        self.num_seg = num_seg
+        self.wres_dist = wres_dist
+        self.wres_prox = wres_prox
+        self.thres = thres
+        self.layer_type = layer_type
+        self.layer_id = None
 
-    def TNN_Layer(num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
-        
-        m = Module('TNN_Layer')
-        num_col = m.Parameter('NUM_COL', int(num_col))
-        num_neurons = m.Parameter('NUM_NEURONS', int(num_neurons))
-        num_dend = m.Parameter('NUM_DEND', int(num_dend))
-        p_dist = m.Parameter('P_DIST', int(p_dist))
-        p_prox = m.Parameter('P_PROX', int(p_prox))
-        num_seg = m.Parameter('NUM_SEG', int(num_seg))
-        wres_dist = m.Parameter('WRES_DIST', int(wres_dist))
-        wres_prox = m.Parameter('WRES_PROX', int(wres_prox))
-        threshold = m.Parameter('THRESHOLD', int(thres))
+    def TNN_Layer(self, layer_id=None):
+        m = Module('TNN_Layer_'+str(layer_id))
+        self.layer_id = str(layer_id)
+        num_col = m.Parameter('NUM_COL', int(self.num_col))
+        num_neurons = m.Parameter('NUM_NEURONS', int(self.num_neurons))
+        num_dend = m.Parameter('NUM_DEND', int(self.num_dend))
+        p_dist = m.Parameter('P_DIST', int(self.p_dist))
+        p_prox = m.Parameter('P_PROX', int(self.p_prox))
+        num_seg = m.Parameter('NUM_SEG', int(self.num_seg))
+        wres_dist = m.Parameter('WRES_DIST', int(self.wres_dist))
+        wres_prox = m.Parameter('WRES_PROX', int(self.wres_prox))
+        threshold = m.Parameter('THRESHOLD', int(self.thres))
 
         ##################
         # Inputs/Outputs #
@@ -166,7 +168,7 @@ class Layers():
         ##################
         # Instantiations #
         ##################
-        tnn_func = TNN_Functions()
+        tnn_func = TNN_Functions(self.layer_id)
 
         comp_col, _ = tnn_func.Comp_column(num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for c in range(num_col.value):
@@ -208,7 +210,7 @@ class Layers():
             # F_brv_prox
             col_ports = tnn_func.append_port3(col_ports, F_brv_prox, c, num_neurons.value,  num_dend.value, num_seg.value)
 
-            m.Instance(comp_col, 'comp_col_inst_'+str(c), params=[num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
+            m.Instance(comp_col, 'L'+str(self.layer_id)+'_comp_col_inst_'+str(c), params=[num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = col_ports)
         
         return m

@@ -1,4 +1,4 @@
-from layers import Layers
+from layer import Layer
 from submodule import *
 from backend.backend import * 
 from rich.console import Console
@@ -14,16 +14,28 @@ class Model:
 
     def add(self, layer):
 
+        # Check layer type (wip)
+        if (layer.layer_type == "TNN"):
+            pass
+        elif (layer.layer_type == "CV"):
+            pass
+        else:
+            raise ValueError("layer_type: '" + layer.layer_type + "' does not exist!")
+        
         # Check all layers but the first
         if (len(self.layers)!=0):
             self.check_params(layer)
-
-        self.layers.append(layer)
+        
+        if (layer.layer_type == "TNN"):
+            self.layers.append(layer.TNN_Layer(len(self.layers)))
+        elif (layer.layer_type == "CV"):
+            pass
+        
 
     def check_params(self, layer):
-        params = layer.get_params()
+        #params = layer.get_params()
         prev_params = self.layers[-1].get_params()
-        in_size = params['NUM_COL'].value * params['NUM_NEURONS'].value * params['P_DIST'].value
+        in_size = layer.num_col* layer.num_neurons * layer.p_dist
         prev_out_size = prev_params['NUM_COL'].value * prev_params['NUM_NEURONS'].value
 
         if (in_size != prev_out_size):
