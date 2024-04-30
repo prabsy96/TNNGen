@@ -78,6 +78,7 @@ class TNN_Functions():
         cin = m.Input('cin')
         out = m.Output('out', res + 1)
     
+        
         out.assign(a+b+cin)
     
         # no clocks, combinational design
@@ -157,7 +158,7 @@ class TNN_Functions():
     # Winner Take All Operator
     def Wta(self, Q=10):
 
-        m = Module('L'+self.layer_id+'_wta')
+        m = Module('L'+self.layer_id+'_wta_'+str(Q))
         q = m.Parameter('Q', Q)
 
         # Input/output ports
@@ -194,7 +195,7 @@ class TNN_Functions():
     # t-Winner Take All Operator
     def t_wta(self, Q=10):
 
-        m = Module('L'+self.layer_id+'_wta')
+        m = Module('L'+self.layer_id+'_t_wta_'+str(Q))
         q = m.Parameter('Q', Q)
 
         # Input/output ports
@@ -833,7 +834,7 @@ class TNN_Functions():
         return m, clk.name
     
     def CV_group(self, num_units=10, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
-        m = Module('CV_group')
+        m = Module('L'+self.layer_id+'_CV_group')
         num_units = m.Parameter('NUM_NEURONS', int(num_units))
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
@@ -958,7 +959,7 @@ class TNN_Functions():
             # F_brv_prox
             neuron_ports = self.append_port1(neuron_ports, F_brv_prox, n, num_seg.value)
             
-            m.Instance(CV_unit, 'CV_unit_'+str(n), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
+            m.Instance(CV_unit, str('L')+self.layer_id+'_CV_unit_inst_'+str(n), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = neuron_ports)
             
         return m, clk.name
@@ -1110,7 +1111,7 @@ class TNN_Functions():
     
     def CV_unit(self, p_dist=3, p_prox=1, num_seg=8, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('CV_unit')
+        m = Module('L'+self.layer_id+'_CV_unit')
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
         num_seg = m.Parameter('NUM_SEG', int(num_seg))
@@ -1226,7 +1227,7 @@ class TNN_Functions():
         for i in range(num_seg.value):
             dendrite_ports.append(F_brv_prox[i])
 
-        m.Instance(dendrite, 'dend_inst', params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
+        m.Instance(dendrite, str('L')+self.layer_id+'_dend_inst', params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                     ports = dendrite_ports)
             
         

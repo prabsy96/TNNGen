@@ -29,6 +29,7 @@ class Model:
         if (layer.layer_type == "TNN"):
             self.layers.append(layer.TNN_Layer(len(self.layers)))
         elif (layer.layer_type == "CV"):
+            self.layers.append(layer.CV_Layer(len(self.layers)))
             pass
         
 
@@ -43,7 +44,7 @@ class Model:
         
     def summary(self):
         for i in range(len(self.layers)):
-            print('Layer', i)
+            print(self.layers[i].name)
             params = self.layers[i].get_params()
             for key in params:
                 print("    ", key, params[key].value)
@@ -79,9 +80,12 @@ class Model:
                         layer_ports.append(model_ports[key])
                         
                 # Instantiate wire to connect output to next layer's input
-                neuron_count = self.layers[i].get_params()['NUM_NEURONS'].value * self.layers[i].get_params()['NUM_COL'].value
-                last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), neuron_count)
-                layer_ports.append(last_out)
+                if (i != (len(self.layers)-1)):
+                    neuron_count = self.layers[i].get_params()['NUM_NEURONS'].value * self.layers[i].get_params()['NUM_COL'].value
+                    last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), neuron_count)
+                    layer_ports.append(last_out)
+                else:
+                    layer_ports.append(model_ports['model_output'])
             else:
                 # distal input is last layer's output
                 layer_ports.append(last_out)
@@ -146,11 +150,11 @@ class Model:
                                 port.name = 'L'+str(i)+'_'+port.name
                                 self.model.add_object(port)
                                 
-                # generate output port
-                if (i == len(self.layers)-1):
-                    for key in ports:
-                        port = ports[key]
-                        port_name = port.name
-                        if (isinstance(port, core.vtypes.Output)):
-                            port.name = 'model_output'
-                            self.model.add_object(port)
+            # generate output port
+            if (i == len(self.layers)-1):
+                for key in ports:
+                    port = ports[key]
+                    port_name = port.name
+                    if (isinstance(port, core.vtypes.Output)):
+                        port.name = 'model_output'
+                        self.model.add_object(port)
