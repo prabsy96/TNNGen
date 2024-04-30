@@ -32,7 +32,7 @@ class TNN_Submod():
             obj, clk_name = self.f.Wta()
         elif name == 't_wta':
             obj, clk_name = self.f.t_wta()
-        elif name == 'stabilize':
+        elif name == 'stabilize_func':
             obj, clk_name = self.f.Stabilize_func()
         elif name == 'stdp_casegen':
             obj, clk_name = self.f.Stdp_case_gen()

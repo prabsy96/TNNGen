@@ -60,11 +60,11 @@ class TNN_Col():
 
         gclk_pulse = m.Wire('gclk_pulse', 1)
     
-        tnn_func = TNN_Functions()
+        tnn_func = TNN_Functions("0")
 
         pulse, pulse_clk = tnn_func.Pulse2edge()
         edge, edge_clk = tnn_func.Edge2pulse()
-        n_rnl, n_rnl_clk = tnn_func.NeuronRNL( p.value, thres.value, wres.value)
+        n_rnl, n_rnl_clk = tnn_func.NeuronRNL(p.value, thres.value, wres.value)
         wta, wta_clk = tnn_func.Wta(q.value)
         stdp, stdp_clk = tnn_func.Stdp(wres.value)
 

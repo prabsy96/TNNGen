@@ -27,16 +27,17 @@ if __name__=='__main__':
     console.print("[bold magenta]    [3] Wei-Che Huang <weichehu@andrew.cmu.edu>")
     console.print("[bold magenta]    [3] Yuyang Kang <yuyangk@andrew.cmu.edu>")
 
-    # parse command line arguments
+    # currently supported modules/submodules
+    m_choice = ['column', 'dendrite']
+    sm_choice = ['less_equal', 'pulse2edge', 'edge2pulse', 'adder', 'incdec', 'wta',
+                 't_wta', 'stabilize_func', 'stdp_casegen', 'fsm_convert', 'fsm_synapse',
+                 'stdp', 'pac', 'neuron_body', 'neuron_rnl', 'segment']
 
+    # parse command line arguments
     parser = argparse.ArgumentParser(description = 'TNNGen: A Framework for Temporal Neural Network Ecosystem')
     parser.add_argument('-f', type=str, required=True, help='Provide text file containing arguments.')
     module_group = parser.add_mutually_exclusive_group(required=True)
-    m_choice = ['column', 'dendrite']
     module_group.add_argument('-m', type=str, metavar='module', choices=m_choice, help='Module name of interest')
-    sm_choice = ['less_equal', 'pulse2edge', 'edge2pulse', 'adder', 'incdec', 'wta',
-                 't_wta', 'stabilize', 'stdp_casegen', 'fsm_convert', 'fsm_synapse',
-                 'stdp', 'pac', 'neuron_body', 'neuron_rnl', 'segment']
     module_group.add_argument('-sm', type=str, metavar='submodule', choices=sm_choice, help='Submodule of interest')
 
     args = parser.parse_args()
@@ -47,17 +48,21 @@ if __name__=='__main__':
     args = text_parser(in_file)
 
     sim_dict, syn_dict = {}, {}
+    # common parameters
+    sim_syn_param = ['neurons', 'rfsize', 'theta', 'nprev', 'wres', 'ip_size_dist', 'ip_size_prox']
+    # SW-sim parameters
     sim_only_param = ['imgsize', 'rfsize', 'stride', 'pn_thresh', 'num_classes',
                       'resize', 'resize_param', 'filter', 'crop', 'crop_size',
                       'crop_pos', 'timeres', 'ntype', 'ramp', 'w_init', 'k',
                       'stoch', 'ucapture', 'usearch', 'ubackoff', 'ubackoff_simp',
                       'umin', 'inc_learn', 'weights_save']
+    # HW parameters
     syn_only_param = ['flow', 'aclk_freq', 'gclk_freq', 'gen_eff', 'tool', 'node',
                       'lib_path', 'lef_path']
 
     # segregate params
     for x in args:
-        if x in ('neurons', 'rfsize', 'theta', 'nprev', 'wres', 'ip_size_dist', 'ip_size_prox'):
+        if x in sim_syn_param:
             sim_dict[x] = args[x]
             syn_dict[x] = args[x]
         elif x in sim_only_param:
@@ -81,5 +86,4 @@ if __name__=='__main__':
                 pass
             else:
                 raise ValueError('Only on/off allowed')
-
 
