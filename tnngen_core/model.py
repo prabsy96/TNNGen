@@ -30,7 +30,6 @@ class Model:
             self.layers.append(layer.TNN_Layer(len(self.layers)))
         elif (layer.layer_type == "CV"):
             self.layers.append(layer.CV_Layer(len(self.layers)))
-            pass
         
 
     def check_params(self, layer):
