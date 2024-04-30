@@ -11,7 +11,7 @@ import time
 from model import Model
 
 FLOW = ('rtl', 'sim', 'syn', 'pnr')
-# TOOL = ('synopsys', 'cadence')
+TOOL = ('Synopsys', 'Cadence')
 NODE = (45, 7)
 
 def tnn_syn(module_name, submodule_name, args):
@@ -20,11 +20,22 @@ def tnn_syn(module_name, submodule_name, args):
 
     # Flow specification check
     flow = args['flow']
-
     if isinstance(flow, str) is False:
         raise TypeError('Incorrect format; provide in %s format')
     if flow not in FLOW:
         raise ValueError('Incorrect flow name')
+
+    # Tool check
+    tool = args['tool']
+    if not isinstance(tool, str):
+        raise TypeError('Incorrect format; provide in %s format')
+    if tool not in TOOL:
+        raise ValueError('Unsupported tool - choose from Synopsys or Cadence')
+
+    # Node specification check
+    node = int(args['node'])
+    if node not in NODE:
+        raise ValueError('Unsupported node - must be 45 or 7')
 
     # Get clk frequencies if synthesis or PNR
     if flow  == 'syn' or flow == 'pnr': 
@@ -112,8 +123,6 @@ def tnn_syn(module_name, submodule_name, args):
             filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.sv'
         # Active Dendrite
         elif module_name == 'dendrite':
-            # - TODO: fix parameters later
-            #filename = 'dendrite_'+str(p)+'_'+str(q)+'_'+str(theta)+'.v'
             filename = 'model.v'
     # Submodule
     elif submodule_name != None:
@@ -142,8 +151,8 @@ def tnn_syn(module_name, submodule_name, args):
     elif flow == FLOW[2]:
         console.print("[bold magenta]   --> Starting TNN Synthesis")
         start_time = time.process_time()
-        syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq)
-        
+        syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq, node)
+
         if args['tool'] == 'Cadence':
           netlist_path = syn.gen_genus_tcl()
         elif args['tool'] == 'Synopsys':
@@ -158,7 +167,7 @@ def tnn_syn(module_name, submodule_name, args):
     elif flow == FLOW[3]:
         console.print("[bold magenta]   --> Starting TNN Synthesis")
         start_time = time.process_time()
-        syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq)
+        syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq, node)
 
         if args['tool'] == 'Cadence':
             netlist_path = syn.gen_genus_tcl()
@@ -166,11 +175,11 @@ def tnn_syn(module_name, submodule_name, args):
             netlist_path = syn.gen_dc_tcl()
 
         end_time = time.process_time()
-        console.print("[bold magenta]   --> Ending TNN Synthesis!, Total Time: {}".format(end_time - start_time))    
-    
+        console.print("[bold magenta]   --> Ending TNN Synthesis!, Total Time: {}".format(end_time - start_time))
+
         console.print("[bold magenta]   --> Starting TNN Place And Route!")
         start_time = time.process_time()
-        pnr = pnr_support(obj, aclk_freq, gclk_freq, netlist_path)
+        pnr = pnr_support(obj, aclk_freq, gclk_freq, netlist_path, node)
 
         if args['tool'] == 'Cadence':
             pnr.gen_innovus_tcl()

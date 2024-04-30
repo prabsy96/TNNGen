@@ -44,15 +44,13 @@ ip_size_dist    = 16              # Number of distal input synapses
 ip_size_prox    = 1               # Number of proximal input synapses
 
 ### Frequency
-flow            = rtl             # Hardware process flow
+flow            = pnr             # Hardware process flow
 aclk_freq       = 10000000.00     # System Clock period in ps
 gclk_freq       = 240000000.00    # Gamma Clock period in ps
 tool            = Cadence         # Synopsys/Cadence
+node            = 45              # Process Node (either 45 or 7)
 lib_path        =                 # path to cell library
 lef_path        =                 # path to lef files
 qrc_file        =
 cap_file        = 
-
-
-
 

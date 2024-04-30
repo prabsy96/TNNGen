@@ -1,4 +1,5 @@
 #### Template Script for RTL->Gate-Level Flow (generated from GENUS 18.14-s037_1)
+# - using ASAP7
 # Authors: Prabhu Vellaisamy, Harideep Nair
 # Last modified by: YoungSeok Na
 
@@ -19,7 +20,7 @@ set MAP_OPT_EFF high
 
 # Set Other Params
 set DATE [clock format [clock seconds] -format "%b%d-%T"] 	
-set _OUTPUTS_PATH $HOME_DIR/syn_out/${DESIGN}/out/							
+set _OUTPUTS_PATH $HOME_DIR/syn_out/${DESIGN}/out/
 set _REPORTS_PATH $HOME_DIR/syn_out/${DESIGN}/rep/
 set _INTER_PATH $HOME_DIR/syn_out/${DESIGN}/inter/
 set _LOG_PATH $HOME_DIR/syn_out/${DESIGN}/log/
@@ -45,47 +46,17 @@ set_db auto_ungroup none
 ######################################################################
 
 read_libs " \
-${LIB_PATH}NangateOpenCellLibrary_typical.lib
+${LIB_PATH}asap7sc7p5t_AO_RVT_TT_ccs_201020.lib \
+${LIB_PATH}asap7sc7p5t_INVBUF_RVT_TT_ccs_201020.lib \
+${LIB_PATH}asap7sc7p5t_OA_RVT_TT_ccs_201020.lib\
+${LIB_PATH}asap7sc7p5t_SEQ_RVT_TT_ccs_201020.lib \
+${LIB_PATH}asap7sc7p5t_SIMPLE_RVT_TT_ccs_201020.lib \
 "
 
 read_physical -lef " \
-${LEF_PATH}NangateOpenCellLibrary.tech.lef \
-${LEF_PATH}NangateOpenCellLibrary.macro.lef \
-${LEF_PATH}stdcells.lef \
+${LEF_PATH}asap7_tech_4x_201209.lef \
+${LEF_PATH}asap7sc7p5t_27_R_4x_201211.lef \
 "
-
-# read_libs " \
-# ${LIB_PATH}asap7sc7p5t_AO_RVT_TT_ccs_201020.lib \
-# ${LIB_PATH}asap7sc7p5t_INVBUF_RVT_TT_ccs_201020.lib \
-# ${LIB_PATH}asap7sc7p5t_OA_RVT_TT_ccs_201020.lib\
-# ${LIB_PATH}asap7sc7p5t_SEQ_RVT_TT_ccs_201020.lib \
-# ${LIB_PATH}asap7sc7p5t_SIMPLE_RVT_TT_ccs_201020.lib \
-# ${LIB_PATH}flogic_8x1_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}fsm_output_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}add_inv_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}fsm_simple_macro_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}fsm_weight_incdec_tt_0.7_25_ccs.lib \
-# 
-# ${LIB_PATH}incdec_mod_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}inhibit_pass_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}pulse2edge_area_tt_0.7_25_ccs.lib \
-# ${LIB_PATH}stdp_tt_0.7_25_ccs.lib \
-# "
-# 
-# read_physical -lef " \
-# ${LEF_PATH}asap7_tech_4x_201209.lef \
-# ${LEF_PATH}asap7sc7p5t_27_R_4x_201211.lef \
-# ${LEF_PATH}add_inv.lef \
-# ${LEF_PATH}flogic_8x1_new.lef \
-# ${LEF_PATH}fsm_output.lef \
-# ${LEF_PATH}fsm_simple_macro.lef \
-# ${LEF_PATH}fsm_weight_incdec.lef \
-# ${LEF_PATH}fsm_weight_update.lef \
-# ${LEF_PATH}incdec_mod.lef \
-# ${LEF_PATH}inhibit_pass.lef \
-# ${LEF_PATH}pulse2edge_area.lef \
-# ${LEF_PATH}stdp_cases.lef \
-# "
 
 read_qrc ${LIB_PATH}qrcTechFile_typ03_scaled4xV06
 set_db / .hdl_generate_index_style %s_%d_
@@ -110,18 +81,18 @@ check_design -unresolved
 ######################################################################
 ## Constraints Setup
 ######################################################################
-create_clock [get_ports clk]  -period $ACLKP -name clk
-#create_clock [get_ports gclk]  -period $GCLKP -name gclk
+create_clock [get_ports aclk]  -period $ACLKP -name aclk
+create_clock [get_ports gclk]  -period $GCLKP -name gclk
 
-set_clock_uncertainty 100 [get_clocks clk]
-set_clock_transition -fall 150 [get_clocks clk]
-set_clock_transition -rise 150 [get_clocks clk]
-#set_clock_uncertainty 100 [get_clocks gclk]
-#set_clock_transition -fall 150 [get_clocks gclk]
-#set_clock_transition -rise 150 [get_clocks gclk]
+set_clock_uncertainty 100 [get_clocks aclk]
+set_clock_transition -fall 150 [get_clocks aclk]
+set_clock_transition -rise 150 [get_clocks aclk]
+set_clock_uncertainty 100 [get_clocks gclk]
+set_clock_transition -fall 150 [get_clocks gclk]
+set_clock_transition -rise 150 [get_clocks gclk]
 
-set_input_delay 2000 -clock clk [remove_from_collection [all_inputs] clk]
-set_output_delay 2000 -clock clk [all_outputs]
+set_input_delay 2000 -clock aclk [remove_from_collection [all_inputs] aclk]
+set_output_delay 2000 -clock aclk [all_outputs]
 #set_load 15 [all_outputs]
 
 puts "The number of exceptions is [llength [vfind "design:$DESIGN" -exception *]]"
