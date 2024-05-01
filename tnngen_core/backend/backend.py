@@ -215,7 +215,10 @@ class synth_support:
 
 
         if (self.mname == 'dendrite'):
-            files = cwd+'/templates/syn_dendrite.tcl'
+            if (self.node == 45):
+                files = cwd+'/templates/syn_dendrite.tcl'
+            else:
+                files = cwd+'/templates/syn_dendrite_7.tcl'
         elif (self.mname in ['less_equal', 'pulse2edge', 'edge2pulse', 'adder', 'incdec', 'wta', 't_wta', 'stabilize_func', 'stdp_casegen', 'fsm_convert', 'fsm_synapse', 'stdp', 'pac', 'neuron_body', 'neuron_rnl', 'segment']):
             files = cwd+'/templates/syn_submod.tcl'
 
@@ -288,7 +291,7 @@ class pnr_support:
         work_path = cwd+'/pnr_out'
 
         if self.node == 7:
-            files = cwd+'/templates/pnr_7.tcl'
+            files = cwd+'/templates/pnr_7_new.tcl'
             lib_path = cwd+'/lib_7/'
             lef_path = cwd+'/lef_7/'
         else:
