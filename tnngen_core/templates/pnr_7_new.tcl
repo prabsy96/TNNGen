@@ -66,7 +66,7 @@ set cellheight [expr 0.270 * 4 ]
 set cellhgrid  0.216
 
 set fpxdim [expr $cellhgrid * 400 ]
-set fpydim [expr $cellheight * 74 ]
+set fpydim [expr $cellheight * 400 ]
 
 floorPlan -site coreSite -s $fpxdim $fpydim 0 0 0 0
 puts "Floorplan is $fpxdim by $fpydim"
