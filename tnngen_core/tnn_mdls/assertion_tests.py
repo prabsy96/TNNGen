@@ -524,3 +524,407 @@ class Test_TNN_Functions(TNN_Functions):
         )
 
         return m
+
+    #############################################
+    # stdp_case_gen
+    #############################################
+    def Tb_Stdp_case_gen(self):
+        m = Module('test_stdp_case_gen')
+        stdp_case, case_clk = self.tnn.Stdp_case_gen()
+
+        dut = Submodule(m, stdp_case, 'dut')
+
+        ein = dut['ein']
+        eout = dut['eout']
+        clk = dut['clk']
+        grst = dut['grst']
+        rstb = dut['rstb']
+        stdp_cases = dut['stdp_cases']
+
+        i = m.Integer('i', 32, value=0)
+
+        dump = simulation.setup_waveform(m, dut, [ein, eout, clk, grst, rstb, stdp_cases])
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        # Define expected outputs
+        def expected_cases(ein, eout, greater):
+            e_both = ein & eout
+            e_one = ein ^ eout
+            return [
+                not greater and e_both,
+                greater and e_both,
+                not greater and e_one,
+                greater and e_one
+            ]
+
+        # Define greater logic for this context
+        greater = False
+
+        # Test different scenarios
+        scenarios = [
+            (0, 0, greater),
+            (1, 0, greater),
+            (0, 1, greater),
+            (1, 1, greater),
+        ]
+
+        for index, (ein_val, eout_val, greater_val) in enumerate(scenarios):
+            exp_cases = expected_cases(ein_val, eout_val, greater_val)
+            m.Initial(
+                ein(ein_val),
+                eout(eout_val),
+                Delay(1),
+                [
+                    If(stdp_cases[k] == exp_cases[k])(
+                        Display(f"Scenario {index + 1}: Case {k+1} Success")
+                    ).Else(
+                        Display(f"Scenario {index + 1}: Case {k+1} Error - Expected {exp_cases[k]}, Got {stdp_cases[k]}")
+                    )
+                    for k in range(4)
+                ],
+                Delay(10)
+            )
+
+        m.Initial(
+            ein(0),
+            eout(0),
+            Delay(10),
+            simulation.finish()
+        )
+
+        m.Always(Posedge(clk))(
+            EmbeddedCode('i = i%23;'),
+            If(i == 0)(
+                grst(1)
+            ).Else(
+                grst(0)
+            ),
+            EmbeddedCode('i=i+1;')
+        )
+
+        return m
+
+    #############################################
+    # fsm_convert
+    #############################################
+    def Tb_Fsm_convert(self, wres=3):
+        m = Module('test_fsm_convert')
+        fsm_convert, simple_clk = self.tnn.Fsm_convert(wres)
+        dut = Submodule(m, fsm_convert, 'dut')
+
+        in_v = dut['in']
+        clk = dut['clk']
+        rstb = dut['rstb']
+        out_v = dut['out']
+
+        i = m.Integer('i', 32, value=0)
+
+        dump = simulation.setup_waveform(m, dut, [in_v, clk, rstb, out_v])
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        # Define expected output
+        def expected_output(rstb, in_v, current_state):
+            if not rstb:
+                return 1
+            return int(not current_state) or (current_state and in_v)
+
+        # Test sequence
+        m.Initial(
+            rstb(1),
+            in_v(0),
+            Delay(5),
+
+            rstb(0),
+            Delay(5),
+            If(out_v == expected_output(0, 0, 0))(
+                Display("Success: Correct output during reset")
+            ).Else(
+                Display("Error: Incorrect output during reset")
+            ),
+            Delay(20),
+
+            rstb(1),
+            in_v(1),
+            Delay(1),
+            If(out_v == expected_output(1, 1, 1))(
+                Display("Success: Correct output with input 1 at state 1")
+            ).Else(
+                Display("Error: Incorrect output with input 1 at state 1")
+            ),
+
+            in_v(0),
+            Delay(12),
+            If(out_v == expected_output(1, 0, 2))(
+                Display("Success: Correct output with input 0 at state 2")
+            ).Else(
+                Display("Error: Incorrect output with input 0 at state 2")
+            ),
+
+            in_v(1),
+            Delay(5),
+            If(out_v == expected_output(1, 1, 3))(
+                Display("Success: Correct output with input 1 at state 3")
+            ).Else(
+                Display("Error: Incorrect output with input 1 at state 3")
+            ),
+
+            in_v(0),
+            Delay(3),
+            If(out_v == expected_output(1, 0, 4))(
+                Display("Success: Correct output with input 0 at state 4")
+            ).Else(
+                Display("Error: Incorrect output with input 0 at state 4")
+            ),
+
+            Delay(200),
+            simulation.finish()
+        )
+
+        return m
+
+    #############################################
+    # fsm_synapse - TODO: improve
+    #############################################
+    def Tb_Fsm_synapse(self, wres=3):
+        m = Module('test_fsm_synapse')
+        synapse, synapse_clk = self.tnn.Fsm_synapse(wres)
+        dut = Submodule(m, synapse, 'dut')
+
+        input_spike = dut['input_spike']
+        w_init = dut['w_init']
+        inc = dut['inc']
+        dec = dut['dec']
+        clk = dut['clk']
+        grst = dut['grst']
+        rstb = dut['rstb']
+        w_out = dut['w_out']
+        syn_out = dut['syn_out']
+
+        i = m.Integer('i', 32, value=0)
+
+        dump = simulation.setup_waveform(m, dut, [input_spike, w_init, inc, dec, clk, grst, rstb, w_out, syn_out])
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        # Simulation state to manage the current weight
+        current_weight = m.Reg('current_weight', wres)
+
+        m.Initial(
+            current_weight(3)
+        )
+
+        # Define expected output
+        def expected_output(inc, dec, current_weight, spike):
+            if inc:
+                new_weight = min(current_weight + 1, (1 << wres) - 1)
+            elif dec:
+                new_weight = max(current_weight - 1, 0)
+            else:
+                new_weight = current_weight
+            return new_weight, (spike and new_weight > 0)
+
+        # Test sequence
+        test_vectors = [
+            (0, 0, 0),
+            (1, 0, 0),
+            (0, 1, 0),
+            (0, 0, 1),
+        ]
+
+        for idx, (spike, increment, decrement) in enumerate(test_vectors):
+            expected_w, expected_syn_out = expected_output(increment, decrement, current_weight, spike)
+
+            m.Initial(
+                input_spike(spike),
+                inc(increment),
+                dec(decrement),
+                If((w_out, syn_out) == (expected_w, expected_syn_out))(
+                    Display(f"Test {idx+1}: Pass")
+                ).Else(
+                    Display(f"Test {idx+1}: Fail - Expected ({expected_w}, {expected_syn_out}), Got ({w_out}, {syn_out})")
+                ),
+                current_weight(expected_w),
+                Delay(10)
+            )
+
+        m.Initial(
+            Delay(200),
+            simulation.finish()
+        )
+
+        m.Always(clk)(
+            If(i == 0)(
+                grst(1)
+            ).Else(
+                grst(0)
+            ),
+            EmbeddedCode('i=i+1;')
+        )
+
+        return m
+
+    #############################################
+    # stdp
+    #############################################
+    def Tb_Stdp(self, wres=3):
+        m = Module('test_stdp')
+        stdp, stdp_clk = self.tnn.Stdp(wres)
+        dut = Submodule(m, stdp, 'dut')
+
+        input_weight = dut['weight_in']
+        ein = dut['ein']
+        eout = dut['eout']
+        capture = dut['capture_brv']
+        minus = dut['minus_brv']
+        search = dut['search_brv']
+        backoff = dut['backoff_brv']
+        min_v = dut['min_brv']
+        F = dut['F_brv']
+        clk = dut['clk']
+        grst = dut['grst']
+        rstb = dut['rstb']
+        inc = dut['inc']
+        dec = dut['dec']
+
+        i = m.Integer('i', 32, value=0)
+
+        dump = simulation.setup_waveform(m, dut, 
+            [input_weight, ein, eout, capture, minus, search, backoff, min_v, F, clk, grst, rstb, inc, dec])
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        # Define the expected behavior
+        def expected_behavior(capture, minus, search, backoff, min_v, weight, F):
+            inc_expected = (capture and search) or (weight > 3 and not min_v)
+            dec_expected = (minus and backoff) or (weight < 2 and min_v)
+            return inc_expected, dec_expected
+
+        # Set initial conditions
+        m.Initial(
+            input_weight(3),
+            ein(0),
+            eout(0),
+            capture(0),
+            minus(0),
+            search(0),
+            backoff(0),
+            min_v(0),
+            F(0b111111),
+            rstb(1),
+            Delay(10),
+            rstb(0),
+            Delay(5)
+        )
+
+        # Cycle through test conditions
+        test_conditions = [
+            (1, 0, 1, 0, 1, 0),
+            (0, 1, 0, 1, 0, 0),
+            (1, 1, 1, 1, 1, 0),
+            (0, 0, 0, 0, 0, 1)
+        ]
+
+        for idx, (cap, minu, sea, back, minv, weight) in enumerate(test_conditions):
+            m.Initial(
+                capture(cap),
+                minus(minu),
+                search(sea),
+                backoff(back),
+                min_v(minv),
+                input_weight(weight),
+                Delay(10),
+                If((inc, dec) == expected_behavior(cap, minu, sea, back, minv, weight, F))(
+                    Display(f"Test {idx+1}: Pass - Expected behavior matched.")
+                ).Else(
+                    Display(f"Test {idx+1}: Fail - Behavior did not match.")
+                ),
+                Delay(20)
+            )
+
+        m.Initial(
+            Delay(500),
+            simulation.finish()
+        )
+
+        m.Always(Posedge(clk))(
+            EmbeddedCode('i = i%23;'),
+            If(i == 0)(
+                grst(1)
+            ).Else(
+                grst(0)
+            ),
+            EmbeddedCode('i=i+1;')
+        )
+
+        return m
+
+    #############################################
+    # neuron_body
+    #############################################
+    def tb_neuronbody(self, ip_size=5, thres=13, wres=3):
+        m = Module('test_neuron_body')
+
+        # Parameters setup
+        ip_size = m.Parameter('IP_SIZE', ip_size)
+        thres = m.Parameter('THRESHOLD', thres)
+        wres = m.Parameter('WRES', wres)
+
+        # Instantiate the Neuronbody
+        nb, bdy_clk = self.tnn.Neuronbody(ip_size=ip_size.value, thres=thres.value, wres=wres.value)
+        dut = Submodule(m, nb, 'dut')
+        
+        acc_in = dut['acc_in']
+        clk = dut['clk']
+        pac_rst = dut['grst']
+        rst = dut['rstb']
+        out_v = dut['output_spike']
+
+        i = m.Integer('i', 32, value=0)
+        dump = simulation.setup_waveform(m, dut, [acc_in, clk, pac_rst, rst, out_v])
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        # Define scenarios
+        scenarios = [
+            {'input': 0b0001, 'expected_output': 0},
+            {'input': 0b1001, 'expected_output': 1},
+            {'input': 0b1000, 'expected_output': 1},
+            {'input': 0b1100, 'expected_output': 1},
+            {'input': 0b0100, 'expected_output': 0},
+            {'input': 0b0000, 'expected_output': 0}
+        ]
+
+        # Test each scenario
+        for scenario in scenarios:
+            test_block = m.Initial()
+            test_block.add(
+                rst(1),
+                pac_rst(0),
+                Delay(5),
+                rst(0),
+                Delay(1),
+                acc_in(scenario['input']),
+                Delay(1),
+                If(out_v == scenario['expected_output'])(
+                    Display("Success: Input %b produces expected output %d", scenario['input'], out_v)
+                ).Else(
+                    Display("Error: Input %b produces unexpected output %d", scenario['input'], out_v),
+                    Finish()
+                ),
+                Delay(10)
+            )
+
+        # Reset and general clock handling
+        m.Initial().add(
+            Delay(200),
+            simulation.finish()
+        )
+
+        m.Always(Posedge(clk))(
+            EmbeddedCode('i = i % 23;'),
+            If(i == 0)(
+                pac_rst(1)
+            ).Else(
+                pac_rst(0)
+            ),
+            EmbeddedCode('i = i + 1;')
+        )
+
+        return m
