@@ -499,7 +499,10 @@ class TNN_Functions():
         regout = m.Reg('regout', maxres)
         poutlatch = m.Reg('poutlatch', 1)
 
-        padded_in.assign(Cat(Int(value=0, width=(in_size.value-INP.value), base=2), in_v))
+        if (in_size.value != INP.value):
+            padded_in.assign(Cat(Int(value=0, width=(in_size.value-INP.value), base=2), in_v))
+        else:
+            padded_in.assign(in_v)
 
         in_size_val = int((in_size.value)/2)
     
