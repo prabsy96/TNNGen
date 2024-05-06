@@ -43,12 +43,14 @@ puts "====================================================="
 # setPlaceMode -place_global_place_io_pins false
 # add_tracks -honor_pitch
 # clearGlobalNets
-set fpxdim 8000
-set fpydim 8000
 
-floorPlan -r 1.0 0.70 4.0 4.0 4.0 4.0
-puts "Floorplan is $fpxdim by $fpydim"
-puts "Total area is [expr $fpxdim * $fpydim ] square um"
+# set fpxdim 300
+# set fpydim 300
+# 
+# floorPlan -r 1.0 0.70 4.0 4.0 4.0 4.0
+# puts "Floorplan is $fpxdim by $fpydim"
+# puts "Total area is [expr $fpxdim * $fpydim ] square um"
+floorPlan -keepShape 0.80
 
 globalNetConnect VDD -type pgpin -pin VDD -inst * -verbose
 globalNetConnect VSS -type pgpin -pin VSS -inst * -verbose

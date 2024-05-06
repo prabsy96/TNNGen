@@ -57,8 +57,8 @@ if __name__=='__main__':
                       'stoch', 'ucapture', 'usearch', 'ubackoff', 'ubackoff_simp',
                       'umin', 'inc_learn', 'weights_save']
     # HW parameters
-    syn_only_param = ['flow', 'aclk_freq', 'gclk_freq', 'gen_eff', 'tool', 'node',
-                      'lib_path', 'lef_path']
+    syn_only_param = ['p_dist', 'p_prox', 'segment_cnt', 'neuron_cnt', 'col_cnt', 'dend_cnt', 'flow',
+                      'aclk_freq', 'gclk_freq', 'gen_eff', 'tool', 'node', 'lib_path', 'lef_path']
 
     # segregate params
     for x in args:

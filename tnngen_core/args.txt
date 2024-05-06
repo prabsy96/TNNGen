@@ -43,10 +43,18 @@ weights_save    = 1               # Save weights after training
 ip_size_dist    = 16              # Number of distal input synapses
 ip_size_prox    = 1               # Number of proximal input synapses
 
+# TNNSyn-specific parameters
+p_dist          = 18 # Distal
+p_prox          = 1  # Proximal
+segment_cnt     = 4  # Segment
+neuron_cnt      = 2  # Neuron Count
+col_cnt         = 2  # Column Count
+dend_cnt        = 1  # Dendrite Count
+
 ### Frequency
 flow            = pnr             # Hardware process flow
-aclk_freq       = 10000000.00     # System Clock period in ps
-gclk_freq       = 240000000.00    # Gamma Clock period in ps
+aclk_freq       = 2147483.00   # System Clock period in ps
+gclk_freq       = 2147483.00   # Gamma Clock period in ps
 tool            = Cadence         # Synopsys/Cadence
 node            = 45              # Process Node (either 45 or 7)
 lib_path        =                 # path to cell library

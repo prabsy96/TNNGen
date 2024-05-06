@@ -29,6 +29,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+setLibraryUnit -cap 1fF
 setLibraryUnit -time 1ps
 
 global init_verilog
@@ -43,35 +44,61 @@ set init_mmmc_file $MMMC_FILE
 set init_lef_file  " \
   ${LEF_PATH}asap7_tech_4x_201209.lef \
   ${LEF_PATH}asap7sc7p5t_27_R_4x_201211.lef \
-  ${LEF_PATH}add_inv.lef \
-  ${LEF_PATH}flogic_8x1_new.lef \
-  ${LEF_PATH}fsm_output.lef \
-  ${LEF_PATH}fsm_simple_macro.lef \
-  ${LEF_PATH}fsm_weight_incdec.lef \
-  ${LEF_PATH}fsm_weight_update.lef \
-  ${LEF_PATH}incdec_mod.lef \
-  ${LEF_PATH}inhibit_pass.lef \
-  ${LEF_PATH}pulse2edge_area.lef \
-  ${LEF_PATH}stdp_cases.lef \
 "
+#  ${LEF_PATH}add_inv.lef \
+#  ${LEF_PATH}flogic_8x1_new.lef \
+#  ${LEF_PATH}fsm_output.lef \
+#  ${LEF_PATH}fsm_simple_macro.lef \
+#  ${LEF_PATH}fsm_weight_incdec.lef \
+#  ${LEF_PATH}fsm_weight_update.lef \
+#  ${LEF_PATH}incdec_mod.lef \
+#  ${LEF_PATH}inhibit_pass.lef \
+#  ${LEF_PATH}pulse2edge_area.lef \
+#  ${LEF_PATH}stdp_cases.lef 
+
 set init_top_cell  $DESIGN
 set init_gnd_net   "VSS"
 set init_pwr_net   "VDD"
 
 init_design
+setAnalysisMode -analysisType onChipVariation
+# create_rc_corner -name typical \
+#     -T 25
+# 
+# create_library_set -name libs_typical \
+#     -timing $LIB_PATH
+# 
+# create_delay_corner -name delay_default \
+#    -early_library_set libs_typical \
+#    -late_library_set libs_typical \
+#    -rc_corner typical
+# 
+# create_constraint_mode -name constraints_default \
+#    -sdc_files [list ${HOME_DIR}/templates/constraints.sdc]
+# 
+# create_analysis_view -name analysis_default \
+#    -constraint_mode constraints_default \
+#    -delay_corner delay_default
+# 
+# set_analysis_view \
+#    -setup [list analysis_default] \
+#    -hold [list analysis_default]
+# 
+# setDesignMode -process 7 -node N7
 
 # this is example tcl to make a flexible floorplan size
 
-set cellheight [expr 0.270 * 4 ]
-set cellhgrid  0.216
-
-set fpxdim [expr $cellhgrid * 400 ]
-set fpydim [expr $cellheight * 400 ]
-
-floorPlan -site coreSite -s $fpxdim $fpydim 0 0 0 0
-puts "Floorplan is $fpxdim by $fpydim"
-puts "Total area is [expr $fpxdim * $fpydim ] square um"
-puts "[expr $fpydim / $cellheight] standard cell rows tall"
+# set cellheight [expr 0.270 * 4 ]
+# set cellhgrid  0.216
+# 
+# set fpydim [expr $cellheight * 800 ]
+# set fpxdim [expr $cellhgrid * 6000 ]
+# 
+# floorPlan -site coreSite -s $fpxdim $fpydim 0 0 0 0
+# puts "Floorplan is $fpxdim by $fpydim"
+# puts "Total area is [expr $fpxdim * $fpydim ] square um"
+# puts "[expr $fpydim / $cellheight] standard cell rows tall"
+floorPlan -keepShape 0.80
 
 # Innovus is not putting tracks on the bottom cell row. That causes problems
 # since it won't route to them on proper tracks.
@@ -290,6 +317,11 @@ setNanoRouteMode -routeWithViaInPin true \
     -routeTopRoutingLayer 6
 
 # route and optimize as desired
+optDesign -postCTS -outdir timingReports -prefix postCTS_hold -hold
+
+routeDesign
+optDesign -postRoute -outDir timingReports -prefix postRoute_hold -hold
+
 
 # all done--finish up with decap and finally filler
 
