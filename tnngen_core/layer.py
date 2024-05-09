@@ -58,8 +58,8 @@ class Layer():
         #######################
         # Combinational logic #
         #######################
-        n_col = inputsize.value - (rfsize.value-1)
-        n_row = inputsize.value - (rfsize.value-1)
+        n_col = int(((inputsize.value-rfsize.value)/stride.value)+1)
+        n_row = int(((inputsize.value-rfsize.value)/stride.value)+1)
 
         for k in range(num_k):
             ky = int(np.floor(k/n_col))
@@ -68,7 +68,7 @@ class Layer():
             for r in range(rfsize.value):
                 out_bot = rfsize.value*rfsize.value*nprev.value*k+r*rfsize.value*nprev.value
                 out_top = out_bot+(rfsize.value*nprev.value-1)
-                in_bot = (kx + ky*inputsize.value + inputsize.value*r)*nprev.value
+                in_bot = ((kx + ky*inputsize.value)*stride.value + inputsize.value*r)*nprev.value
                 in_top = in_bot+(rfsize.value*nprev.value-1)
                 temp_out.slice(out_top, out_bot).assign(layer_in.slice(in_top, in_bot))
 
