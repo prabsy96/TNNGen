@@ -7,10 +7,11 @@ from veriloggen import *
 from tnn_mdls.func_mdls import TNN_Functions
 from tnn_mdls.tb_func_mdls import Test_TNN_Functions
 from backend import backend
+import numpy as np
 import os
 
 class Layer():
-    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
+    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13, rfsize=None, stride=None, nprev=None, inputsize=None):
         self.num_col = num_col
         self.num_neurons = num_neurons
         self.num_dend = num_dend
@@ -22,6 +23,59 @@ class Layer():
         self.thres = thres
         self.layer_type = layer_type
         self.layer_id = None
+        self.rfsize = rfsize
+        self.stride = stride
+        self.nprev = nprev
+        self.inputsize = inputsize
+
+    def Kernel_Layer(self, layer_id=None):
+        m = Module('Kernel_Layer_'+str(layer_id))
+        self.layer_id = str(layer_id)
+
+        ##################
+        # Parameters #
+        ##################
+        rfsize = m.Parameter('RFSIZE', int(self.rfsize))
+        stride = m.Parameter('STRIDE', int(self.stride))
+        nprev = m.Parameter('NPREV', int(self.nprev))
+        inputsize = m.Parameter('INPUTSIZE', int(self.inputsize))
+        in_width = m.Parameter('IN_WIDTH', int(inputsize.value*inputsize.value*nprev.value))
+        p = m.Parameter('p', int(rfsize.value*rfsize.value*nprev.value))
+        num_k = int((((inputsize.value-rfsize.value)/stride.value)+1) * (((inputsize.value-rfsize.value)/stride.value)+1))
+        out_width = m.Parameter('OUT_WIDTH', int(p.value*num_k))
+
+        ##################
+        # Inputs/Outputs #
+        ##################
+        layer_in = m.Input('layer_in', in_width.value)
+        layer_out = m.Output('layer_out', out_width.value)
+
+        #####################
+        # Intermediate wire #
+        #####################
+        temp_out = m.Wire('temp_out', out_width.value)
+
+        #######################
+        # Combinational logic #
+        #######################
+        n_col = inputsize.value - (rfsize.value-1)
+        n_row = inputsize.value - (rfsize.value-1)
+
+        for k in range(num_k):
+            ky = int(np.floor(k/n_col))
+            kx = int(np.floor(k%n_row))
+            
+            for r in range(rfsize.value):
+                out_bot = rfsize.value*rfsize.value*nprev.value*k+r*rfsize.value*nprev.value
+                out_top = out_bot+(rfsize.value*nprev.value-1)
+                in_bot = (kx + ky*inputsize.value + inputsize.value*r)*nprev.value
+                in_top = in_bot+(rfsize.value*nprev.value-1)
+                temp_out.slice(out_top, out_bot).assign(layer_in.slice(in_top, in_bot))
+
+        layer_out.assign(temp_out)
+
+        return m
+
 
     def TNN_Layer(self, layer_id=None):
         m = Module('TNN_Layer_'+str(layer_id))
