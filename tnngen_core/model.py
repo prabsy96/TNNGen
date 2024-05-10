@@ -24,26 +24,29 @@ class Model:
         else:
             raise ValueError("layer_type: '" + layer.layer_type + "' does not exist!")
         
-        # Check all layers but the first
-        if (len(self.layers)!=0):
-            self.check_params(layer)
-        
         if (layer.layer_type == "TNN"):
-            self.layers.append(layer.TNN_Layer(len(self.layers)))
+            self.layers.append(self.check_params(layer.TNN2_Layer(len(self.layers))))
         elif (layer.layer_type == "CV"):
-            self.layers.append(layer.CV_Layer(len(self.layers)))
+            self.layers.append(self.check_params(layer.CV_Layer(len(self.layers))))
         elif (layer.layer_type == "Kernel"):
-            self.layers.append(layer.Kernel_Layer(len(self.layers)))
+            self.layers.append(self.check_params(layer.Kernel_Layer(len(self.layers))))
         
 
     def check_params(self, layer):
-        #params = layer.get_params()
+        
+        # Check all layers but the first
+        if (len(self.layers)==0):
+            return layer
+        
         prev_params = self.layers[-1].get_params()
-        in_size = layer.num_col* layer.num_neurons * layer.p_dist
-        prev_out_size = prev_params['NUM_COL'].value * prev_params['NUM_NEURONS'].value
+        params = layer.get_params()
+        in_size = params['IN_WIDTH'].value
+        prev_out_size = prev_params['OUT_WIDTH'].value
 
         if (in_size != prev_out_size):
             raise ValueError("Incompatible input width")
+        else:
+            return layer
         
     def summary(self):
         for i in range(len(self.layers)):
@@ -68,8 +71,12 @@ class Model:
 
         for i in range(len(self.layers)):
             layer = self.layers[i]
-            layer_ports = [model_ports['clk'], model_ports['grst'], model_ports['rstb']]
-            layer_params = [i]
+            # Only add clk and rst ports to NN layer types
+            if (layer.get_params()['is_clk'].value == 1):
+                layer_ports = [model_ports['clk'], model_ports['grst'], model_ports['rstb']]
+            else:
+                layer_ports = []
+            layer_params = []
 
             # Add params
             for key in model_params:
@@ -84,8 +91,9 @@ class Model:
                         
                 # Instantiate wire to connect output to next layer's input
                 if (i != (len(self.layers)-1)):
-                    neuron_count = self.layers[i].get_params()['NUM_NEURONS'].value * self.layers[i].get_params()['NUM_COL'].value
-                    last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), neuron_count)
+                    #neuron_count = self.layers[i].get_params()['NUM_NEURONS'].value * self.layers[i].get_params()['NUM_COL'].value
+                    last_out_width = self.layers[i].get_params()['OUT_WIDTH']
+                    last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), last_out_width.value)
                     layer_ports.append(last_out)
                 else:
                     layer_ports.append(model_ports['model_output'])
@@ -99,8 +107,9 @@ class Model:
                         
                 # Instantiate wire to connect output to next layer's input
                 if (i != (len(self.layers)-1)):
-                    neuron_count = self.layers[i].get_params()['NUM_NEURONS'].value * self.layers[i].get_params()['NUM_COL'].value
-                    last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), neuron_count)
+                    #neuron_count = self.layers[i].get_params()['NUM_NEURONS'].value * self.layers[i].get_params()['NUM_COL'].value
+                    last_out_width = self.layers[i].get_params()['OUT_WIDTH']
+                    last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), last_out_width.value)
                     layer_ports.append(last_out)
                 else:
                     layer_ports.append(model_ports['model_output'])
@@ -133,7 +142,7 @@ class Model:
                     if ((port_name!='clk') & (port_name!='grst') & (port_name!='rstb')):
                         # add input ports to model
                         if (isinstance(port, core.vtypes.Input)):
-                            if (port_name.startswith('input_spikes_dist')):
+                            if (port_name.startswith('layer_in')):
                                 port.name = 'model_input'
                             else:
                                 port.name = 'L0_'+port.name
@@ -149,7 +158,7 @@ class Model:
                         # add input ports to model
                         if (isinstance(port, core.vtypes.Input)):
                             # filter out connecting ports
-                            if (not(port_name.startswith('input_spikes_dist'))):
+                            if (not(port_name.startswith('layer_in'))):
                                 port.name = 'L'+str(i)+'_'+port.name
                                 self.model.add_object(port)
                                 

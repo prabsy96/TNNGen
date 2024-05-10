@@ -78,8 +78,11 @@ def tnn_syn(module_name, submodule_name, args):
         # Active Dendrite
         elif module_name == 'dendrite':
             myModel = Model()
-            myModel.add(Layer(layer_type="TNN", num_col=args['col_cnt'], num_neurons=args['neuron_cnt'], num_dend=args['dend_cnt'], p_dist=args['p_dist'], p_prox=args['p_prox'], num_seg=args['segment_cnt'], wres_dist=3, wres_prox=3, thres=6))
-            # myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layer(layer_type="TNN", num_col=16, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layer(layer_type="Kernel", rfsize=2, stride=1, nprev=2, inputsize=4))
+            myModel.add(Layer(layer_type="TNN", num_col=9, num_neurons=1, num_dend=1, p_dist=8, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
+            #myModel.add(Layer(layer_type="TNN", num_col=args['col_cnt'], num_neurons=args['neuron_cnt'], num_dend=args['dend_cnt'], p_dist=args['p_dist'], p_prox=args['p_prox'], num_seg=args['segment_cnt'], wres_dist=3, wres_prox=3, thres=6))
+            #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=4, num_dend=1, p_dist=4, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=1, num_dend=1, p_dist=4, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
