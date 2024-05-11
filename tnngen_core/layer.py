@@ -77,8 +77,8 @@ class Layer():
 
         return m
 
-    def TNN2_Layer(self, layer_id=None):
-        m = Module('TNN2_Layer_'+str(layer_id))
+    def TNN_Layer_V2(self, layer_id=None):
+        m = Module('TNN_Layer_V2_'+str(layer_id))
         self.layer_id = str(layer_id)
         num_col = m.Parameter('NUM_COL', int(self.num_col))
         num_neurons = m.Parameter('NUM_NEURONS', int(self.num_neurons))
@@ -92,6 +92,7 @@ class Layer():
         in_width = m.Parameter('IN_WIDTH', int(num_col.value*p_dist.value))
         out_width = m.Parameter('OUT_WIDTH', int(num_col.value*num_neurons.value))
         is_clk = m.Parameter('is_clk', 1)
+        
         ##################
         # Inputs/Outputs #
         ##################
@@ -106,13 +107,10 @@ class Layer():
         w_init_prox, capture_brv_prox, minus_brv_prox, search_brv_prox, backoff_brv_prox, min_brv_prox, F_brv_prox = [], [], [], [], [], [], []
 
         # input_spikes_dist
-        #for c in range(num_col.value):
-        #    for n in range(num_neurons.value):
-        #        input_spikes_dist.append(m.Input('input_spikes_dist_'+str(c)+'_'+str(n), p_dist.value))
         input_spikes_dist = m.Input('layer_in', num_col.value*p_dist.value)
 
         # input_spikes_prox
-        for i in range(num_dend.value):
+        for i in range(num_neurons.value):
             input_spikes_prox.append(m.Input('input_spikes_prox_'+str(i), p_prox.value))
 
         # w_init_dist
@@ -215,10 +213,6 @@ class Layer():
                         F_brv_prox.append(m.Input('F_brv_prox_'+str(c)+'_'+str(n)+'_'+str(i)+str(j), (1<<wres_prox.value)-3 + 1))
 
         # Output_spikes
-        #for i in range(num_col.value*num_neurons.value):
-        #    output_spikes.append(m.Output('layer_out_spikes'))
-        #for c in range(num_col.value):
-        #    output_spikes.append(m.Output('output_spikes'+'_'+str(c), num_neurons.value))
         output_spikes = m.Output('layer_out', num_col.value*num_neurons.value)
 
         ##################
@@ -226,17 +220,14 @@ class Layer():
         ##################
         tnn_func = TNN_Functions(self.layer_id)
 
-        comp_col, _ = tnn_func.Comp_column(num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
+        comp_col, _ = tnn_func.Comp_column_V2(num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for c in range(num_col.value):
             col_ports = [clk, grst, rstb, 
-                         output_spikes.slice((c+1)*num_neurons.value-1, c*num_neurons.value)]
+                         output_spikes.slice((c+1)*num_neurons.value-1, c*num_neurons.value),
+                         input_spikes_dist.slice((c+1)*p_dist.value-1, c*p_dist.value)]
             
-            # input_spikes_dist
-            for n in range(num_neurons.value):
-                col_ports.append(input_spikes_dist.slice((c+1)*p_dist.value-1, c*p_dist.value))
-
             # input_spikes_prox
-            for d in range(num_dend.value):
+            for d in range(num_neurons.value):
                 col_ports.append(input_spikes_prox[d])
 
             # w_init_dist
