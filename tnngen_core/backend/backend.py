@@ -8,42 +8,72 @@ import pathlib
 import subprocess
 import sys
 import shlex
+import json
 
 #################################################
 # Generic functions
 #################################################
 # args.txt file parser
-def text_parser(file):
-    content_dic = {}
-    num = 0
-    with open(file) as f:
+def text_parser(fname):
+    arg = []
+    with open(fname, 'r') as f:
         while True:
             line = f.readline()
-            if line.strip(): 
-                content_dic[num] = line
-                num = num+1
+            if line.strip():
+                stline = line.strip()
+                if stline[0] != '#':
+                    arg.append(stline)
             if not line:
                 break
 
-    arg = []
-    for i in content_dic:
-        if content_dic[i][0] != '#':
-            arg.append(content_dic[i])
-
     params = {}
-    new = arg[0].split()
-    for i in range(len(arg)):
-        temp = arg[i].split()
-        for j in range(len(temp)):
-            if temp[j] == '#':
-                break
-            else:
-                if j != 0:
-                    if temp[j] != '=':
-                        new_temp= temp[j]
-        params[temp[0]] = new_temp
+    for elem in arg:
+        assign = elem.split('=')
+        if len(assign) != 2:
+            err_str = f"Malformed line detected in config: \"{elem}\""
+            raise ValueError(err_str)
+        k = assign[0].strip()
+        v = assign[1].split('#')[0].strip()
+        params[k] = v
 
     return params
+
+# Divide the contents of args to appropriate dictionary
+def args_divide(args):
+    # Verifying the assigned values
+    checker = {}
+    with open(f'{os.getcwd()}/backend/argcheck.json', 'r') as f:
+        checker = json.load(f)
+
+    sim_dict, syn_dict = {}, {}
+    for k, v in args.items():
+        # Key must be a valid option
+        if k not in checker["options"]:
+            err_str = f"Item {k} is not one of the available options"
+            raise ValueError(err_str)
+
+        # Switch must be on/off
+        if (k == "sim_switch") or (k == "syn_switch"):
+            if v not in checker["switch_modes"]:
+                err_str = "Switch modes must be \"on\" or \"off\""
+                raise ValueError(err_str)
+
+        # Divide up appropriately
+        if k in checker["common_param"]:
+            sim_dict[k] = v
+            syn_dict[k] = v
+        elif k in checker["sim_only"]:
+            sim_dict[k] = v
+        elif k in checker["syn_only"]:
+            syn_dict[k] = v
+
+    # Check mutual exclusivity of switches
+    # - after iterating to ensure that on/off check is performed first
+    if (args["sim_switch"] == "on") and (args["syn_switch"] == "on"):
+        err_str = "SIM and SYN are mutually exclusive. Change one of them to \"off\""
+        raise ValueError(err_str)
+
+    return sim_dict, syn_dict
 
 # Generate verilog file
 # - module: veriloggen module
@@ -76,6 +106,7 @@ def gen_verilog(module=None, path=None, filename=None):
 
     return gen_file, (os.getcwd()+"/"+path)
 
+# Functional simulation of verilog
 def sim_verilog(obj=None, sim_name='simvision', wave=None):
     if obj is None:
         raise ValueError("Module is required.")

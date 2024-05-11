@@ -1,3 +1,7 @@
+# TNNSyn main framework
+# Authors: Prabhu Vellaisamy, Harideep Nair
+# Last modified by: YoungSeok Na, Wei-Che Huang
+
 from column import TNN_Col
 from layer import Layer
 from submodule import *
@@ -14,6 +18,15 @@ FLOW = ('rtl', 'sim', 'syn', 'pnr')
 TOOL = ('Synopsys', 'Cadence')
 NODE = (45, 7)
 
+# Try converting a parameter to an int. Handle errors appropriately
+def convert_int(args, vid):
+    try:
+        return int(args[vid])
+    except:
+        err_str = f"Value of {vid} must be provided in integer format"
+        raise TypeError(err_str)
+
+# Main procedure
 def tnn_syn(module_name, submodule_name, args):
     console = Console()
     console.print("[bold magenta]   --> Starting TNN Syn!")
@@ -44,55 +57,64 @@ def tnn_syn(module_name, submodule_name, args):
 
     # Large modules
     if module_name != None:
-        # Default parameter values
-        p, q, theta, wres = 18, 8, 6, 3
-
-        # generate verilog
-        for i in args:
-            if i == 'neurons':
-                q = int(args[i])
-                console.print("[bold blue]  -> Selected # of Neurons: "+str(q))
-            elif i == 'rfsize':
-                p = int(args[i])*int(args[i])
-            elif i == 'theta':
-                theta = int(args[i])
-                console.print("[bold blue]  -> Selected threshold value: "+str(theta))
-            elif i == 'nprev':
-                p = int(args[i])*p
-                console.print("[bold blue]  -> Selected # Synapses per Neuron: "+str(p))
-            elif i == 'wres':
-                wres = int(args[i])
-
-        if not isinstance(p, int):
-            raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
-        if not isinstance(q, int):
-            raise TypeError('Invalid type for synapse per neuron count; provide in %d format')
-        if not isinstance(theta, int):
-            raise TypeError('Invalid type for threshold value; provide in %d format')
-        if not isinstance(wres, int):
-            raise TypeError('Invalid type for wres value; provide in %d format')
-
         # Column
         if module_name == 'column':
-          col = TNN_Col(p, q, theta, wres)
+            # Default parameter values
+            p, q, theta, wres = 18, 8, 6, 3
+
+            # Parameter parsing
+            rf = convert_int(args['rfsize'], 'rfsize')
+            np = convert_int(args['nprev'], 'nprev')
+            p = rf * rf * np
+            console.print("[bold blue]  -> Selected # Synapses per Neuron: "+str(p))
+
+            q = convert_int(args['neurons'], 'neurons')
+            console.print("[bold blue]  -> Selected # of Neurons: "+str(q))
+
+            theta = convert_int(args['theta'], 'theta')
+            console.print("[bold blue]  -> Selected threshold value: "+str(theta))
+
+            wres = convert_int(args['wres'], 'wres')
+
+            # generate verilog
+            col = TNN_Col(p, q, theta, wres)
+
         # Active Dendrite
         elif module_name == 'dendrite':
+            # Parameter parsing
+            lt = args['ltype']
+            if lt not in ['TNN', 'CV']:
+                raise ValueError("Layer type must be \"TNN\" or \"CV\" for dendrite")
+            nc = convert_int(args, 'col_cnt') 
+            nn = convert_int(args, 'neuron_cnt')
+            nd = convert_int(args, 'dend_cnt')
+            ns = convert_int(args, 'segment_cnt')
+            pd = convert_int(args, 'p_dist')
+            pp = convert_int(args, 'p_prox')
+
+            # generate verilog
             myModel = Model()
             myModel.add(Layer(layer_type="TNN", num_col=16, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             myModel.add(Layer(layer_type="Kernel", rfsize=2, stride=1, nprev=2, inputsize=4))
             myModel.add(Layer(layer_type="TNN", num_col=9, num_neurons=1, num_dend=1, p_dist=8, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=args['col_cnt'], num_neurons=args['neuron_cnt'], num_dend=args['dend_cnt'], p_dist=args['p_dist'], p_prox=args['p_prox'], num_seg=args['segment_cnt'], wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
+
+            # YN - ORIGINAL
+            # myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=3, wres_prox=3, thres=6))
+
             #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=4, num_dend=1, p_dist=4, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=1, num_dend=1, p_dist=4, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             myModel.summary()
             myModel.compile()
-          #col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
+            #col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
+
         # default to column
         else:
           col = TNN_Col(p, q, theta, wres)
 
+        # Generate model objects
         if flow == 'syn' or flow == 'pnr': 
             if module_name == 'dendrite':
                 #obj, clk_name = col.CV_Layer()
@@ -127,7 +149,7 @@ def tnn_syn(module_name, submodule_name, args):
             filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.sv'
         # Active Dendrite
         elif module_name == 'dendrite':
-            filename = 'model.v'
+            filename = f"model_{args['ltype']}_{args['col_cnt']}_{args['neuron_cnt']}_{args['dend_cnt']}_{args['segment_cnt']}_{args['p_dist']}_{args['p_prox']}.v"
     # Submodule
     elif submodule_name != None:
         filename = submodule_name+'.sv'
@@ -144,9 +166,9 @@ def tnn_syn(module_name, submodule_name, args):
         sim = sim_support(file = gen_file)
 
         if args['tool'] == 'Cadence':
-          sim_v = sim.run_xrun()
+            sim_v = sim.run_xrun()
         elif args['tool'] == 'Synopsys':
-          sim_v = sim.run_vcs()
+            sim_v = sim.run_vcs()
         console.print("\n[bold blue]  -> Simulation Dump Completed \n -----------------------------------------")
 
     #############################################
@@ -158,9 +180,9 @@ def tnn_syn(module_name, submodule_name, args):
         syn = synth_support(module_name, obj, aclk_freq, rtl_path, gclk_freq, node)
 
         if args['tool'] == 'Cadence':
-          netlist_path = syn.gen_genus_tcl()
+            netlist_path = syn.gen_genus_tcl()
         elif args['tool'] == 'Synopsys':
-          netlist_path = syn.gen_dc_tcl()
+            netlist_path = syn.gen_dc_tcl()
 
         end_time = time.process_time()
         console.print("[bold magenta]   --> Ending TNN Synthesis!, Total Time: {}".format(end_time - start_time))

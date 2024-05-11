@@ -46,44 +46,12 @@ if __name__=='__main__':
     submodule_name = args.sm
 
     args = text_parser(in_file)
+    sim_dict, syn_dict = args_divide(args)
 
-    sim_dict, syn_dict = {}, {}
-    # common parameters
-    sim_syn_param = ['neurons', 'rfsize', 'theta', 'nprev', 'wres', 'ip_size_dist', 'ip_size_prox']
-    # SW-sim parameters
-    sim_only_param = ['imgsize', 'rfsize', 'stride', 'pn_thresh', 'num_classes',
-                      'resize', 'resize_param', 'filter', 'crop', 'crop_size',
-                      'crop_pos', 'timeres', 'ntype', 'ramp', 'w_init', 'k',
-                      'stoch', 'ucapture', 'usearch', 'ubackoff', 'ubackoff_simp',
-                      'umin', 'inc_learn', 'weights_save']
-    # HW parameters
-    syn_only_param = ['p_dist', 'p_prox', 'segment_cnt', 'neuron_cnt', 'col_cnt', 'dend_cnt', 'flow',
-                      'aclk_freq', 'gclk_freq', 'gen_eff', 'tool', 'node', 'lib_path', 'lef_path']
-
-    # segregate params
-    for x in args:
-        if x in sim_syn_param:
-            sim_dict[x] = args[x]
-            syn_dict[x] = args[x]
-        elif x in sim_only_param:
-            sim_dict[x] = args[x]
-        elif x in syn_only_param:
-            syn_dict[x] = args[x]
-
-    # find mode
-    for y in args:
-        if y == 'sim_switch':
-            if args[y] == 'on':
-                tnn_sim(sim_dict)
-            elif args[y] == 'off':
-                pass
-            else:
-                raise ValueError('Only on/off allowed')
-        elif y == 'syn_switch':
-            if args[y] == 'on':
-                tnn_syn(module_name, submodule_name, syn_dict)
-            elif args[y] == 'off':
-                pass
-            else:
-                raise ValueError('Only on/off allowed')
+    if args['sim_switch'] == 'on':
+        tnn_sim(sim_dict)
+    elif args['syn_switch'] == 'on':
+        tnn_syn(module_name, submodule_name, syn_dict)
+    else:
+        console.print("[bold blue]  -> Mode not selected. Ending the program.")
 
