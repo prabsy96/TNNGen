@@ -633,9 +633,73 @@ class TNN_Functions():
         return m, ('aclk', 'gclk')
     
     # Segment
-    def segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
+    # def segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('L'+self.layer_id+'_segment')
+    #     m = Module('L'+self.layer_id+'_segment')
+    #     # parameters
+    #     in_size_dist = m.Parameter('INP_DIST', ip_size_dist)
+    #     in_size_prox = m.Parameter('INP_PROX', ip_size_prox)
+    #     wres_dist = m.Parameter('WRES_DIST', wres_dist)
+    #     wres_prox = m.Parameter('WRES_PROX', wres_prox)
+    #     thres = m.Parameter('THRESHOLD', thres)
+
+    #     # inputs and outputs
+    #     input_spikes_dist = m.Input('input_spikes_dist', in_size_dist.value)
+    #     input_spikes_prox = m.Input('input_spikes_prox', in_size_prox.value)
+    #     inc_dist = m.Input('inc_dist', in_size_dist.value)
+    #     inc_prox = m.Input('inc_prox', in_size_prox.value)
+    #     dec_dist = m.Input('dec_dist', in_size_dist.value)
+    #     dec_prox = m.Input('dec_prox', in_size_prox.value)
+    #     clk = m.Input('clk', 1)
+    #     grst = m.Input('grst', 1)
+    #     rstb = m.Input('rstb', 1)
+    #     output_spike = m.Output('output_spike', 1)
+
+    #     w_init_dist = []
+    #     for i in range(in_size_dist.value):
+    #         w_init_dist.append(m.Input('w_init_dist_'+str(i), wres_dist.value))
+
+    #     w_init_prox = []
+    #     for i in range(in_size_prox.value):
+    #         w_init_prox.append(m.Input('w_init_prox_'+str(i), wres_prox.value))
+
+    #     weights_dist = []
+    #     for i in range(in_size_dist.value):
+    #         weights_dist.append(m.Output('weights_dist_'+str(i), wres_dist.value))
+
+    #     weights_prox = []
+    #     for i in range(in_size_prox.value):
+    #         weights_prox.append(m.Output('weights_prox_'+str(i), wres_prox.value))
+
+    #     # wires/regs
+    #     resp_func_dist = m.Wire('resp_func_dist', in_size_dist.value)
+    #     resp_func_prox = m.Wire('resp_func_prox', in_size_prox.value)
+            
+    #     # submodules
+    #     # Distal: Synaptic weight + readout logic FSM
+    #     fsm_s_dist, fsm_clk_dist = self.Fsm_synapse(wres_dist.value)
+    #     for i in range(in_size_dist.value):
+    #         ### TODO: investigate fsm_synapse module ###
+    #         m.Instance(fsm_s_dist, 'syn_dist_'+str(i), params=None,
+    #                    ports=[input_spikes_dist[i], w_init_dist[i], inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
+
+    #     # Proximal: Synaptic weight + readout logic FSM
+    #     fsm_s_prox, fsm_clk_prox = self.Fsm_synapse(wres_prox.value)
+    #     for i in range(in_size_prox.value):
+    #         ### TODO: investigate fsm_synapse module ###
+    #         m.Instance(fsm_s_prox, 'syn_prox_'+str(i), params=None,
+    #                    ports=[input_spikes_prox[i], w_init_prox[i], inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
+
+    #     # Neuron body
+    #     soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
+    #     m.Instance(soma, 'soma', params=[in_size_dist.value+in_size_prox.value, thres.value, wres_dist.value],
+    #               ports=[Cat(resp_func_prox,resp_func_dist), clk, grst, rstb, output_spike])
+
+    #     return m, ('clk')
+
+    def segment_V2(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
+
+        m = Module('L'+self.layer_id+'_segment_V2')
         # parameters
         in_size_dist = m.Parameter('INP_DIST', ip_size_dist)
         in_size_prox = m.Parameter('INP_PROX', ip_size_prox)
@@ -655,13 +719,17 @@ class TNN_Functions():
         rstb = m.Input('rstb', 1)
         output_spike = m.Output('output_spike', 1)
 
-        w_init_dist = []
-        for i in range(in_size_dist.value):
-            w_init_dist.append(m.Input('w_init_dist_'+str(i), wres_dist.value))
+        # w_init_dist = []
+        # for i in range(in_size_dist.value):
+        #     w_init_dist.append(m.Input('w_init_dist_'+str(i), wres_dist.value))
+        w_init_dist_width = wres_dist.value
+        w_init_dist = m.Input('w_init_dist', in_size_dist.value*w_init_dist_width)
 
-        w_init_prox = []
-        for i in range(in_size_prox.value):
-            w_init_prox.append(m.Input('w_init_prox_'+str(i), wres_prox.value))
+        # w_init_prox = []
+        # for i in range(in_size_prox.value):
+        #     w_init_prox.append(m.Input('w_init_prox_'+str(i), wres_prox.value))
+        w_init_prox_width = wres_prox.value
+        w_init_prox = m.Input('w_init_prox', in_size_prox.value*w_init_prox_width)
 
         weights_dist = []
         for i in range(in_size_dist.value):
@@ -681,14 +749,14 @@ class TNN_Functions():
         for i in range(in_size_dist.value):
             ### TODO: investigate fsm_synapse module ###
             m.Instance(fsm_s_dist, 'syn_dist_'+str(i), params=None,
-                       ports=[input_spikes_dist[i], w_init_dist[i], inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
+                       ports=[input_spikes_dist[i], w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width), inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
 
         # Proximal: Synaptic weight + readout logic FSM
         fsm_s_prox, fsm_clk_prox = self.Fsm_synapse(wres_prox.value)
         for i in range(in_size_prox.value):
             ### TODO: investigate fsm_synapse module ###
             m.Instance(fsm_s_prox, 'syn_prox_'+str(i), params=None,
-                       ports=[input_spikes_prox[i], w_init_prox[i], inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
+                       ports=[input_spikes_prox[i], w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width), inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
 
         # Neuron body
         soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
@@ -897,79 +965,118 @@ class TNN_Functions():
             input_spikes_prox.append(m.Input('input_spikes_prox_'+str(i), p_prox.value))
 
         # w_init_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value):
-                    for k in range(p_dist.value):
-                        w_init_dist.append(m.Input('w_init_dist_'+str(n)+'_'+str(i)+str(j)+str(k), wres_dist.value))    
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value):
+        #             for k in range(p_dist.value):
+        #                 w_init_dist.append(m.Input('w_init_dist_'+str(n)+'_'+str(i)+str(j)+str(k), wres_dist.value))
+        w_init_dist_width = num_dend.value*num_seg.value*p_dist.value*wres_dist.value
+        w_init_dist = m.Input('w_init_dist', num_neurons.value*w_init_dist_width) 
         
         # w_init_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value):
-                    for k in range(p_prox.value):
-                        w_init_prox.append(m.Input('w_init_prox_'+str(n)+'_'+str(i)+str(j)+str(k), wres_prox.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value):
+        #             for k in range(p_prox.value):
+        #                 w_init_prox.append(m.Input('w_init_prox_'+str(n)+'_'+str(i)+str(j)+str(k), wres_prox.value))
+        w_init_prox_width = num_dend.value*num_seg.value*p_prox.value*wres_prox.value
+        w_init_prox = m.Input('w_init_prox', num_neurons.value*w_init_prox_width) 
 
         # capture_brv_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value):
-                    capture_brv_dist.append(m.Input('capture_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value):
+        #             capture_brv_dist.append(m.Input('capture_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        capture_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
+        capture_brv_dist = m.Input('capture_brv_dist', num_neurons.value*capture_brv_dist_width)
+
         # capture_brv_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value):
-                    capture_brv_prox.append(m.Input('capture_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value):
+        #             capture_brv_prox.append(m.Input('capture_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        capture_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+        capture_brv_prox = m.Input('capture_brv_prox', num_neurons.value*capture_brv_prox_width)
+
         # minus_brv_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value):
-                    minus_brv_dist.append(m.Input('minus_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value):
+        #             minus_brv_dist.append(m.Input('minus_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        minus_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
+        minus_brv_dist = m.Input('minus_brv_dist', num_neurons.value*minus_brv_dist_width)
+
         # minus_brv_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value):       
-                    minus_brv_prox.append(m.Input('minus_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value):       
+        #             minus_brv_prox.append(m.Input('minus_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        minus_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+        minus_brv_prox = m.Input('minus_brv_prox', num_neurons.value*minus_brv_prox_width)
+
         # search_brv_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    search_brv_dist.append(m.Input('search_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             search_brv_dist.append(m.Input('search_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        search_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
+        search_brv_dist = m.Input('search_brv_dist', num_neurons.value*search_brv_dist_width)
+
         # search_brv_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    search_brv_prox.append(m.Input('search_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             search_brv_prox.append(m.Input('search_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        search_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+        search_brv_prox = m.Input('search_brv_prox', num_neurons.value*search_brv_prox_width)
+
         # backoff_brv_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        backoff_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
+        backoff_brv_dist = m.Input('backoff_brv_dist', num_neurons.value*backoff_brv_dist_width)
+
         # backoff_brv_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        backoff_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+        backoff_brv_prox = m.Input('backoff_brv_prox', num_neurons.value*backoff_brv_prox_width)
+
         # min_brv_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    min_brv_dist.append(m.Input('min_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             min_brv_dist.append(m.Input('min_brv_dist_'+str(n)+'_'+str(i)+str(j), p_dist.value))
+        min_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
+        min_brv_dist = m.Input('min_brv_dist', num_neurons.value*min_brv_dist_width)
+
         # min_brv_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    min_brv_prox.append(m.Input('min_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             min_brv_prox.append(m.Input('min_brv_prox_'+str(n)+'_'+str(i)+str(j), p_prox.value))
+        min_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+        min_brv_prox = m.Input('min_brv_prox', num_neurons.value*min_brv_prox_width)
+
         # F_brv_dist
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    F_brv_dist.append(m.Input('F_brv_dist_'+str(n)+'_'+str(i)+str(j), (1<<wres_dist.value)-3 + 1))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             F_brv_dist.append(m.Input('F_brv_dist_'+str(n)+'_'+str(i)+str(j), (1<<wres_dist.value)-3 + 1))
+        F_brv_dist_width = num_dend.value*num_seg.value*((1<<wres_dist.value)-3 + 1)
+        F_brv_dist = m.Input('F_brv_dist', num_neurons.value*F_brv_dist_width)
+
         # F_brv_prox
-        for n in range(num_neurons.value):
-            for i in range(num_dend.value):
-                for j in range(num_seg.value): 
-                    F_brv_prox.append(m.Input('F_brv_prox_'+str(n)+'_'+str(i)+str(j), (1<<wres_prox.value)-3 + 1))
+        # for n in range(num_neurons.value):
+        #     for i in range(num_dend.value):
+        #         for j in range(num_seg.value): 
+        #             F_brv_prox.append(m.Input('F_brv_prox_'+str(n)+'_'+str(i)+str(j), (1<<wres_prox.value)-3 + 1))
+        F_brv_prox_width = num_dend.value*num_seg.value*((1<<wres_prox.value)-3 + 1)
+        F_brv_prox = m.Input('F_brv_prox', num_neurons.value*F_brv_prox_width)
 
 
         ##############
@@ -984,33 +1091,47 @@ class TNN_Functions():
         for n in range(num_neurons.value):
             neuron_ports = [clk, grst, rstb, prewta_spikes[n], input_spikes_dist, input_spikes_prox[n]]
             # w_init_dist
-            neuron_ports = self.append_port3(neuron_ports, w_init_dist, n, num_dend.value, num_seg.value, p_dist.value)
+            #neuron_ports = self.append_port3(neuron_ports, w_init_dist, n, num_dend.value, num_seg.value, p_dist.value)
+            neuron_ports.append(w_init_dist.slice((n+1)*w_init_dist_width-1, n*w_init_dist_width))
             # w_init_prox
-            neuron_ports = self.append_port3(neuron_ports, w_init_prox, n, num_dend.value, num_seg.value, p_prox.value)
+            #neuron_ports = self.append_port3(neuron_ports, w_init_prox, n, num_dend.value, num_seg.value, p_prox.value)
+            neuron_ports.append(w_init_prox.slice((n+1)*w_init_prox_width-1, n*w_init_prox_width))
             # capture_brv_dist
-            neuron_ports = self.append_port2(neuron_ports, capture_brv_dist, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, capture_brv_dist, n, num_dend.value, num_seg.value)
+            neuron_ports.append(capture_brv_dist.slice((n+1)*capture_brv_dist_width-1, n*capture_brv_dist_width))
             # capture_brv_prox
-            neuron_ports = self.append_port2(neuron_ports, capture_brv_prox, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, capture_brv_prox, n, num_dend.value, num_seg.value)
+            neuron_ports.append(capture_brv_prox.slice((n+1)*capture_brv_prox_width-1, n*capture_brv_prox_width))
             # minus_brv_dist
-            neuron_ports = self.append_port2(neuron_ports, minus_brv_dist, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, minus_brv_dist, n, num_dend.value, num_seg.value)
+            neuron_ports.append(minus_brv_dist.slice((n+1)*minus_brv_dist_width-1, n*minus_brv_dist_width))
             # minus_brv_prox
-            neuron_ports = self.append_port2(neuron_ports, minus_brv_prox, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, minus_brv_prox, n, num_dend.value, num_seg.value)
+            neuron_ports.append(minus_brv_prox.slice((n+1)*minus_brv_prox_width-1, n*minus_brv_prox_width))
             # search_brv_dist
-            neuron_ports = self.append_port2(neuron_ports, search_brv_dist, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, search_brv_dist, n, num_dend.value, num_seg.value)
+            neuron_ports.append(search_brv_dist.slice((n+1)*search_brv_dist_width-1, n*search_brv_dist_width))
             # search_brv_prox
-            neuron_ports = self.append_port2(neuron_ports, search_brv_prox, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, search_brv_prox, n, num_dend.value, num_seg.value)
+            neuron_ports.append(search_brv_prox.slice((n+1)*search_brv_prox_width-1, n*search_brv_prox_width))
             # backoff_brv_dist
-            neuron_ports = self.append_port2(neuron_ports, backoff_brv_dist, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, backoff_brv_dist, n, num_dend.value, num_seg.value)\
+            neuron_ports.append(backoff_brv_dist.slice((n+1)*backoff_brv_dist_width-1, n*backoff_brv_dist_width))
             # backoff_brv_prox
-            neuron_ports = self.append_port2(neuron_ports, backoff_brv_prox, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, backoff_brv_prox, n, num_dend.value, num_seg.value)
+            neuron_ports.append(backoff_brv_prox.slice((n+1)*backoff_brv_prox_width-1, n*backoff_brv_prox_width))
             # min_brv_dist
-            neuron_ports = self.append_port2(neuron_ports, min_brv_dist, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, min_brv_dist, n, num_dend.value, num_seg.value)
+            neuron_ports.append(min_brv_dist.slice((n+1)*min_brv_dist_width-1, n*min_brv_dist_width))
             # min_brv_prox
-            neuron_ports = self.append_port2(neuron_ports, min_brv_prox, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, min_brv_prox, n, num_dend.value, num_seg.value)
+            neuron_ports.append(min_brv_prox.slice((n+1)*min_brv_prox_width-1, n*min_brv_prox_width))
             # F_brv_dist
-            neuron_ports = self.append_port2(neuron_ports, F_brv_dist, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, F_brv_dist, n, num_dend.value, num_seg.value)
+            neuron_ports.append(F_brv_dist.slice((n+1)*F_brv_dist_width-1, n*F_brv_dist_width))
             # F_brv_prox
-            neuron_ports = self.append_port2(neuron_ports, F_brv_prox, n, num_dend.value, num_seg.value)
+            #neuron_ports = self.append_port2(neuron_ports, F_brv_prox, n, num_dend.value, num_seg.value)
+            neuron_ports.append(F_brv_prox.slice((n+1)*F_brv_prox_width-1, n*F_brv_prox_width))
             
             m.Instance(comp_neuron, str('L')+self.layer_id+'_comp_neuron_inst_'+str(n), params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = neuron_ports)
@@ -1326,65 +1447,104 @@ class TNN_Functions():
         w_init_prox, capture_brv_prox, minus_brv_prox, search_brv_prox, backoff_brv_prox, min_brv_prox, F_brv_prox = [], [], [], [], [], [], []
 
         # w_init_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value):
-                for k in range(p_dist.value):
-                    w_init_dist.append(m.Input('w_init_dist_'+str(i)+str(j)+str(k), wres_dist.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value):
+        #         for k in range(p_dist.value):
+        #             w_init_dist.append(m.Input('w_init_dist_'+str(i)+str(j)+str(k), wres_dist.value))
+        w_init_dist_width = num_seg.value*p_dist.value*wres_dist.value
+        w_init_dist = m.Input('w_init_dist', num_dend.value*w_init_dist_width)
 
         # w_init_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value):
-                for k in range(p_prox.value):
-                    w_init_prox.append(m.Input('w_init_prox_'+str(i)+str(j)+str(k), wres_prox.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value):
+        #         for k in range(p_prox.value):
+        #             w_init_prox.append(m.Input('w_init_prox_'+str(i)+str(j)+str(k), wres_prox.value))
+        w_init_prox_width = num_seg.value*p_prox.value*wres_prox.value
+        w_init_prox = m.Input('w_init_prox', num_dend.value*w_init_prox_width)
 
         # capture_brv_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value):
-                capture_brv_dist.append(m.Input('capture_brv_dist_'+str(i)+str(j), p_dist.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value):
+        #         capture_brv_dist.append(m.Input('capture_brv_dist_'+str(i)+str(j), p_dist.value))
+        capture_brv_dist_width = num_seg.value*p_dist.value
+        capture_brv_dist = m.Input('capture_brv_dist', num_dend.value*capture_brv_dist_width)
+
         # capture_brv_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value):
-                capture_brv_prox.append(m.Input('capture_brv_prox_'+str(i)+str(j), p_prox.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value):
+        #         capture_brv_prox.append(m.Input('capture_brv_prox_'+str(i)+str(j), p_prox.value))
+        capture_brv_prox_width = num_seg.value*p_prox.value
+        capture_brv_prox = m.Input('capture_brv_prox', num_dend.value*capture_brv_prox_width)
+
         # minus_brv_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value):
-                minus_brv_dist.append(m.Input('minus_brv_dist_'+str(i)+str(j), p_dist.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value):
+        #         minus_brv_dist.append(m.Input('minus_brv_dist_'+str(i)+str(j), p_dist.value))
+        minus_brv_dist_width = num_seg.value*p_dist.value
+        minus_brv_dist = m.Input('minus_brv_dist', num_dend.value*minus_brv_dist_width)
+
         # minus_brv_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value):       
-                minus_brv_prox.append(m.Input('minus_brv_prox_'+str(i)+str(j), p_prox.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value):       
+        #         minus_brv_prox.append(m.Input('minus_brv_prox_'+str(i)+str(j), p_prox.value))
+        minus_brv_prox_width = num_seg.value*p_prox.value
+        minus_brv_prox = m.Input('minus_brv_prox', num_dend.value*minus_brv_prox_width)
+
         # search_brv_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                search_brv_dist.append(m.Input('search_brv_dist_'+str(i)+str(j), p_dist.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         search_brv_dist.append(m.Input('search_brv_dist_'+str(i)+str(j), p_dist.value))
+        search_brv_dist_width = num_seg.value*p_dist.value
+        search_brv_dist = m.Input('search_brv_dist', num_dend.value*search_brv_dist_width)
+
         # search_brv_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                search_brv_prox.append(m.Input('search_brv_prox_'+str(i)+str(j), p_prox.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         search_brv_prox.append(m.Input('search_brv_prox_'+str(i)+str(j), p_prox.value))
+        search_brv_prox_width = num_seg.value*p_prox.value
+        search_brv_prox = m.Input('search_brv_prox', num_dend.value*search_brv_prox_width)
+
         # backoff_brv_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(i)+str(j), p_dist.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(i)+str(j), p_dist.value))
+        backoff_brv_dist_width = num_seg.value*p_dist.value
+        backoff_brv_dist = m.Input('backoff_brv_dist', num_dend.value*backoff_brv_dist_width)
+
         # backoff_brv_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(i)+str(j), p_prox.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(i)+str(j), p_prox.value))
+        backoff_brv_prox_width = num_seg.value*p_prox.value
+        backoff_brv_prox = m.Input('backoff_brv_prox', num_dend.value*backoff_brv_prox_width)
+
         # min_brv_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                min_brv_dist.append(m.Input('min_brv_dist_'+str(i)+str(j), p_dist.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         min_brv_dist.append(m.Input('min_brv_dist_'+str(i)+str(j), p_dist.value))
+        min_brv_dist_width = num_seg.value*p_dist.value
+        min_brv_dist = m.Input('min_brv_dist', num_dend.value*min_brv_dist_width)
+
         # min_brv_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                min_brv_prox.append(m.Input('min_brv_prox_'+str(i)+str(j), p_prox.value))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         min_brv_prox.append(m.Input('min_brv_prox_'+str(i)+str(j), p_prox.value))
+        min_brv_prox_width = num_seg.value*p_prox.value
+        min_brv_prox = m.Input('min_brv_prox', num_dend.value*min_brv_prox_width)
+
         # F_brv_dist
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                F_brv_dist.append(m.Input('F_brv_dist_'+str(i)+str(j), (1<<wres_dist.value)-3 + 1))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         F_brv_dist.append(m.Input('F_brv_dist_'+str(i)+str(j), (1<<wres_dist.value)-3 + 1))
+        F_brv_dist_width = num_seg.value*((1<<wres_dist.value)-3 + 1)
+        F_brv_dist = m.Input('F_brv_dist', num_dend.value*F_brv_dist_width)
+
         # F_brv_prox
-        for i in range(num_dend.value):
-            for j in range(num_seg.value): 
-                F_brv_prox.append(m.Input('F_brv_prox_'+str(i)+str(j), (1<<wres_prox.value)-3 + 1))
+        # for i in range(num_dend.value):
+        #     for j in range(num_seg.value): 
+        #         F_brv_prox.append(m.Input('F_brv_prox_'+str(i)+str(j), (1<<wres_prox.value)-3 + 1))
+        F_brv_prox_width = num_seg.value*((1<<wres_prox.value)-3 + 1)
+        F_brv_prox = m.Input('F_brv_prox', num_dend.value*F_brv_prox_width)
 
         ##############
         # Wires/Regs #
@@ -1394,42 +1554,54 @@ class TNN_Functions():
         ##################
         # Instantiations #
         ##################
-        dendrite, _ = self.Dendrite(p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
+        dendrite, _ = self.Dendrite_V2(p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for i in range(num_dend.value):
             dendrite_ports = [input_spike_dist, input_spikes_prox, clk, grst, rstb, dend_out[i]]
             # Distal ports
-            for j in range(num_seg.value):
-                for k in range(p_dist.value):
-                    dendrite_ports.append(w_init_dist[(i*num_seg.value*p_dist.value+j*p_dist.value) + k])
-            for j in range(num_seg.value):
-                dendrite_ports.append(capture_brv_dist[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(minus_brv_dist[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(search_brv_dist[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(backoff_brv_dist[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(min_brv_dist[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(F_brv_dist[i*num_seg.value+j])
-
+            # for j in range(num_seg.value):
+            #     for k in range(p_dist.value):
+            #         dendrite_ports.append(w_init_dist[(i*num_seg.value*p_dist.value+j*p_dist.value) + k])
+            dendrite_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(capture_brv_dist[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(minus_brv_dist[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(search_brv_dist[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(backoff_brv_dist[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(min_brv_dist[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(F_brv_dist[i*num_seg.value+j])
+            dendrite_ports.append(capture_brv_dist.slice((i+1)*capture_brv_dist_width-1, i*capture_brv_dist_width))
+            dendrite_ports.append(minus_brv_dist.slice((i+1)*minus_brv_dist_width-1, i*minus_brv_dist_width))
+            dendrite_ports.append(search_brv_dist.slice((i+1)*search_brv_dist_width-1, i*search_brv_dist_width))
+            dendrite_ports.append(backoff_brv_dist.slice((i+1)*backoff_brv_dist_width-1, i*backoff_brv_dist_width))
+            dendrite_ports.append(F_brv_dist.slice((i+1)*F_brv_dist_width-1, i*F_brv_dist_width))
+            
             # Proximal ports
-            for j in range(num_seg.value):
-                for k in range(p_prox.value):
-                    dendrite_ports.append(w_init_prox[(i*num_seg.value*p_prox.value+j*p_prox.value) + k])
-            for j in range(num_seg.value):
-                dendrite_ports.append(capture_brv_prox[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(minus_brv_prox[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(search_brv_prox[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(backoff_brv_prox[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(min_brv_prox[i*num_seg.value+j])
-            for j in range(num_seg.value):
-                dendrite_ports.append(F_brv_prox[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     for k in range(p_prox.value):
+            #         dendrite_ports.append(w_init_prox[(i*num_seg.value*p_prox.value+j*p_prox.value) + k])
+            dendrite_ports.append(w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width))
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(capture_brv_prox[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(minus_brv_prox[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(search_brv_prox[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(backoff_brv_prox[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(min_brv_prox[i*num_seg.value+j])
+            # for j in range(num_seg.value):
+            #     dendrite_ports.append(F_brv_prox[i*num_seg.value+j])
+            dendrite_ports.append(capture_brv_prox.slice((i+1)*capture_brv_prox_width-1, i*capture_brv_prox_width))
+            dendrite_ports.append(minus_brv_prox.slice((i+1)*minus_brv_prox_width-1, i*minus_brv_prox_width))
+            dendrite_ports.append(search_brv_prox.slice((i+1)*search_brv_prox_width-1, i*search_brv_prox_width))
+            dendrite_ports.append(backoff_brv_prox.slice((i+1)*backoff_brv_prox_width-1, i*backoff_brv_prox_width))
+            dendrite_ports.append(F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width))
 
             m.Instance(dendrite, str('L')+self.layer_id+'_dend_inst_'+str(i), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = dendrite_ports)
@@ -1521,7 +1693,7 @@ class TNN_Functions():
         ##################
         # Instantiations #
         ##################
-        dendrite, _ = self.Dendrite(p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
+        dendrite, _ = self.Dendrite_V2(p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         dendrite_ports = [input_spike_dist, input_spikes_prox, clk, grst, rstb, dend_out]
         # Distal ports
         for i in range(num_seg.value):
@@ -1565,9 +1737,184 @@ class TNN_Functions():
 
         return m, clk.name
 
-    def Dendrite(self, p_dist=3, p_prox=1, q=2, wres_dist=3, wres_prox=3, thres=13):
+    # def Dendrite(self, p_dist=3, p_prox=1, q=2, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('L'+self.layer_id+'_dendrite')
+    #     m = Module('L'+self.layer_id+'_dendrite')
+    #     p_dist = m.Parameter('P_DIST', int(p_dist))
+    #     p_prox = m.Parameter('P_PROX', int(p_prox))
+    #     q = m.Parameter('Q', int(q))
+    #     wres_dist = m.Localparam('WRES_DIST', int(wres_dist))
+    #     wres_prox = m.Localparam('WRES_PROX', int(wres_prox))
+    #     thres = m.Parameter('THRESHOLD', int(thres))
+
+    #     ##################
+    #     # Inputs/Outputs #
+    #     ##################
+
+    #     # Input Spikes
+    #     input_spikes_dist = m.Input('input_spikes_dist', p_dist.value)
+    #     input_spikes_prox = m.Input('input_spikes_prox', p_prox.value)
+    #     # Control signals
+    #     clk = m.Input('clk')
+    #     grst = m.Input('grst')
+    #     rstb = m.Input('rstb')
+    #     # Output_spike
+    #     out_spike = m.Output('output_spike')
+
+    #     # STDP
+    #     w_init_dist, capture_brv_dist, minus_brv_dist, search_brv_dist, backoff_brv_dist, min_brv_dist, F_brv_dist = [], [], [], [], [], [], []
+    #     w_init_prox, capture_brv_prox, minus_brv_prox, search_brv_prox, backoff_brv_prox, min_brv_prox, F_brv_prox = [], [], [], [], [], [], []
+
+    #     # STDP_dist
+    #     for i in range(int(q.value)):
+    #         for j in range(p_dist.value):
+    #             w_init_dist.append(m.Input('w_init_dist_'+str(i)+'_'+str(j), wres_dist.value))
+    #     for i in range(int(q.value)):
+    #         capture_brv_dist.append(m.Input('capture_brv_dist_'+str(i), p_dist.value))
+    #     for i in range(int(q.value)):
+    #         minus_brv_dist.append(m.Input('minus_brv_dist_'+str(i), p_dist.value))
+    #     for i in range(int(q.value)):
+    #         search_brv_dist.append(m.Input('search_brv_dist_'+str(i), p_dist.value))
+    #     for i in range(int(q.value)):
+    #         backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(i), p_dist.value))
+    #     for i in range(int(q.value)):
+    #         min_brv_dist.append(m.Input('min_brv_dist_'+str(i), p_dist.value))
+    #     for i in range(int(q.value)):
+    #         F_brv_dist.append(m.Input('F_brv_dist_'+str(i), (1<<wres_dist.value)-3 + 1))
+            
+
+    #     # STDP_prox
+    #     for i in range(int(q.value)):
+    #         for j in range(p_prox.value):
+    #             w_init_prox.append(m.Input('w_init_prox_'+str(i)+'_'+str(j), wres_prox.value))
+    #     for i in range(int(q.value)):
+    #         capture_brv_prox.append(m.Input('capture_brv_prox_'+str(i), p_prox.value))
+    #     for i in range(int(q.value)):
+    #         minus_brv_prox.append(m.Input('minus_brv_prox_'+str(i), p_prox.value))
+    #     for i in range(int(q.value)):
+    #         search_brv_prox.append(m.Input('search_brv_prox_'+str(i), p_prox.value))
+    #     for i in range(int(q.value)):
+    #         backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(i), p_prox.value))
+    #     for i in range(int(q.value)):
+    #         min_brv_prox.append(m.Input('min_brv_prox_'+str(i), p_prox.value))
+    #     for i in range(int(q.value)):
+    #         F_brv_prox.append(m.Input('F_brv_prox_'+str(i), (1<<wres_prox.value)-3 + 1))
+
+    #     ##############
+    #     # Wires/Regs #
+    #     ##############
+
+    #     ein_dist = m.Wire('ein_dist', p_dist.value)
+    #     ein_prox = m.Wire('ein_prox', p_prox.value)
+    #     eout = m.Wire('eout', q.value)
+    #     ec_spikes = m.Wire('ec_spikes', q.value)
+    #     li_spikes = m.Wire('li_spikes', q.value)
+    #     # dist wires
+    #     inc_dist, dec_dist, weights_dist = [], [], []
+    #     for i in range(q.value):
+    #         inc_dist.append(m.Wire('inc_dist_'+str(i), p_dist.value))
+    #         dec_dist.append(m.Wire('dec_dist_'+str(i), p_dist.value))
+    #         for j in range(p_dist.value):
+    #             weights_dist.append(m.Wire('weights_dist_'+str(i)+'_'+str(j), wres_dist.value))
+
+    #     # prox wires
+    #     inc_prox, dec_prox, weights_prox = [], [], []
+    #     for i in range(q.value):
+    #         inc_prox.append(m.Wire('inc_prox_'+str(i), p_prox.value))
+    #         dec_prox.append(m.Wire('dec_prox_'+str(i), p_prox.value))
+    #         for j in range(p_prox.value):
+    #             weights_prox.append(m.Wire('weights_prox_'+str(i)+'_'+str(j), wres_prox.value))
+
+    #     ##################
+    #     # Instantiations #
+    #     ##################
+
+    #     # edge_input_gen_dist
+    #     pulse_dist, pulse_clk_dist = self.Pulse2edge()
+    #     for i in range(p_dist.value):
+    #         m.Instance(pulse_dist, 'pe_in_dist_'+str(i), ports = [input_spikes_dist[i], clk, grst, rstb, ein_dist[i]])
+
+    #     # edge_input_gen_prox
+    #     pulse_prox, pulse_clk_prox = self.Pulse2edge()
+    #     for i in range(p_prox.value):
+    #         m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [input_spikes_prox[i], clk, grst, rstb, ein_prox[i]])
+
+    #     # segment
+    #     # [YoungSeok] better way to do w_init_dist*?
+    #     n_seg, _ = self.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value)
+    #     for i in range(q.value):
+    #         segment_ports = [input_spikes_dist, input_spikes_prox, inc_dist[i], inc_prox[i], dec_dist[i], dec_prox[i], clk, grst, rstb, ec_spikes[i]]
+    #         for j in range(p_dist.value):
+    #             segment_ports.append(w_init_dist[i*p_dist.value+j])
+    #         for j in range(p_prox.value):
+    #             segment_ports.append(w_init_prox[i*p_prox.value+j])
+    #         for j in range(p_dist.value):
+    #             segment_ports.append(weights_dist[i*p_dist.value+j])
+    #         for j in range(p_prox.value):
+    #             segment_ports.append(weights_prox[i*p_prox.value+j])   
+    #         m.Instance(n_seg, str('L')+self.layer_id+'_ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
+    #                    ports = segment_ports)
+
+    #     # WTA
+    #     wta, _ = self.Wta(q.value)
+    #     m.Instance(wta, str('L')+self.layer_id+'_li', params = [q.value], ports = [ec_spikes, clk, grst, rstb, li_spikes])
+
+    #     # edge_output_gen
+    #     pulse, pulse_clk = self.Pulse2edge()
+    #     for i in range(q.value):
+    #         m.Instance(pulse, 'pe_out_'+str(i), ports = [li_spikes[i], clk, grst, rstb, eout[i]])
+
+    #     # stdp_dist
+    #     stdp_dist, _ = self.Stdp(wres_dist.value)
+    #     for i in range(q.value):
+    #         for j in range(p_dist.value):
+    #             m.Instance(stdp_dist, str('L')+self.layer_id+'_stdp_dist_'+str(i)+'_'+str(j), params = [wres_dist.value],
+    #                 ports = [
+    #                 weights_dist[i*p_dist.value+j],
+    #                 ein_dist[j],
+    #                 eout[i],
+    #                 capture_brv_dist[i][j],
+    #                 minus_brv_dist[i][j],
+    #                 search_brv_dist[i][j],
+    #                 backoff_brv_dist[i][j],
+    #                 min_brv_dist[i][j],
+    #                 F_brv_dist[i],
+    #                 clk,
+    #                 grst,
+    #                 rstb,
+    #                 inc_dist[i][j],
+    #                 dec_dist[i][j]
+    #                 ])
+
+    #     # stdp_prox
+    #     stdp_prox, _ = self.Stdp(wres_prox.value)
+    #     for i in range(q.value):
+    #         for j in range(p_prox.value):
+    #             m.Instance(stdp_prox, str('L')+self.layer_id+'_stdp_prox_'+str(i)+'_'+str(j), params = [wres_prox.value],
+    #                 ports = [
+    #                 weights_prox[i*p_prox.value+j],
+    #                 ein_prox[j],
+    #                 eout[i],
+    #                 capture_brv_prox[i][j],
+    #                 minus_brv_prox[i][j],
+    #                 search_brv_prox[i][j],
+    #                 backoff_brv_prox[i][j],
+    #                 min_brv_prox[i][j],
+    #                 F_brv_prox[i],
+    #                 clk,
+    #                 grst,
+    #                 rstb,
+    #                 inc_prox[i][j],
+    #                 dec_prox[i][j]
+    #                 ])
+
+    #     m.EmbeddedCode('assign output_spike = |li_spikes;')
+
+    #     return m, clk.name
+
+    def Dendrite_V2(self, p_dist=3, p_prox=1, q=2, wres_dist=3, wres_prox=3, thres=13):
+
+        m = Module('L'+self.layer_id+'_dendrite_V2')
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
         q = m.Parameter('Q', int(q))
@@ -1594,39 +1941,68 @@ class TNN_Functions():
         w_init_prox, capture_brv_prox, minus_brv_prox, search_brv_prox, backoff_brv_prox, min_brv_prox, F_brv_prox = [], [], [], [], [], [], []
 
         # STDP_dist
-        for i in range(int(q.value)):
-            for j in range(p_dist.value):
-                w_init_dist.append(m.Input('w_init_dist_'+str(i)+'_'+str(j), wres_dist.value))
-        for i in range(int(q.value)):
-            capture_brv_dist.append(m.Input('capture_brv_dist_'+str(i), p_dist.value))
-        for i in range(int(q.value)):
-            minus_brv_dist.append(m.Input('minus_brv_dist_'+str(i), p_dist.value))
-        for i in range(int(q.value)):
-            search_brv_dist.append(m.Input('search_brv_dist_'+str(i), p_dist.value))
-        for i in range(int(q.value)):
-            backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(i), p_dist.value))
-        for i in range(int(q.value)):
-            min_brv_dist.append(m.Input('min_brv_dist_'+str(i), p_dist.value))
-        for i in range(int(q.value)):
-            F_brv_dist.append(m.Input('F_brv_dist_'+str(i), (1<<wres_dist.value)-3 + 1))
-            
+        # for i in range(int(q.value)):
+        #     for j in range(p_dist.value):
+        #         w_init_dist.append(m.Input('w_init_dist_'+str(i)+'_'+str(j), wres_dist.value))
+        w_init_dist_width = p_dist.value*wres_dist.value
+        w_init_dist = m.Input('w_init_dist', q.value*w_init_dist_width)
+
+        # for i in range(int(q.value)):
+        #     capture_brv_dist.append(m.Input('capture_brv_dist_'+str(i), p_dist.value))
+        # for i in range(int(q.value)):
+        #     minus_brv_dist.append(m.Input('minus_brv_dist_'+str(i), p_dist.value))
+        # for i in range(int(q.value)):
+        #     search_brv_dist.append(m.Input('search_brv_dist_'+str(i), p_dist.value))
+        # for i in range(int(q.value)):
+        #     backoff_brv_dist.append(m.Input('backoff_brv_dist_'+str(i), p_dist.value))
+        # for i in range(int(q.value)):
+        #     min_brv_dist.append(m.Input('min_brv_dist_'+str(i), p_dist.value))
+        # for i in range(int(q.value)):
+        #     F_brv_dist.append(m.Input('F_brv_dist_'+str(i), (1<<wres_dist.value)-3 + 1))
+        capture_brv_dist_width = p_dist.value
+        capture_brv_dist = m.Input('capture_brv_dist', q.value*capture_brv_dist_width)
+        minus_brv_dist_width = p_dist.value
+        minus_brv_dist = m.Input('minus_brv_dist', q.value*minus_brv_dist_width)
+        search_brv_dist_width = p_dist.value
+        search_brv_dist = m.Input('search_brv_dist', q.value*search_brv_dist_width)
+        backoff_brv_dist_width = p_dist.value
+        backoff_brv_dist = m.Input('backoff_brv_dist', q.value*backoff_brv_dist_width)
+        min_brv_dist_width = p_dist.value
+        min_brv_dist = m.Input('min_brv_dist', q.value*min_brv_dist_width)
+        F_brv_dist_width = ((1<<wres_dist.value)-3 + 1)
+        F_brv_dist = m.Input('F_brv_dist', q.value*F_brv_dist_width)
 
         # STDP_prox
-        for i in range(int(q.value)):
-            for j in range(p_prox.value):
-                w_init_prox.append(m.Input('w_init_prox_'+str(i)+'_'+str(j), wres_prox.value))
-        for i in range(int(q.value)):
-            capture_brv_prox.append(m.Input('capture_brv_prox_'+str(i), p_prox.value))
-        for i in range(int(q.value)):
-            minus_brv_prox.append(m.Input('minus_brv_prox_'+str(i), p_prox.value))
-        for i in range(int(q.value)):
-            search_brv_prox.append(m.Input('search_brv_prox_'+str(i), p_prox.value))
-        for i in range(int(q.value)):
-            backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(i), p_prox.value))
-        for i in range(int(q.value)):
-            min_brv_prox.append(m.Input('min_brv_prox_'+str(i), p_prox.value))
-        for i in range(int(q.value)):
-            F_brv_prox.append(m.Input('F_brv_prox_'+str(i), (1<<wres_prox.value)-3 + 1))
+        # for i in range(int(q.value)):
+        #     for j in range(p_prox.value):
+        #         w_init_prox.append(m.Input('w_init_prox_'+str(i)+'_'+str(j), wres_prox.value))
+        w_init_prox_width = p_prox.value*wres_prox.value
+        w_init_prox = m.Input('w_init_prox', q.value*w_init_prox_width)
+
+        # for i in range(int(q.value)):
+        #     capture_brv_prox.append(m.Input('capture_brv_prox_'+str(i), p_prox.value))
+        # for i in range(int(q.value)):
+        #     minus_brv_prox.append(m.Input('minus_brv_prox_'+str(i), p_prox.value))
+        # for i in range(int(q.value)):
+        #     search_brv_prox.append(m.Input('search_brv_prox_'+str(i), p_prox.value))
+        # for i in range(int(q.value)):
+        #     backoff_brv_prox.append(m.Input('backoff_brv_prox_'+str(i), p_prox.value))
+        # for i in range(int(q.value)):
+        #     min_brv_prox.append(m.Input('min_brv_prox_'+str(i), p_prox.value))
+        # for i in range(int(q.value)):
+        #     F_brv_prox.append(m.Input('F_brv_prox_'+str(i), (1<<wres_prox.value)-3 + 1))
+        capture_brv_prox_width = p_prox.value
+        capture_brv_prox = m.Input('capture_brv_prox', q.value*capture_brv_prox_width)
+        minus_brv_prox_width = p_prox.value
+        minus_brv_prox = m.Input('minus_brv_prox', q.value*minus_brv_prox_width)
+        search_brv_prox_width = p_prox.value
+        search_brv_prox = m.Input('search_brv_prox', q.value*search_brv_prox_width)
+        backoff_brv_prox_width = p_prox.value
+        backoff_brv_prox = m.Input('backoff_brv_prox', q.value*backoff_brv_prox_width)
+        min_brv_prox_width = p_prox.value
+        min_brv_prox = m.Input('min_brv_prox', q.value*min_brv_prox_width)
+        F_brv_prox_width = ((1<<wres_prox.value)-3 + 1)
+        F_brv_prox = m.Input('F_brv_prox', q.value*F_brv_prox_width)
 
         ##############
         # Wires/Regs #
@@ -1669,13 +2045,15 @@ class TNN_Functions():
 
         # segment
         # [YoungSeok] better way to do w_init_dist*?
-        n_seg, _ = self.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value)
+        n_seg, _ = self.segment_V2(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value)
         for i in range(q.value):
             segment_ports = [input_spikes_dist, input_spikes_prox, inc_dist[i], inc_prox[i], dec_dist[i], dec_prox[i], clk, grst, rstb, ec_spikes[i]]
-            for j in range(p_dist.value):
-                segment_ports.append(w_init_dist[i*p_dist.value+j])
-            for j in range(p_prox.value):
-                segment_ports.append(w_init_prox[i*p_prox.value+j])
+            # for j in range(p_dist.value):
+            #     segment_ports.append(w_init_dist[i*p_dist.value+j])
+            segment_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
+            # for j in range(p_prox.value):
+            #     segment_ports.append(w_init_prox[i*p_prox.value+j])
+            segment_ports.append(w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width))
             for j in range(p_dist.value):
                 segment_ports.append(weights_dist[i*p_dist.value+j])
             for j in range(p_prox.value):
@@ -1701,12 +2079,18 @@ class TNN_Functions():
                     weights_dist[i*p_dist.value+j],
                     ein_dist[j],
                     eout[i],
-                    capture_brv_dist[i][j],
-                    minus_brv_dist[i][j],
-                    search_brv_dist[i][j],
-                    backoff_brv_dist[i][j],
-                    min_brv_dist[i][j],
-                    F_brv_dist[i],
+                    #capture_brv_dist[i][j],
+                    # minus_brv_dist[i][j],
+                    # search_brv_dist[i][j],
+                    # backoff_brv_dist[i][j],
+                    # min_brv_dist[i][j],
+                    # F_brv_dist[i],
+                    capture_brv_dist[i*p_dist.value+j],
+                    minus_brv_dist[i*p_dist.value+j],
+                    search_brv_dist[i*p_dist.value+j],
+                    backoff_brv_dist[i*p_dist.value+j],
+                    min_brv_dist[i*p_dist.value+j],
+                    F_brv_dist.slice((i+1)*F_brv_dist_width-1, i*F_brv_dist_width),
                     clk,
                     grst,
                     rstb,
@@ -1723,12 +2107,18 @@ class TNN_Functions():
                     weights_prox[i*p_prox.value+j],
                     ein_prox[j],
                     eout[i],
-                    capture_brv_prox[i][j],
-                    minus_brv_prox[i][j],
-                    search_brv_prox[i][j],
-                    backoff_brv_prox[i][j],
-                    min_brv_prox[i][j],
-                    F_brv_prox[i],
+                    # capture_brv_prox[i][j],
+                    # minus_brv_prox[i][j],
+                    # search_brv_prox[i][j],
+                    # backoff_brv_prox[i][j],
+                    # min_brv_prox[i][j],
+                    # F_brv_prox[i],
+                    capture_brv_prox[i*p_prox.value+j],
+                    minus_brv_prox[i*p_prox.value+j],
+                    search_brv_prox[i*p_prox.value+j],
+                    backoff_brv_prox[i*p_prox.value+j],
+                    min_brv_prox[i*p_prox.value+j],
+                    F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width),
                     clk,
                     grst,
                     rstb,
