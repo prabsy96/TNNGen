@@ -1578,6 +1578,7 @@ class TNN_Functions():
             dendrite_ports.append(minus_brv_dist.slice((i+1)*minus_brv_dist_width-1, i*minus_brv_dist_width))
             dendrite_ports.append(search_brv_dist.slice((i+1)*search_brv_dist_width-1, i*search_brv_dist_width))
             dendrite_ports.append(backoff_brv_dist.slice((i+1)*backoff_brv_dist_width-1, i*backoff_brv_dist_width))
+            dendrite_ports.append(min_brv_dist.slice((i+1)*min_brv_dist_width-1, i*min_brv_dist_width))
             dendrite_ports.append(F_brv_dist.slice((i+1)*F_brv_dist_width-1, i*F_brv_dist_width))
             
             # Proximal ports
@@ -1601,6 +1602,7 @@ class TNN_Functions():
             dendrite_ports.append(minus_brv_prox.slice((i+1)*minus_brv_prox_width-1, i*minus_brv_prox_width))
             dendrite_ports.append(search_brv_prox.slice((i+1)*search_brv_prox_width-1, i*search_brv_prox_width))
             dendrite_ports.append(backoff_brv_prox.slice((i+1)*backoff_brv_prox_width-1, i*backoff_brv_prox_width))
+            dendrite_ports.append(min_brv_prox.slice((i+1)*min_brv_prox_width-1, i*min_brv_prox_width))
             dendrite_ports.append(F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width))
 
             m.Instance(dendrite, str('L')+self.layer_id+'_dend_inst_'+str(i), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
