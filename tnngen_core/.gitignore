@@ -15,3 +15,4 @@ out_rtl/
 waveform*
 args*.txt
 .simvision/
+templates/syn_gen.tcl

@@ -160,7 +160,7 @@ class sim_support:
 
         self.file = file
 
-    def run_xrun (self, nospecify='yes', timescale='1ns/1ps'):
+    def run_xrun(self, nospecify='yes', timescale='1ns/1ps'):
         # check if sim_out exists already
         if not os.path.exists('./sim_out'):
             os.makedirs('./sim_out')
@@ -193,6 +193,9 @@ class sim_support:
         proc.stdout.close()
         dis = ''.join(dis)
         return dis
+
+    def run_vcs(self):
+        raise ValueError("Not yet supported")
 
 #################################################
 # Synthesis
@@ -260,7 +263,6 @@ class synth_support:
             elif self.mname == 'dendrite':
                 f.write(constraint_dendrite)
             f.write(epilogue_str)
-
         files = cwd+'/templates/syn_gen.tcl'
 
         work_path = cwd+'/syn_out'
@@ -283,7 +285,7 @@ class synth_support:
         cmd.append(str(10))
         cmd.append("-execute")
 
-        cmd.append("\"set HOME_DIR")
+        cmd.append("\"set HOME_DIR ")
         cmd.append(str(cwd))
 
         cmd.append("; set ACLKP ")
@@ -301,7 +303,7 @@ class synth_support:
         cmd.append("; set LEF_PATH ")
         cmd.append(str(lef_path))
 
-        cmd.append("; set RTL_PATH")
+        cmd.append("; set RTL_PATH ")
         cmd.append(str(self.rtl_path)+"\"")
 
         cmd.append(" -f ")
@@ -314,6 +316,9 @@ class synth_support:
         netlist_path = os.path.join(work_path, self.obj.name, "out", self.obj.name+"_m.v")
 
         return netlist_path
+
+    def gen_dc_tcl(self):
+        raise ValueError("Not yet supported")
 
 #################################################
 # PNR
@@ -386,7 +391,7 @@ class pnr_support:
         cmd.append("; set LEF_PATH ")
         cmd.append(str(lef_path))
 
-        cmd.append("; set RTL_PATH")
+        cmd.append("; set RTL_PATH ")
         cmd.append(str(self.netlist_path)+" \"")
 
         cmd.append(" -files ")
@@ -400,3 +405,7 @@ class pnr_support:
         subprocess.run(cmd, shell=True)
 
         os.chdir(cwd)
+
+    def gen_primetime_tcl(self):
+        raise ValueError("Not yet supported")
+

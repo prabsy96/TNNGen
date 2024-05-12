@@ -8,8 +8,8 @@ from veriloggen import *
 import copy
 
 class Model:
-    def __init__(self):
-        self.model = Module('model')
+    def __init__(self, name):
+        self.model = Module(name)
         self.layers = []
 
     def add(self, layer):

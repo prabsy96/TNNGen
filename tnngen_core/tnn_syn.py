@@ -93,8 +93,10 @@ def tnn_syn(module_name, submodule_name, args):
             pp = convert_int(args, 'p_prox')
 
             # generate verilog
-            myModel = Model()
-            myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=2, p_dist=8, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=6))
+            synapse_cnt = (pd + pp) * ns * nn * nc * nd
+            model_name = f"model_{lt}_{str(synapse_cnt)}"
+            myModel = Model(model_name)
+            # myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=2, p_dist=8, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=16, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="Kernel", rfsize=2, stride=1, nprev=2, inputsize=4))
             #myModel.add(Layer(layer_type="TNN", num_col=9, num_neurons=1, num_dend=1, p_dist=8, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
@@ -102,8 +104,7 @@ def tnn_syn(module_name, submodule_name, args):
             #myModel.add(Layer(layer_type="TNN", num_col=args['col_cnt'], num_neurons=args['neuron_cnt'], num_dend=args['dend_cnt'], p_dist=args['p_dist'], p_prox=args['p_prox'], num_seg=args['segment_cnt'], wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
 
-            # YN - ORIGINAL
-            # myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=3, wres_prox=3, thres=6))
+            myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=3, wres_prox=3, thres=6))
 
             #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=4, num_dend=1, p_dist=4, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
             #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
@@ -151,7 +152,8 @@ def tnn_syn(module_name, submodule_name, args):
             filename = 'column_'+str(p)+'_'+str(q)+'_'+str(theta)+'.sv'
         # Active Dendrite
         elif module_name == 'dendrite':
-            filename = f"model_{args['ltype']}_{args['col_cnt']}_{args['neuron_cnt']}_{args['dend_cnt']}_{args['segment_cnt']}_{args['p_dist']}_{args['p_prox']}.v"
+            filename = f"{model_name}.v"
+            # filename = 'model.v'
     # Submodule
     elif submodule_name != None:
         filename = submodule_name+'.sv'
