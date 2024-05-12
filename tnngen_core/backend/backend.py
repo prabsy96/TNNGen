@@ -3,6 +3,7 @@
 # Last modified by: YoungSeok Na
 
 from veriloggen import *
+from .tcltemplate import *
 import os
 import pathlib
 import subprocess
@@ -239,19 +240,28 @@ class synth_support:
         
         cwd = os.getcwd()
 
-        if (self.node == 7):
-            files = cwd+'/templates/syn_7.tcl'
-        else:
-            files = cwd+'/templates/syn_45.tcl'
+        # Get rid of previously generated tcl
+        try:
+            os.remove(cwd+'/templates/syn_gen.tcl')
+        except OSError:
+            pass
+        # Generate Tcl
+        with open(cwd+'/templates/syn_gen.tcl', 'a') as f:
+            f.write(prologue_str)
+            if self.node == 45:
+                f.write(lib_str_nangate45)
+            elif self.node == 7:
+                f.write(lib_str_asap7)
+            # TODO
+            # elif lset == 't7':
+            #     f.write(lib_str_tnn7)
+            if self.mname == 'column':
+                f.write(constraint_column)
+            elif self.mname == 'dendrite':
+                f.write(constraint_dendrite)
+            f.write(epilogue_str)
 
-
-        if (self.mname == 'dendrite'):
-            if (self.node == 45):
-                files = cwd+'/templates/syn_dendrite.tcl'
-            else:
-                files = cwd+'/templates/syn_dendrite_7.tcl'
-        elif (self.mname in ['less_equal', 'pulse2edge', 'edge2pulse', 'adder', 'incdec', 'wta', 't_wta', 'stabilize_func', 'stdp_casegen', 'fsm_convert', 'fsm_synapse', 'stdp', 'pac', 'neuron_body', 'neuron_rnl', 'segment']):
-            files = cwd+'/templates/syn_submod.tcl'
+        files = cwd+'/templates/syn_gen.tcl'
 
         work_path = cwd+'/syn_out'
         if (self.node == 7):
