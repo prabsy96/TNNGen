@@ -110,8 +110,10 @@ class Layer():
         input_spikes_dist = m.Input('layer_in', num_col.value*p_dist.value)
 
         # input_spikes_prox
-        for i in range(num_neurons.value):
-            input_spikes_prox.append(m.Input('input_spikes_prox_'+str(i), p_prox.value))
+        # for i in range(num_neurons.value):
+        #     input_spikes_prox.append(m.Input('input_spikes_prox_'+str(i), p_prox.value))
+        input_spikes_prox_width = num_neurons.value*p_prox.value
+        input_spikes_prox = m.Input('input_spikes_prox', input_spikes_prox_width)
 
         # w_init_dist
         # for c in range(num_col.value):
@@ -253,11 +255,12 @@ class Layer():
         for c in range(num_col.value):
             col_ports = [clk, grst, rstb, 
                          output_spikes.slice((c+1)*num_neurons.value-1, c*num_neurons.value),
-                         input_spikes_dist.slice((c+1)*p_dist.value-1, c*p_dist.value)]
+                         input_spikes_dist.slice((c+1)*p_dist.value-1, c*p_dist.value),
+                         input_spikes_prox]
             
             # input_spikes_prox
-            for d in range(num_neurons.value):
-                col_ports.append(input_spikes_prox[d])
+            # for d in range(num_neurons.value):
+            #     col_ports.append(input_spikes_prox[d])
 
             # w_init_dist
             #col_ports = tnn_func.append_port4(col_ports, w_init_dist, c, num_neurons.value, num_dend.value, num_seg.value, p_dist.value)

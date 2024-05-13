@@ -961,8 +961,10 @@ class TNN_Functions():
         input_spikes_dist = m.Input('input_spikes_dist', p_dist.value)
 
         # input_spikes_prox
-        for i in range(num_neurons.value):
-            input_spikes_prox.append(m.Input('input_spikes_prox_'+str(i), p_prox.value))
+        # for i in range(num_neurons.value):
+        #     input_spikes_prox.append(m.Input('input_spikes_prox_'+str(i), p_prox.value))
+        input_spikes_prox_width = p_prox.value
+        input_spikes_prox = m.Input('input_spikes_prox', num_neurons.value*input_spikes_prox_width)
 
         # w_init_dist
         # for n in range(num_neurons.value):
@@ -1089,7 +1091,9 @@ class TNN_Functions():
         ##################
         comp_neuron, _ = self.Comp_neuron_V2(num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for n in range(num_neurons.value):
-            neuron_ports = [clk, grst, rstb, prewta_spikes[n], input_spikes_dist, input_spikes_prox[n]]
+            neuron_ports = [clk, grst, rstb, prewta_spikes[n], input_spikes_dist]
+            #input_spikes_prox
+            neuron_ports.append(input_spikes_prox.slice((n+1)*input_spikes_prox_width-1, n*input_spikes_prox_width))
             # w_init_dist
             #neuron_ports = self.append_port3(neuron_ports, w_init_dist, n, num_dend.value, num_seg.value, p_dist.value)
             neuron_ports.append(w_init_dist.slice((n+1)*w_init_dist_width-1, n*w_init_dist_width))
