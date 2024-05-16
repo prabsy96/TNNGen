@@ -43,7 +43,7 @@ class Test_TNN_Functions(TNN_Functions):
             {'data_in': 1, 'inhibit_in': 1, 'expected_out': 0},
         ]
 
-        # Initial block
+        # Initial block for reset and input initialization
         init_block = m.Initial()
         init_block.add(
             data_in(0),
@@ -55,26 +55,25 @@ class Test_TNN_Functions(TNN_Functions):
         )
 
         # Applying scenarios in the simulation
-        for scenario in scenarios:
+        for idx, scenario in enumerate(scenarios):
             scenario_block = m.Initial()
             scenario_block.add(
+                Delay(20 * idx),
                 data_in(scenario['data_in']),
                 inhibit_in(scenario['inhibit_in']),
                 Delay(10),
                 If(out == scenario['expected_out'])(
-                    Display("Success: Output is %d as expected for inputs data_in=%d, inhibit_in=%d",
-                            out, scenario['data_in'], scenario['inhibit_in'])
+                    Display("Step %0d: Success - Output is %0d as expected for inputs data_in=%0d, inhibit_in=%0d",
+                            idx, out, scenario['data_in'], scenario['inhibit_in'])
                 ).Else(
-                    Display("Error: Output is %d, expected %d for inputs data_in=%d, inhibit_in=%d",
-                            out, scenario['expected_out'], scenario['data_in'], scenario['inhibit_in']),
-                    Finish()
-                ),
-                Delay(10)
+                    Display("Step %0d: Error - Output is %0d, expected %0d for inputs data_in=%0d, inhibit_in=%0d",
+                            idx, out, scenario['expected_out'], scenario['data_in'], scenario['inhibit_in'])
+                )
             )
 
         # End the simulation
         m.Initial().add(
-            Delay(200),
+            Delay(100 * len(scenarios)),
             simulation.finish()
         )
 
@@ -116,13 +115,15 @@ class Test_TNN_Functions(TNN_Functions):
         scenarios = [
             {'pulse_in': 0, 'expected_edge_out': 0},
             {'pulse_in': 1, 'expected_edge_out': 1},
+            {'pulse_in': 0, 'expected_edge_out': 1},
+            {'pulse_in': 0, 'expected_edge_out': 0},
+            {'pulse_in': 1, 'expected_edge_out': 1},
         ]
 
-        # Initial block
+        # Initial block for reset and input initialization
         init_block = m.Initial()
         init_block.add(
             pulse_in(0),
-            Delay(1),
             rstb(0),
             grst(0),
             Delay(1),
@@ -132,26 +133,25 @@ class Test_TNN_Functions(TNN_Functions):
             grst(0)
         )
 
-        # Applying scenarios
-        for scenario in scenarios:
+        # Applying scenarios in the simulation
+        for idx, scenario in enumerate(scenarios):
             scenario_block = m.Initial()
             scenario_block.add(
+                Delay(20 * idx),
                 pulse_in(scenario['pulse_in']),
                 Delay(10),
                 If(edge_out == scenario['expected_edge_out'])(
-                    Display("Success: Edge output is %d as expected for pulse_in=%d",
-                            edge_out, scenario['pulse_in'])
+                    Display("Step %0d: Success - Edge output is %0d as expected for pulse_in=%0d",
+                            idx, edge_out, scenario['pulse_in'])
                 ).Else(
-                    Display("Error: Edge output is %d, expected %d for pulse_in=%d",
-                            edge_out, scenario['expected_edge_out'], scenario['pulse_in']),
-                    Finish()
-                ),
-                Delay(10)
+                    Display("Step %0d: Error - Edge output is %0d, expected %0d for pulse_in=%0d",
+                            idx, edge_out, scenario['expected_edge_out'], scenario['pulse_in'])
+                )
             )
 
         # End the simulation
         m.Initial().add(
-            Delay(200),
+            Delay(20 * len(scenarios)),
             simulation.finish()
         )
 
@@ -173,31 +173,37 @@ class Test_TNN_Functions(TNN_Functions):
     #############################################
     def Tb_Adder(self, RES=4):
         m = Module('test_adder')
-    
+
         res = m.Parameter('RES', RES)
-    
-        adder, add_clk = self.tnn.Adder(res.value)
-    
+
+        adder, _ = self.Adder(res.value)
+
         dut = Submodule(m, adder, 'dut')
-    
+
         out = dut['out']
         a = dut['a']
         b = dut['b']
         cin = dut['cin']
-    
+
         i = m.Integer('i', 32, value=0)
-    
+
         dump = simulation.setup_waveform(m, dut, [a, b, cin, out])
-    
+
         # Define scenarios with expected results
         scenarios = [
             {'a': 0, 'b': 0, 'cin': 0, 'expected_out': 0},
             {'a': 3, 'b': 0, 'cin': 0, 'expected_out': 3},
             {'a': 3, 'b': int('1100', 2), 'cin': 0, 'expected_out': 15},
             {'a': 3, 'b': int('1100', 2), 'cin': 1, 'expected_out': 16},
+            {'a': 1, 'b': 1, 'cin': 1, 'expected_out': 3},                             # Single bit overflow
+            {'a': int('1111', 2), 'b': 1, 'cin': 0, 'expected_out': 16},               # Boundary check
+            {'a': int('1010', 2), 'b': int('0101', 2), 'cin': 1, 'expected_out': 16},  # Mid-range check
+            {'a': int('0110', 2), 'b': int('1001', 2), 'cin': 1, 'expected_out': 16},  # Random mid-range
+            {'a': int('0011', 2), 'b': int('1100', 2), 'cin': 0, 'expected_out': 15},  # Random mid-range
+            {'a': int('1000', 2), 'b': int('1000', 2), 'cin': 1, 'expected_out': 17},  # Boundary + carry
         ]
 
-        # Initial block
+        # Initial block for reset
         init_block = m.Initial()
         init_block.add(
             a(0),
@@ -206,28 +212,28 @@ class Test_TNN_Functions(TNN_Functions):
             Delay(1)
         )
 
-        # Applying scenarios
-        for scenario in scenarios:
+        # Applying scenarios in the simulation
+        for idx, scenario in enumerate(scenarios):
             scenario_block = m.Initial()
             scenario_block.add(
+                Delay(20 * idx),
                 a(scenario['a']),
                 b(scenario['b']),
                 cin(scenario['cin']),
                 Delay(10),
                 If(out == scenario['expected_out'])(
-                    Display("Success: Output is %d as expected for a=%d, b=%d, cin=%d",
-                            out, scenario['a'], scenario['b'], scenario['cin'])
+                    Display("Step %0d: Success - Output is %0d as expected for a=%0d, b=%0d, cin=%0d",
+                            idx, out, scenario['a'], scenario['b'], scenario['cin'])
                 ).Else(
-                    Display("Error: Output is %d, expected %d for a=%d, b=%d, cin=%d",
-                            out, scenario['expected_out'], scenario['a'], scenario['b'], scenario['cin']),
-                    Finish()
+                    Display("Step %0d: Error - Output is %0d, expected %0d for a=%0d, b=%0d, cin=%0d",
+                            idx, out, scenario['expected_out'], scenario['a'], scenario['b'], scenario['cin'])
                 ),
                 Delay(10)
             )
 
         # End the simulation
         m.Initial().add(
-            Delay(200),
+            Delay(20 * len(scenarios)),
             simulation.finish()
         )
 
@@ -239,7 +245,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Edge2pulse(self):
         m = Module('test_edge2pulse')
 
-        edge, edge_clk = self.tnn.Edge2pulse()
+        edge, edge_clk = self.Edge2pulse()
 
         dut = Submodule(m, edge, 'dut')
 
@@ -266,28 +272,30 @@ class Test_TNN_Functions(TNN_Functions):
             Delay(1)
         )
 
-        # Applying scenarios
-        for scenario in scenarios:
+        # Applying scenarios in the simulation
+        for idx, scenario in enumerate(scenarios):
             scenario_block = m.Initial()
             scenario_block.add(
+                Delay(20 * idx),
                 edge_in(scenario['edge_in']),
                 Delay(10),
                 If(pulse_out == scenario['expected_pulse_out'])(
-                    Display("Success: Pulse output is %d as expected for edge_in=%d",
-                            pulse_out, scenario['edge_in'])
+                    Display("Step %0d: Success - Pulse output is %0d as expected for edge_in=%0d",
+                            idx, pulse_out, scenario['edge_in'])
                 ).Else(
-                    Display("Error: Pulse output is %d, expected %d for edge_in=%d",
-                            pulse_out, scenario['expected_pulse_out'], scenario['edge_in']),
-                    Finish()
+                    Display("Step %0d: Error - Pulse output is %0d, expected %0d for edge_in=%0d",
+                            idx, pulse_out, scenario['expected_pulse_out'], scenario['edge_in'])
                 ),
                 Delay(10)
             )
 
+        # End the simulation
         m.Initial().add(
-            Delay(200),
+            Delay(20 * len(scenarios)),
             simulation.finish()
         )
 
+        # Clock and toggle edge_in based on counter
         m.Always(Posedge(clk))(
             EmbeddedCode('i = i % 23;'),
             If(i == 0)(
@@ -304,7 +312,8 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Incdec(self):
         m = Module('test_incdec')
 
-        incdec, inc_clk = self.tnn.Incdec()
+        incdec, _ = self.Incdec()
+
         dut = Submodule(m, incdec, 'dut')
 
         cases = dut['stdp_cases']
@@ -319,18 +328,19 @@ class Test_TNN_Functions(TNN_Functions):
 
         i = m.Integer('i', 32, value=0)
 
-        dump = simulation.setup_waveform(
-            m, dut, [cases, capture, minus, search, backoff, min_v, fout, inc, dec])
+        dump = simulation.setup_waveform(m, dut, [cases, capture, minus, search, backoff, min_v, fout, inc, dec])
 
-        # Define expected logic
-        def expected_inc_dec(cases, capture, minus, search, backoff, fout, min_v):
-            stabilize_brv = fout | min_v
-            expected_inc = (cases == 0b0001 and capture and stabilize_brv) or (cases == 0b0100 and search)
-            expected_dec = (cases == 0b0010 and minus and stabilize_brv) or (cases == 0b1000 and backoff and stabilize_brv)
-            return expected_inc, expected_dec
+        # Define scenarios with expected results
+        scenarios = [
+            {'cases': 0b0001, 'capture': 1, 'minus': 0, 'search': 0, 'backoff': 0, 'fout': 1, 'min_v': 0, 'expected_inc': 1, 'expected_dec': 0},
+            {'cases': 0b0100, 'capture': 0, 'minus': 0, 'search': 1, 'backoff': 0, 'fout': 1, 'min_v': 0, 'expected_inc': 1, 'expected_dec': 0},
+            {'cases': 0b0010, 'capture': 0, 'minus': 1, 'search': 0, 'backoff': 0, 'fout': 0, 'min_v': 1, 'expected_inc': 0, 'expected_dec': 1},
+            {'cases': 0b1000, 'capture': 0, 'minus': 0, 'search': 0, 'backoff': 1, 'fout': 1, 'min_v': 0, 'expected_inc': 0, 'expected_dec': 1},
+            {'cases': 0, 'capture': 0, 'minus': 0, 'search': 0, 'backoff': 0, 'fout': 0, 'min_v': 0, 'expected_inc': 0, 'expected_dec': 0},
+        ]
 
-        # Setup initial conditions and test cases
-        m.Initial(
+        init_block = m.Initial()
+        init_block.add(
             cases(0),
             capture(0),
             minus(0),
@@ -338,37 +348,35 @@ class Test_TNN_Functions(TNN_Functions):
             backoff(0),
             min_v(0),
             fout(0),
-            Delay(5)
+            Delay(1)
         )
 
-        test_vectors = [
-            (0b0001, 1, 0, 0, 0, 1, 0),
-            (0b0100, 0, 0, 1, 0, 1, 0),
-            (0b0010, 0, 1, 0, 0, 0, 1),
-            (0b1000, 0, 0, 0, 1, 1, 0),
-            (0, 0, 0, 0, 0, 0, 0)
-        ]
-
-        for index, (c, cap, minu, sea, back, f, minv) in enumerate(test_vectors):
-            m.Initial(
-                cases(c),
-                capture(cap),
-                minus(minu),
-                search(sea),
-                backoff(back),
-                min_v(minv),
-                fout(f),
-                Delay(5),
-                If((inc, dec) == expected_inc_dec(c, cap, minu, sea, back, f, minv))(
-                    Display(f"Test Case {index+1} Success: Outputs are correct.")
+        # Applying scenarios in the simulation
+        for idx, scenario in enumerate(scenarios):
+            scenario_block = m.Initial()
+            scenario_block.add(
+                Delay(20 * idx),
+                cases(scenario['cases']),
+                capture(scenario['capture']),
+                minus(scenario['minus']),
+                search(scenario['search']),
+                backoff(scenario['backoff']),
+                min_v(scenario['min_v']),
+                fout(scenario['fout']),
+                Delay(10),
+                If((inc == scenario['expected_inc']) & (dec == scenario['expected_dec']))(
+                    Display("Step %0d: Success - inc=%0d, dec=%0d as expected for stdp_cases=%0b, capture=%0d, minus=%0d, search=%0d, backoff=%0d, fout=%0d, min=%0d",
+                            idx, inc, dec, scenario['cases'], scenario['capture'], scenario['minus'], scenario['search'], scenario['backoff'], scenario['fout'], scenario['min_v'])
                 ).Else(
-                    Display(f"Test Case {index+1} Error: Outputs are incorrect.")
+                    Display("Step %0d: Error - inc=%0d, dec=%0d, expected inc=%0d, expected dec=%0d for stdp_cases=%0b, capture=%0d, minus=%0d, search=%0d, backoff=%0d, fout=%0d, min=%0d",
+                            idx, inc, dec, scenario['expected_inc'], scenario['expected_dec'], scenario['cases'], scenario['capture'], scenario['minus'], scenario['search'], scenario['backoff'], scenario['fout'], scenario['min_v'])
                 ),
                 Delay(10)
             )
 
+        # End the simulation
         m.Initial().add(
-            Delay(200),
+            Delay(20 * len(scenarios)),
             simulation.finish()
         )
 
@@ -381,7 +389,7 @@ class Test_TNN_Functions(TNN_Functions):
         m = Module('test_wta')
 
         q = m.Parameter('Q', Q)
-        wta, wta_clk = self.tnn.Wta(q.value)
+        wta, wta_clk = self.Wta(q.value)
 
         dut = Submodule(m, wta, 'dut')
 
@@ -392,12 +400,12 @@ class Test_TNN_Functions(TNN_Functions):
         li_out = dut['li_out']
 
         i = m.Integer('i', 32, value=0)
-        
+
         dump = simulation.setup_waveform(m, dut, [ec_spikes, clk, grst, rstb, li_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
-        
+
+        # Define expected logic based on the control inputs
         def expected_output(ec_spikes, Q):
-            
             output = [0] * Q
             first_spike_found = False
             for i in range(Q):
@@ -414,21 +422,24 @@ class Test_TNN_Functions(TNN_Functions):
             [0, 0, 0, 1],
         ]
 
-        for pattern in input_patterns:
+        for idx, pattern in enumerate(input_patterns):
             expected = expected_output(pattern, Q)
-
-            dump.add(
+            m.Initial(
+                Delay(20 * idx),
                 ec_spikes(Cat(*[Int(x, width=1) for x in pattern])),
-                Delay(1),
-                If(li_out != Cat(*[Int(x, width=1) for x in expected]))(
-                    Systask('display', "Assertion Failed: Output %b does not match expected %b", li_out, Cat(*[Int(x, width=1) for x in expected])),
-                    Systask('finish')
+                Delay(10),
+                If(li_out == Cat(*[Int(x, width=1) for x in expected]))(
+                    Display("Step %0d: Success - Output %b matches expected %b for ec_spikes=%b",
+                            idx, li_out, Cat(*[Int(x, width=1) for x in expected]), Cat(*[Int(x, width=1) for x in pattern]))
+                ).Else(
+                    Display("Step %0d: Error - Output %b does not match expected %b for ec_spikes=%b",
+                            idx, li_out, Cat(*[Int(x, width=1) for x in expected]), Cat(*[Int(x, width=1) for x in pattern]))
                 ),
                 Delay(10)
             )
 
-        dump.add(
-            Delay(100),
+        m.Initial().add(
+            Delay(100 * len(input_patterns)),
             simulation.finish()
         )
 
@@ -474,47 +485,53 @@ class Test_TNN_Functions(TNN_Functions):
         dump = simulation.setup_waveform(m, dut, [ec_spikes, clk, grst, rstb, li_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        # Define expected output function
-        def expected_output(spikes):
-            if spikes == 0:
-                return 0
-            for i in range(Q):
-                if (spikes >> i) & 1:
-                    return 1 << i
-            return 0
-
-        # Test sequence
-        m.Initial(
-            ec_spikes(0),
-            Delay(5),
-            If(li_out == expected_output(0))(
-                Display("Success: Correct output for no spikes")
-            ).Else(
-                Display("Error: Incorrect output for no spikes, expected 0")
-            ),
+        # Initial reset
+        init = m.Initial()
+        init.add(
+            rstb(0),
+            grst(1),
+            Delay(2),
+            rstb(1),
+            grst(0)
         )
 
-        for index in range(1, Q):
-            m.Initial(
-                ec_spikes(1 << index),
-                Delay(1),
-                If(li_out == expected_output(1 << index))(
-                    Display("Success: Correct output for spike at position %d", index)
+        # Define test sequence with expected outputs
+        test_sequence = [
+            (0b0000, 0b0000),  # No spikes
+            (0b0110, 0b0010),  # Spikes at positions 1 and 2, expect output at position 1
+            (0b1000, 0b1000),  # Spike at position 3
+            (0b0001, 0b0001),  # Spike at position 0
+            (0b0000, 0b0000),  # No spikes
+            (0b1111, 0b0001),  # All spikes, expect output at position 0
+            (0b0000, 0b0000),  # No spikes
+            (0b1100, 0b0100),  # Spikes at positions 2 and 3, expect output at position 2
+            (0b1110, 0b0010),  # Spikes at positions 1, 2, and 3, expect output at position 1
+            (0b0000, 0b0000)   # No spikes
+        ]
+
+        for idx, (spikes, expected) in enumerate(test_sequence):
+            init.add(
+                ec_spikes(spikes),
+                Delay(20),
+                If(li_out == expected)(
+                    Display("Step %0d: Success - Output %b matches expected %b for ec_spikes=%b",
+                            idx, li_out, expected, spikes)
                 ).Else(
-                    Display("Error: Incorrect output for spike at position %d, expected %d",
-                            index, expected_output(1 << index))
+                    Display("Step %0d: Error - Output %b does not match expected %b for ec_spikes=%b",
+                            idx, li_out, expected, spikes)
                 ),
-                ec_spikes(0),
-                Delay(4)
+                Delay(10)
             )
 
-        m.Initial(
+        # Finish the simulation
+        init.add(
             Delay(100),
             simulation.finish()
         )
 
+        # Clock generation and reset logic
         m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
+            EmbeddedCode('i = i % 23;'),
             If(i == 0)(
                 grst(1)
             ).Else(
@@ -526,11 +543,64 @@ class Test_TNN_Functions(TNN_Functions):
         return m
 
     #############################################
+    # stabilize
+    #############################################
+    def Tb_Stabilize(self, wres=3):
+        m = Module('test_stabilize')
+        stabilize, _ = self.Stabilize_func(wres)
+
+        dut = Submodule(m, stabilize, 'dut')
+
+        weight = dut['weight']
+        F_brv = dut['F_brv']
+        out = dut['out']
+
+        dump = simulation.setup_waveform(m, dut, [weight, F_brv, out])
+
+        # Test sequence with expected outputs
+        test_sequence = [
+            (0, 0b000000, 0),
+            (0, 0b111111, 0),
+            (1, 0b111111, 1),
+            (1, 0b011111, 0),
+            (2, 0b111111, 1),
+            (2, 0b101111, 0),
+            (3, 0b111111, 1),
+            (3, 0b110111, 0),
+            (4, 0b111011, 1),
+            (5, 0b111101, 1),
+            (6, 0b111110, 1),
+            (7, 0b000000, 1),
+        ]
+
+        for idx, (w, f, expected) in enumerate(test_sequence):
+            dump.add(
+                weight(w),
+                F_brv(f),
+                Delay(5),
+                If(out == expected)(
+                    Display("Step %0d: Success - Output %b matches expected %b for weight=%b, F_brv=%b",
+                            idx, out, expected, w, f)
+                ).Else(
+                    Display("Step %0d: Error - Output %b does not match expected %b for weight=%b, F_brv=%b",
+                            idx, out, expected, w, f)
+                ),
+                Delay(5)
+            )
+
+        dump.add(
+            Delay(100),
+            simulation.finish()
+        )
+
+        return m
+
+    #############################################
     # stdp_case_gen
     #############################################
     def Tb_Stdp_case_gen(self):
         m = Module('test_stdp_case_gen')
-        stdp_case, case_clk = self.tnn.Stdp_case_gen()
+        stdp_case, case_clk = self.Stdp_case_gen()
 
         dut = Submodule(m, stdp_case, 'dut')
 
@@ -546,45 +616,44 @@ class Test_TNN_Functions(TNN_Functions):
         dump = simulation.setup_waveform(m, dut, [ein, eout, clk, grst, rstb, stdp_cases])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        # Define expected outputs
+        # Define expected outputs for stdp_cases based on inputs
         def expected_cases(ein, eout, greater):
             e_both = ein & eout
             e_one = ein ^ eout
             return [
-                not greater and e_both,
-                greater and e_both,
-                not greater and e_one,
-                greater and e_one
+                int(not greater and e_both),
+                int(greater and e_both),
+                int(not greater and e_one),
+                int(greater and e_one)
             ]
-
-        # Define greater logic for this context
-        greater = False
 
         # Test different scenarios
         scenarios = [
-            (0, 0, greater),
-            (1, 0, greater),
-            (0, 1, greater),
-            (1, 1, greater),
+            (0, 0, False),
+            (1, 0, False),
+            (0, 1, True),
+            (1, 1, False),
         ]
 
         for index, (ein_val, eout_val, greater_val) in enumerate(scenarios):
             exp_cases = expected_cases(ein_val, eout_val, greater_val)
-            m.Initial(
+            init = m.Initial()
+            init.add(
                 ein(ein_val),
                 eout(eout_val),
                 Delay(1),
-                [
+                *[
                     If(stdp_cases[k] == exp_cases[k])(
-                        Display(f"Scenario {index + 1}: Case {k+1} Success")
+                        Display(f"Scenario {index + 1}: Case {k + 1} Success - Expected {exp_cases[k]}, Got {stdp_cases[k]}")
                     ).Else(
-                        Display(f"Scenario {index + 1}: Case {k+1} Error - Expected {exp_cases[k]}, Got {stdp_cases[k]}")
+                        Display(f"Scenario {index + 1}: Case {k + 1} Error - Expected {exp_cases[k]}, Got {stdp_cases[k]}")
                     )
                     for k in range(4)
                 ],
                 Delay(10)
             )
 
+        # Reset scenario
         m.Initial(
             ein(0),
             eout(0),
@@ -593,13 +662,13 @@ class Test_TNN_Functions(TNN_Functions):
         )
 
         m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
+            EmbeddedCode('i = i % 23;'),
             If(i == 0)(
                 grst(1)
             ).Else(
                 grst(0)
             ),
-            EmbeddedCode('i=i+1;')
+            EmbeddedCode('i = i + 1;')
         )
 
         return m
