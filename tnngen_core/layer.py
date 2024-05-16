@@ -11,7 +11,7 @@ import numpy as np
 import os
 
 class Layer():
-    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13, rfsize=None, stride=None, nprev=None, inputsize=None):
+    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13, rfsize=None, stride=None, nprev=None, inputsize=None, tnn7_en=False):
         self.num_col = num_col
         self.num_neurons = num_neurons
         self.num_dend = num_dend
@@ -27,6 +27,7 @@ class Layer():
         self.stride = stride
         self.nprev = nprev
         self.inputsize = inputsize
+        self.tnn7_en = tnn7_en
 
     def Kernel_Layer(self, layer_id=None):
         m = Module('Kernel_Layer_'+str(layer_id))
@@ -249,7 +250,7 @@ class Layer():
         ##################
         # Instantiations #
         ##################
-        tnn_func = TNN_Functions(self.layer_id)
+        tnn_func = TNN_Functions(self.layer_id, tnn7_en=self.tnn7_en)
 
         comp_col, _ = tnn_func.Comp_column_V2(num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for c in range(num_col.value):
@@ -458,7 +459,7 @@ class Layer():
         ##################
         # Instantiations #
         ##################
-        tnn_func = TNN_Functions(self.layer_id)
+        tnn_func = TNN_Functions(self.layer_id, tnn7_en=self.tnn7_en)
 
         comp_col, _ = tnn_func.Comp_column(num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for c in range(num_col.value):
@@ -636,7 +637,7 @@ class Layer():
         ##################
         # Instantiations #
         ##################
-        tnn_func = TNN_Functions(self.layer_id)
+        tnn_func = TNN_Functions(self.layer_id, tnn7_en=self.tnn7_en)
         CV_group, _ = tnn_func.CV_group(num_neurons.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for c in range(num_col.value):
             col_ports = [clk, grst, rstb, 

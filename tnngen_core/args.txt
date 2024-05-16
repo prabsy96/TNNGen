@@ -46,18 +46,18 @@ ip_size_prox    = 1               # Number of proximal input synapses
 # TNNSyn-specific parameters
 ltype           = TNN             # Layer type (TNN or CV)
 col_cnt         = 1               # Column Count
-neuron_cnt      = 2               # Neuron Count
-dend_cnt        = 2               # Dendrite Count
-segment_cnt     = 2               # Segment
-p_dist          = 14              # Distal
-p_prox          = 2               # Proximal
+neuron_cnt      = 10               # Neuron Count
+dend_cnt        = 1              # Dendrite Count
+segment_cnt     = 1               # Segment
+p_dist          = 18              # Distal
+p_prox          = 1               # Proximal
 
 ### Frequency
 flow            = pnr             # Hardware process flow
 aclk_freq       = 2147483.00   # System Clock period in ps
 gclk_freq       = 2147483.00   # Gamma Clock period in ps
 tool            = Cadence         # Synopsys/Cadence
-node            = 45              # Process Node (either 45 or 7)
+node            = 77              # Process Node (45 - Nangate45, 7 - ASAP7, 77 - ASAP7+TNN7)
 #lib_path        =                 # path to cell library
 #lef_path        =                 # path to lef files
 #qrc_file        =

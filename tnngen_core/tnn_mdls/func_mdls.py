@@ -11,8 +11,9 @@ import numpy as np
 import os
 
 class TNN_Functions():
-    def __init__(self, layer_id=None):
+    def __init__(self, layer_id=None, tnn7_en=False):
         self.layer_id = layer_id
+        self.tnn7_en = tnn7_en
 
     # inhibit operator
     def Less_equal(self):
@@ -34,9 +35,12 @@ class TNN_Functions():
         inhibit_only.assign(~data_in & inhibit_in)
 
         # Submodules
-        pulse, _ = self.Pulse2edge()
-        pe_le = m.Instance(pulse, 'pe_le', params=None, 
-                           ports=[inhibit_only, clk, grst, rstb, inhibit_only_edge])
+        if self.tnn7_en:
+            code = m.EmbeddedCode("inhibit_pass DUT_wq(.INHIBIT(inhibit_in),.DATA_IN(data_in),.OUT(inhibit_only_edge));")
+        else:
+            pulse, _ = self.Pulse2edge()
+            pe_le = m.Instance(pulse, 'pe_le', params=None, 
+                               ports=[inhibit_only, clk, grst, rstb, inhibit_only_edge])
 
         out.assign(data_in & ~inhibit_only_edge)
 
@@ -54,15 +58,19 @@ class TNN_Functions():
         rstb = m.Input('rstb', 1)
         edge_out = m.Output('edge_out', 1)
 
-        # Regs
-        temp = m.Reg('temp', 1)
+        if self.tnn7_en:
+            # ASAP7+TNN7
+            code = m.EmbeddedCode("pulse2edge_area pluse2edge_inst(.EDGE_OUT(edge_out),.ACLK(clk),.GRST(grst),.PULSE_IN(pulse_in));")
+        else:
+            # Regs
+            temp = m.Reg('temp', 1)
 
-        m.Always(Posedge(clk))(
-            If (grst | ~rstb)(temp(Int(0, width=1, base=2)))
-            .Else(temp(edge_out))
-        )
+            m.Always(Posedge(clk))(
+                If (grst | ~rstb)(temp(Int(0, width=1, base=2)))
+                .Else(temp(edge_out))
+            )
 
-        edge_out.assign(pulse_in | temp)
+            edge_out.assign(pulse_in | temp)
 
         return m, ('clk')
 
@@ -145,12 +153,16 @@ class TNN_Functions():
         inc = m.Output('inc', 1)
         dec = m.Output('dec', 1)
         
-        stabilize_brv = m.Wire('stabilize_brv', 1)
+        if self.tnn7_en:
+            code = m.EmbeddedCode("""incdec_macro macro_init (.MIN(min_brv), .F(fout_brv), .BACKOFF(backoff_brv), .STDP_CASES_3(stdp_cases[3]), .STDP_CASES_1(stdp_cases[1]), .MINUS(minus_brv), .CAPTURE(capture_brv), .STDP_CASES_0(stdp_cases[0]), .STDP_CASES_2(stdp_cases[2]), .SEARCH(search_brv), .DEC(dec), .INC(inc)); """)
+
+        else:
+            stabilize_brv = m.Wire('stabilize_brv', 1)
     
-        stabilize_brv.assign(fout_brv | min_brv)
+            stabilize_brv.assign(fout_brv | min_brv)
     
-        inc.assign((stdp_cases[0] & capture_brv & stabilize_brv) | (stdp_cases[2] & search_brv))
-        dec.assign((stdp_cases[1] & minus_brv & stabilize_brv) | (stdp_cases[3] & backoff_brv & stabilize_brv))
+            inc.assign((stdp_cases[0] & capture_brv & stabilize_brv) | (stdp_cases[2] & search_brv))
+            dec.assign((stdp_cases[1] & minus_brv & stabilize_brv) | (stdp_cases[3] & backoff_brv & stabilize_brv))
     
         # no clocks returned
         return m, None
@@ -234,55 +246,32 @@ class TNN_Functions():
         F_brv = m.Input('F_brv', (1<<wres_v.value)-3 + 1)
         out = m.Output('out', 1)
 
-        code = m.EmbeddedCode("""
-            reg out_reg;
-            always @(*) begin
-              if(weight == 3'b0) begin
-                out_reg <= 1'b0;
-              end else if(weight == 3'b1) begin
-                out_reg <= F_brv[5];
-              end else if(weight == 3'b10) begin
-                out_reg <= F_brv[4];
-              end else if(weight == 3'b11) begin
-                out_reg <= F_brv[3];
-              end else if(weight == 3'b100) begin
-                out_reg <= F_brv[2];
-              end else if(weight == 3'b101) begin
-                out_reg <= F_brv[1];
-              end else if(weight == 3'b110) begin
-                out_reg <= F_brv[0];
-              end else if(weight == 3'b111) begin
-                out_reg <= 1'b1;
-              end 
-            end
-            assign out = out_reg;
-        """)
-
-        #code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F_brv[0]), .F_2(F_brv[1]), .F_3(F_brv[2]), .F_4(F_brv[3]), .F_5(F_brv[4]), .F_6(F_brv[5]), .F_7(1'b1), .SEL_0(weight[0]), .SEL_1(weight[1]), .SEL_2(weight[2])); """)
-        # code = m.EmbeddedCode("""
-        #     reg [1-1:0] out_reg;
-        #     always_comb
-        #     begin
-        #         out_reg = 0;
-        #         if ((weight == 0) | (weight == ((1<<WRES)-1))) out_reg = 0;
-        #         for (int i = 1; i < ((1<<WRES)-1); i++)
-        #         begin
-        #             if (weight == i) out_reg = F[i-1];
-        #         end
-        #     end
-        #     assign out = out_reg;""")
-        # code = m.EmbeddedCode("""
-        #     reg out_reg;
-        #     always @*
-        #     begin
-        #         out_reg = 0;
-        #         if ((weight == 0) | (weight == ((1<<WRES)-1))) out_reg = 0;
-        #         for (int i = 1; i < ((1<<WRES)-1); i++)
-        #         begin
-        #             if (weight == i) out_reg = F_brv[i-1];
-        #         end
-        #     end
-        #     assign out = out_reg;""")
+        if self.tnn7_en:
+            code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F_brv[0]), .F_2(F_brv[1]), .F_3(F_brv[2]), .F_4(F_brv[3]), .F_5(F_brv[4]), .F_6(F_brv[5]), .F_7(1'b1), .SEL_0(weight[0]), .SEL_1(weight[1]), .SEL_2(weight[2])); """)
+        else:
+            code = m.EmbeddedCode("""
+                reg out_reg;
+                always @(*) begin
+                  if(weight == 3'b0) begin
+                    out_reg <= 1'b0;
+                  end else if(weight == 3'b1) begin
+                    out_reg <= F_brv[5];
+                  end else if(weight == 3'b10) begin
+                    out_reg <= F_brv[4];
+                  end else if(weight == 3'b11) begin
+                    out_reg <= F_brv[3];
+                  end else if(weight == 3'b100) begin
+                    out_reg <= F_brv[2];
+                  end else if(weight == 3'b101) begin
+                    out_reg <= F_brv[1];
+                  end else if(weight == 3'b110) begin
+                    out_reg <= F_brv[0];
+                  end else if(weight == 3'b111) begin
+                    out_reg <= 1'b1;
+                  end 
+                end
+                assign out = out_reg;
+            """)
 
         return m, None
 
@@ -298,26 +287,33 @@ class TNN_Functions():
         grst = m.Input('grst', 1)
         rstb = m.Input('rstb', 1)
         stdp_cases = m.Output('stdp_cases', 4)
-        
-        eout_only = m.Wire('eout_only', 1)
-        e_both = m.Wire('e_both', 1)
-        e_one = m.Wire('e_one', 1)
-        greater = m.Wire('greater', 1)
+
+        if self.tnn7_en:
+            temp = m.Reg('temp', 1)
+            greater = m.Reg('greater',1)
+            code1 = m.EmbeddedCode("stdp_case_gen_macro stdp (.EIN(ein),.EOUT(eout),.STDP_CASES_0(stdp_cases[0]),.STDP_CASES_1(stdp_cases[1]),.STDP_CASES_2(stdp_cases[2]),.STDP_CASES_3(stdp_cases[3]),.GREATER(greater));")
+            code2 = m.EmbeddedCode("inhibit_pass DUT_wq(.INHIBIT(eout),.DATA_IN(ein),.OUT(temp));")
+            greater.assign = (eout & ~temp)
+        else:
+            eout_only = m.Wire('eout_only', 1)
+            e_both = m.Wire('e_both', 1)
+            e_one = m.Wire('e_one', 1)
+            greater = m.Wire('greater', 1)
     
-        eout_only.assign(~ ein & eout)
+            eout_only.assign(~ ein & eout)
     
-        # submodule
-        pulse, _ = self.Pulse2edge()
-        pulse_inst = m.Instance(pulse, 'pe', params=None,  ports=[
-                                eout_only, clk, grst, rstb, greater])
+            # submodule
+            pulse, _ = self.Pulse2edge()
+            pulse_inst = m.Instance(pulse, 'pe', params=None,  ports=[
+                                    eout_only, clk, grst, rstb, greater])
     
-        e_both.assign(ein & eout)
-        e_one.assign(ein ^ eout)
+            e_both.assign(ein & eout)
+            e_one.assign(ein ^ eout)
     
-        stdp_cases[0].assign(~ greater & e_both)
-        stdp_cases[1].assign(greater & e_both)
-        stdp_cases[2].assign(~ greater & e_one)
-        stdp_cases[3].assign(greater & e_one)
+            stdp_cases[0].assign(~ greater & e_both)
+            stdp_cases[1].assign(greater & e_both)
+            stdp_cases[2].assign(~ greater & e_one)
+            stdp_cases[3].assign(greater & e_one)
         
         return m, ('clk')
 
@@ -336,32 +332,36 @@ class TNN_Functions():
         state = m.Reg('state', wres_v)
         temp = m.Reg('temp', 1)
 
-        m.Always(Posedge(clk)) (
-            If(~rstb)(
-                state(Int(0, width=wres_v.value, base=2))
-            )
-            .Else(
-                If(state == Int(0, width=wres_v.value, base=2)) (
-                    If(in_v)(
+        if self.tnn7_en:
+            next_state = m.Reg('next_state', wres_v)
+            code1 = m.EmbeddedCode("""fsm_simple_macro fsm_simple_inst(.IN(in),.OUT(out),.STATE_0(state[0]),.STATE_1(state[1]),.STATE_2(state[2]),.NEXT_STATE_0(next_state[0]),.NEXT_STATE_1(next_state[1]),.NEXT_STATE_2(next_state[2]));""")
+        else:
+            m.Always(Posedge(clk)) (
+                If(~rstb)(
+                    state(Int(0, width=wres_v.value, base=2))
+                )
+                .Else(
+                    If(state == Int(0, width=wres_v.value, base=2)) (
+                        If(in_v)(
+                            state(state + Int(1, width=wres_v.value, base=2))
+                        )
+                    )
+                    .Else(
                         state(state + Int(1, width=wres_v.value, base=2))
                     )
                 )
+            )
+
+            m.Always()(
+                If(state == 0)(
+                    temp(Int(1, width=1, base=2))
+                )
                 .Else(
-                    state(state + Int(1, width=wres_v.value, base=2))
+                    temp(Int(0, width=1, base=2))
                 )
             )
-        )
 
-        m.Always()(
-            If(state == 0)(
-                temp(Int(1, width=1, base=2))
-            )
-            .Else(
-                temp(Int(0, width=1, base=2))
-            )
-        )
-
-        out_v.assign((~temp) | (temp & in_v))
+            out_v.assign((~temp) | (temp & in_v))
 
         return m, ('clk')
 

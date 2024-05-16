@@ -255,9 +255,8 @@ class synth_support:
                 f.write(lib_str_nangate45)
             elif self.node == 7:
                 f.write(lib_str_asap7)
-            # TODO
-            # elif lset == 't7':
-            #     f.write(lib_str_tnn7)
+            elif self.node == 77:
+                f.write(lib_str_tnn7)
             if self.mname == 'column':
                 f.write(constraint_column)
             elif self.mname == 'dendrite':
@@ -266,12 +265,12 @@ class synth_support:
         files = cwd+'/templates/syn_gen.tcl'
 
         work_path = cwd+'/syn_out'
-        if (self.node == 7):
-            lib_path = cwd+'/lib_7/'
-            lef_path = cwd+'/lef_7/'
-        else:
+        if self.node == 45:
             lib_path = cwd+'/lib_45/'
             lef_path = cwd+'/lef_45/'
+        else:
+            lib_path = cwd+'/lib_7/'
+            lef_path = cwd+'/lef_7/'
 
         if not os.path.exists(work_path):
             os.makedirs(work_path)
@@ -336,14 +335,18 @@ class pnr_support:
         cwd = os.getcwd()
         work_path = cwd+'/pnr_out'
 
-        if self.node == 7:
-            files = cwd+'/templates/pnr_7_new.tcl'
-            lib_path = cwd+'/lib_7/'
-            lef_path = cwd+'/lef_7/'
-        else:
+        if self.node == 45:
             files = cwd+'/templates/pnr_45.tcl'
             lib_path = cwd+'/lib_45/'
             lef_path = cwd+'/lef_45/'
+        elif self.node == 7:
+            files = cwd+'/templates/pnr_7_new.tcl'
+            lib_path = cwd+'/lib_7/'
+            lef_path = cwd+'/lef_7/'
+        elif self.node == 77:
+            files = cwd+'/templates/pnr_tnn7.tcl'
+            lib_path = cwd+'/lib_7/'
+            lef_path = cwd+'/lef_7/'
 
         mmmc_file = os.path.join(cwd, "templates/column-mmmc.tcl")
         m2_file = os.path.join(cwd, "templates/m2followRail.tcl")
