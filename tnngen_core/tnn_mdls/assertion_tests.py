@@ -774,59 +774,83 @@ class Test_TNN_Functions(TNN_Functions):
         dump = simulation.setup_waveform(m, dut, [input_spike, w_init, inc, dec, clk, grst, rstb, w_out, syn_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        # Simulation state to manage the current weight
-        current_weight = m.Reg('current_weight', wres)
-
-        m.Initial(
-            current_weight(3)
+        # Initial reset
+        init = m.Initial()
+        init.add(
+            rstb(0),
+            grst(1),
+            Delay(10),
+            rstb(1),
+            grst(0),
+            w_init(5),
+            Delay(10)
         )
 
-        # Define expected output
-        def expected_output(inc, dec, current_weight, spike):
-            if inc:
-                new_weight = min(current_weight + 1, (1 << wres) - 1)
-            elif dec:
-                new_weight = max(current_weight - 1, 0)
-            else:
-                new_weight = current_weight
-            return new_weight, (spike and new_weight > 0)
-
-        # Test sequence
-        test_vectors = [
-            (0, 0, 0),
-            (1, 0, 0),
-            (0, 1, 0),
-            (0, 0, 1),
+        # Test different scenarios
+        scenarios = [
+            (0, 1, 0, 0, 5),
+            (1, 0, 0, 0, 5),
+            (1, 0, 1, 0, 6),
+            (1, 0, 0, 1, 5),
+            (1, 1, 0, 0, 0),
         ]
 
-        for idx, (spike, increment, decrement) in enumerate(test_vectors):
-            expected_w, expected_syn_out = expected_output(increment, decrement, current_weight, spike)
-
-            m.Initial(
-                input_spike(spike),
-                inc(increment),
-                dec(decrement),
-                If((w_out, syn_out) == (expected_w, expected_syn_out))(
-                    Display(f"Test {idx+1}: Pass")
+        for index, (rstb_val, grst_val, inc_val, dec_val, expected_w) in enumerate(scenarios):
+            init.add(
+                rstb(rstb_val),
+                grst(grst_val),
+                inc(inc_val),
+                dec(dec_val),
+                Delay(10),
+                If(w_out == expected_w)(
+                    Display(f"Scenario {index + 1}: Success - Expected {expected_w}, Got %0d", w_out)
                 ).Else(
-                    Display(f"Test {idx+1}: Fail - Expected ({expected_w}, {expected_syn_out}), Got ({w_out}, {syn_out})")
+                    Display(f"Scenario {index + 1}: Error - Expected {expected_w}, Got %0d", w_out)
                 ),
-                current_weight(expected_w),
                 Delay(10)
             )
 
-        m.Initial(
-            Delay(200),
+        # Additional scenarios with input_spike
+        spike_scenarios = [
+            (1, 1, 0, 0, 5),
+            (1, 0, 0, 0, 4),
+            (1, 0, 0, 1, 3),
+        ]
+
+        for index, (input_spike_val, inc_val, dec_val, grst_val, expected_w) in enumerate(spike_scenarios, start=len(scenarios)):
+            init.add(
+                input_spike(0),
+                rstb(1),
+                grst(grst_val),
+                inc(inc_val),
+                dec(dec_val),
+                Delay(10),
+                input_spike(input_spike_val),
+                Delay(10),
+                If(w_out == expected_w)(
+                    Display(f"Spike Scenario {index + 1}: Success - Expected {expected_w}, Got %0d", w_out)
+                ).Else(
+                    Display(f"Spike Scenario {index + 1}: Error - Expected {expected_w}, Got %0d", w_out)
+                ),
+                Delay(10)
+            )
+
+        # Final reset and finish
+        init.add(
+            rstb(0),
+            grst(1),
+            Delay(10),
             simulation.finish()
         )
 
-        m.Always(clk)(
+        m.Always(Posedge(clk))(
+            EmbeddedCode('i = i % 23;'),
             If(i == 0)(
                 grst(1)
             ).Else(
                 grst(0)
             ),
-            EmbeddedCode('i=i+1;')
+            EmbeddedCode('i = i + 1;')
         )
 
         return m
