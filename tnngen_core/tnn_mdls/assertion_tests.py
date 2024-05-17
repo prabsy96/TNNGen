@@ -926,6 +926,91 @@ class Test_TNN_Functions(TNN_Functions):
         return m
 
     #############################################
+    # pac
+    #############################################
+    def Tb_Pac(self, ip_size=5, thres=13):
+        m = Module('test_pac')
+        ip_size = m.Parameter('IP_SIZE', ip_size)
+        thres = m.Parameter('THRESHOLD', thres)
+
+        pac, pac_clk = self.tnn.Pac(ip_size=ip_size.value, thres=thres.value)
+        dut = Submodule(m, pac, 'dut')
+
+        in_v = dut['in']
+        clk = dut['clk']
+        grst = dut['grst']
+        rstb = dut['rstb']
+        pac_out = dut['pac_out']
+
+        i = m.Integer('i', 32, value=0)
+
+        dump = simulation.setup_waveform(m, dut, [in_v, clk, grst, rstb, pac_out])
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+
+        def assert_equal(expected, actual, msg):
+            return If(expected == actual)(
+                Display("Success: " + msg + " Expected: %0d, Got: %0d", expected, actual)
+            ).Else(
+                Display("Error: " + msg + " Expected: %0d, Got: %0d", expected, actual)
+            )
+
+        input_sequence = [
+            int('0001', 2),
+            int('1001', 2),
+            int('1000', 2),
+            int('1100', 2),
+            int('1000', 2),
+            int('0000', 2),
+        ]
+
+        expected_outputs = []
+        running_sum = 0
+        for value in input_sequence:
+            running_sum += value
+            expected_outputs.append(int(running_sum >= thres.value))
+
+        init = m.Initial()
+        init.add(
+            # Initial conditions
+            rstb(1),
+            grst(0),
+            in_v(0),
+            Delay(5),
+
+            # Assert initial state
+            assert_equal(0, pac_out, "Initial state"),
+            
+            # Reset signal handling
+            rstb(0),
+            Delay(5),
+            rstb(1)
+        )
+
+        for idx in range(len(input_sequence)):
+            init.add(
+                in_v(input_sequence[idx]),
+                Delay(5),
+                assert_equal(expected_outputs[idx], pac_out, f"After input {bin(input_sequence[idx])[2:].zfill(ip_size.value)}")
+            )
+
+        init.add(
+            Delay(200),
+            simulation.finish()
+        )
+
+        m.Always(Posedge(clk))(
+            EmbeddedCode('i = i % 23;'),
+            If(i == 0)(
+                grst(1)
+            ).Else(
+                grst(0)
+            ),
+            EmbeddedCode('i = i + 1;')
+        )
+
+        return m
+
+    #############################################
     # neuron_body
     #############################################
     def tb_neuronbody(self, ip_size=5, thres=13, wres=3):
