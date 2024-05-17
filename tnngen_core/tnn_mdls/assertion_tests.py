@@ -856,71 +856,75 @@ class Test_TNN_Functions(TNN_Functions):
 
         i = m.Integer('i', 32, value=0)
 
-        dump = simulation.setup_waveform(m, dut, 
-            [input_weight, ein, eout, capture, minus, search, backoff, min_v, F, clk, grst, rstb, inc, dec])
+        dump = simulation.setup_waveform(m, dut, [input_weight, ein, eout, capture, minus, search, backoff, min_v, F, clk, grst, rstb, inc, dec])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        # Define the expected behavior
-        def expected_behavior(capture, minus, search, backoff, min_v, weight, F):
-            inc_expected = (capture and search) or (weight > 3 and not min_v)
-            dec_expected = (minus and backoff) or (weight < 2 and min_v)
-            return inc_expected, dec_expected
+        # Define expected outputs for inc and dec
+        def expected_outputs(ein, eout):
+            if ein and eout:
+                return 1, 0  # Expected: inc = 1, dec = 0
+            elif eout:
+                return 0, 1  # Expected: inc = 0, dec = 1
+            else:
+                return 0, 0  # Expected: inc = 0, dec = 0
 
-        # Set initial conditions
-        m.Initial(
-            input_weight(3),
-            ein(0),
-            eout(0),
-            capture(0),
-            minus(0),
-            search(0),
-            backoff(0),
-            min_v(0),
-            F(0b111111),
-            rstb(1),
-            Delay(10),
-            rstb(0),
-            Delay(5)
-        )
-
-        # Cycle through test conditions
-        test_conditions = [
-            (1, 0, 1, 0, 1, 0),
-            (0, 1, 0, 1, 0, 0),
-            (1, 1, 1, 1, 1, 0),
-            (0, 0, 0, 0, 0, 1)
+        # Test different scenarios
+        scenarios = [
+            (0, 0, 1, 1, 1, 1, 1, int('111111', 2), int('101', 2)),
+            (1, 1, 1, 1, 1, 1, 1, int('111111', 2), int('101', 2)),
+            (0, 1, 1, 1, 1, 1, 1, int('111111', 2), int('101', 2)),
+            (1, 0, 1, 1, 1, 1, 1, int('111111', 2), int('101', 2)),
         ]
 
-        for idx, (cap, minu, sea, back, minv, weight) in enumerate(test_conditions):
-            m.Initial(
-                capture(cap),
-                minus(minu),
-                search(sea),
-                backoff(back),
-                min_v(minv),
-                input_weight(weight),
+        init = m.Initial()
+        for index, (ein_val, eout_val, capture_val, minus_val, search_val, backoff_val, min_v_val, F_val, weight_in_val) in enumerate(scenarios):
+            exp_inc, exp_dec = expected_outputs(ein_val, eout_val)
+            init.add(
+                rstb(0),
+                grst(1),
+                Delay(5),
+                rstb(1),
+                grst(0),
+                Delay(5),
+                ein(ein_val),
+                eout(eout_val),
+                capture(capture_val),
+                minus(minus_val),
+                search(search_val),
+                backoff(backoff_val),
+                min_v(min_v_val),
+                F(F_val),
+                input_weight(weight_in_val),
                 Delay(10),
-                If((inc, dec) == expected_behavior(cap, minu, sea, back, minv, weight, F))(
-                    Display(f"Test {idx+1}: Pass - Expected behavior matched.")
+                If(inc == exp_inc)(
+                    Display(f"Scenario {index + 1}: inc Success - Expected {exp_inc}, Got %0d", inc)
                 ).Else(
-                    Display(f"Test {idx+1}: Fail - Behavior did not match.")
+                    Display(f"Scenario {index + 1}: inc Error - Expected {exp_inc}, Got %0d", inc)
                 ),
-                Delay(20)
+                If(dec == exp_dec)(
+                    Display(f"Scenario {index + 1}: dec Success - Expected {exp_dec}, Got %0d", dec)
+                ).Else(
+                    Display(f"Scenario {index + 1}: dec Error - Expected {exp_dec}, Got %0d", dec)
+                ),
+                Delay(10)
             )
 
-        m.Initial(
-            Delay(500),
+        # Reset scenario
+        init.add(
+            ein(0),
+            eout(0),
+            Delay(10),
             simulation.finish()
         )
 
         m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
+            EmbeddedCode('i = i % 23;'),
             If(i == 0)(
                 grst(1)
             ).Else(
                 grst(0)
             ),
-            EmbeddedCode('i=i+1;')
+            EmbeddedCode('i = i + 1;')
         )
 
         return m
