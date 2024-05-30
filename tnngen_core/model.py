@@ -25,7 +25,7 @@ class Model:
             raise ValueError("layer_type: '" + layer.layer_type + "' does not exist!")
         
         if (layer.layer_type == "TNN"):
-            self.layers.append(self.check_params(layer.TNN_Layer_V2(len(self.layers))))
+            self.layers.append(self.check_params(layer.TNN_Layer(len(self.layers))))
         elif (layer.layer_type == "CV"):
             self.layers.append(self.check_params(layer.CV_Layer(len(self.layers))))
         elif (layer.layer_type == "Kernel"):
