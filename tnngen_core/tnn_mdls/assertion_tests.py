@@ -1110,3 +1110,117 @@ class Test_TNN_Functions(TNN_Functions):
         )
 
         return m
+
+    #############################################
+    # neuron_rnl
+    #############################################
+    def Tb_NeuronRNL(self, ip_size=5, thres=13, wres=3):
+        m = Module('test_neuron_rnl')
+        ip_size = m.Parameter('IP_SIZE', ip_size)
+        thres = m.Parameter('THRESHOLD', thres)
+        wres = m.Parameter('WRES', wres)
+
+        rnl, rnl_clk = self.tnn.NeuronRNL(ip_size=ip_size.value, thres=thres.value, wres=wres)
+
+        here = m.copy_sim_ports(rnl)
+
+        input_spikes = here['input_spikes']
+        inc = here['inc']
+        dec = here['dec']
+        weight_en = here['weight_update_en']
+        aclk = here['aclk']
+        gclk = here['gclk']
+        grst = here['grst']
+        rst = here['rst']
+        out_v = here['out_spike']
+        weights = [here[f'weights_{i}'] for i in range(ip_size.value)]
+
+        dut = m.Instance(rnl, 'dut', ports=m.connect_ports(rnl))
+
+        i = m.Integer('i', 32, value=0)
+        j = m.Integer('j', 32, value=0)
+
+        dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(rnl))
+        clock = simulation.setup_clock(m, aclk, hperiod=0.5)
+
+        # Define initial weights
+        initial_weights = [5] * ip_size.value
+
+        # Define expected output calculation
+        def expected_output(input_spikes, inc, dec, weights):
+            new_weights = weights.copy()
+            for i in range(ip_size.value):
+                if inc[i]:
+                    new_weights[i] = min(new_weights[i] + 1, (1 << wres.value) - 1)
+                if dec[i]:
+                    new_weights[i] = max(new_weights[i] - 1, 0)
+            total_input = sum(input_spikes[i] * new_weights[i] for i in range(ip_size.value))
+            return 1 if total_input >= thres.value else 0, new_weights
+
+        # Test scenarios
+        scenarios = [
+            {'input_spikes': [0, 0, 0, 0, 0], 'inc': [0, 0, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [1, 0, 0, 0, 0], 'inc': [0, 0, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [1, 1, 0, 0, 0], 'inc': [0, 0, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [1, 1, 1, 0, 0], 'inc': [0, 0, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [1, 1, 1, 1, 0], 'inc': [0, 0, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 1},
+            {'input_spikes': [0, 0, 0, 0, 0], 'inc': [1, 0, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [0, 0, 0, 0, 0], 'inc': [0, 1, 0, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [0, 0, 0, 0, 0], 'inc': [0, 0, 1, 0, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [0, 0, 0, 0, 0], 'inc': [0, 0, 0, 1, 0], 'dec': [0, 0, 0, 0, 0], 'expected_out': 0},
+            {'input_spikes': [1, 1, 1, 1, 1], 'inc': [1, 1, 1, 1, 1], 'dec': [0, 0, 0, 0, 0], 'expected_out': 1},
+            {'input_spikes': [1, 1, 1, 1, 1], 'inc': [0, 0, 0, 0, 0], 'dec': [1, 1, 1, 1, 1], 'expected_out': 1},
+        ]
+
+        init = m.Initial()
+        for index, scenario in enumerate(scenarios):
+            expected_out, updated_weights = expected_output(
+                scenario['input_spikes'], scenario['inc'], scenario['dec'], initial_weights)
+            initial_weights = updated_weights
+            init.add(
+                rst(1),
+                grst(0),
+                Delay(10),
+                rst(0),
+                Delay(10),
+                *[input_spikes[i](scenario['input_spikes'][i]) for i in range(ip_size.value)],
+                *[inc[i](scenario['inc'][i]) for i in range(ip_size.value)],
+                *[dec[i](scenario['dec'][i]) for i in range(ip_size.value)],
+                Delay(10),
+                If(out_v == expected_out)(
+                    Display(f"Scenario {index + 1}: Success - Expected {expected_out}, Got %0d", out_v)
+                ).Else(
+                    Display(f"Scenario {index + 1}: Error - Expected {expected_out}, Got %0d", out_v)
+                ),
+                Delay(10)
+            )
+
+        # Final reset and finish
+        init.add(
+            rst(0),
+            grst(1),
+            Delay(10),
+            simulation.finish()
+        )
+
+        m.Always(Posedge(aclk))(
+            EmbeddedCode('i = i % 23;'),
+            If(i == 0)(
+                EmbeddedCode('gclk = ~gclk;')
+            ),
+            EmbeddedCode('i = i + 1;')
+        )
+
+        m.Initial(j(0))
+        m.Always(Posedge(aclk))(
+            EmbeddedCode('j = j % 23;'),
+            If(j == 0)(
+                grst(1)
+            )
+            .Else(
+                grst(0)
+            ),
+            EmbeddedCode('j = j + 1;')
+        )
+
+        return m
