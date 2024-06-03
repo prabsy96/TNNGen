@@ -238,7 +238,7 @@ class TNN_Functions():
     # block to select appropriate BRVs
     def Stabilize_func(self,  wres=3):
 
-        m = Module('L'+self.layer_id+'_stabilize_func')
+        m = Module('L'+self.layer_id+'_stabilize_func_'+str(wres))
         wres_v = m.Parameter('WRES', wres)
 
         # Input/output ports
@@ -249,29 +249,54 @@ class TNN_Functions():
         if self.tnn7_en:
             code = m.EmbeddedCode("""flogic_8x1 DUT (.OUT(out), .F_0(1'b0), .F_1(F_brv[0]), .F_2(F_brv[1]), .F_3(F_brv[2]), .F_4(F_brv[3]), .F_5(F_brv[4]), .F_6(F_brv[5]), .F_7(1'b1), .SEL_0(weight[0]), .SEL_1(weight[1]), .SEL_2(weight[2])); """)
         else:
+            # code = m.EmbeddedCode("""
+            #     reg out_reg;
+            #     always @(*) begin
+            #       if(weight == 3'b0) begin
+            #         out_reg <= 1'b0;
+            #       end else if(weight == 3'b1) begin
+            #         out_reg <= F_brv[5];
+            #       end else if(weight == 3'b10) begin
+            #         out_reg <= F_brv[4];
+            #       end else if(weight == 3'b11) begin
+            #         out_reg <= F_brv[3];
+            #       end else if(weight == 3'b100) begin
+            #         out_reg <= F_brv[2];
+            #       end else if(weight == 3'b101) begin
+            #         out_reg <= F_brv[1];
+            #       end else if(weight == 3'b110) begin
+            #         out_reg <= F_brv[0];
+            #       end else if(weight == 3'b111) begin
+            #         out_reg <= 1'b1;
+            #       end 
+            #     end
+            #     assign out = out_reg;
+            # """)
+
             code = m.EmbeddedCode("""
-                reg out_reg;
-                always @(*) begin
-                  if(weight == 3'b0) begin
-                    out_reg <= 1'b0;
-                  end else if(weight == 3'b1) begin
-                    out_reg <= F_brv[5];
-                  end else if(weight == 3'b10) begin
-                    out_reg <= F_brv[4];
-                  end else if(weight == 3'b11) begin
-                    out_reg <= F_brv[3];
-                  end else if(weight == 3'b100) begin
-                    out_reg <= F_brv[2];
-                  end else if(weight == 3'b101) begin
-                    out_reg <= F_brv[1];
-                  end else if(weight == 3'b110) begin
-                    out_reg <= F_brv[0];
-                  end else if(weight == 3'b111) begin
-                    out_reg <= 1'b1;
-                  end 
-                end
-                assign out = out_reg;
+integer i;
+reg out_reg;
+                    
+always @(*)
+begin
+    out_reg = 0;
+                    
+    if ((weight == 0) | (weight == ((1<<WRES)-1))) begin
+        out_reg = 0;
+    end
+                    
+    for (i = 1; i < ((1<<WRES)-1); i = i + 1) begin
+        if (weight == i) begin
+            out_reg = F_brv[i-1];
+        end
+    end
+end
+                    
+assign out = out_reg;
             """)
+
+
+
 
         return m, None
 
