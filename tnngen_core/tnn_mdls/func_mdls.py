@@ -85,7 +85,6 @@ class TNN_Functions():
         b = m.Input('b', res)
         cin = m.Input('cin')
         out = m.Output('out', res + 1)
-    
         
         out.assign(a+b+cin)
     
@@ -279,10 +278,10 @@ reg out_reg;
                     
 always @(*)
 begin
-    out_reg = 0;
+    out_reg = 1'b0;
                     
     if ((weight == 0) | (weight == ((1<<WRES)-1))) begin
-        out_reg = 0;
+        out_reg = 1'b0;
     end
                     
     for (i = 1; i < ((1<<WRES)-1); i = i + 1) begin
