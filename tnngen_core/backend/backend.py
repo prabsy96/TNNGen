@@ -167,6 +167,7 @@ class sim_support:
 
         cmd = []
         cmd.append('/afs/ece.cmu.edu/support/cds/share/image/usr/cds/xcelium-23.09/tools.lnx86/bin/xrun')
+        cmd.append('-gui')
         cmd.append('-clean')
         if nospecify == 'yes':
             cmd.append('-nospecify')

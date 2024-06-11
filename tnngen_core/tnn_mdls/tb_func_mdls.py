@@ -7,6 +7,7 @@
 # Testbench class
 
 from tnn_mdls.func_mdls import *
+from tnn_mdls.sim_utils import *
 
 class Test_TNN_Functions(TNN_Functions):
 
@@ -28,80 +29,22 @@ class Test_TNN_Functions(TNN_Functions):
         grst = dut['grst']
         rstb = dut['rstb']
         out = dut['out']
-
-        i = m.Integer('i', 32, 0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(
             m, dut, [data_in, inhibit_in, clk, grst, rstb, out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            data_in(0),
-            inhibit_in(1),
-            Delay(5),
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((tres**2)+(wres**2)))
 
-            data_in(1),
-            Delay(1),
+        # Hard coded for now
+        inputs = [[0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0], # data_in
+                  [1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0]] # inhibit_in
+        delays = [5, 1, 5, 11, 5, 3, 5, 9, 5, 3, 5, 9, 5, 8, 9, 10, 100]
 
-            data_in(0),
-            Delay(5),
-
-            inhibit_in(1),
-            Delay(11),
-
-            inhibit_in(0),
-            Delay(5),
-
-            data_in(1),
-            Delay(3),
-
-            inhibit_in(1),
-            Delay(5),
-
-            data_in(0),
-            Delay(9),
-
-            inhibit_in(0),
-            Delay(5),
-
-            inhibit_in(1),
-            Delay(3),
-
-            data_in(1),
-            Delay(5),
-
-            data_in(0),
-            Delay(9),
-
-            inhibit_in(0),
-            Delay(5),
-
-            data_in(1),
-            inhibit_in(1),
-            Delay(8),
-
-            data_in(0),
-            Delay(9),
-
-            inhibit_in(0),
-            Delay(10),
-
-            data_in(0),
-            Delay(100),
-
-            simulation.finish()
-        )
-
-        m.Always(clk)(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('i = i+1;')
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -120,51 +63,21 @@ class Test_TNN_Functions(TNN_Functions):
         grst = dut['grst']
         rstb = dut['rstb']
         edge_out = dut['edge_out']
-    
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
     
         dump = simulation.setup_waveform(m, dut, [pulse_in, clk, grst, rstb, edge_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
-    
-        dump.add(
-            pulse_in(0),
-            Delay(5),
-    
-            pulse_in(1),
-            Delay(1),
-    
-            pulse_in(0),
-            Delay(5),
-    
-            pulse_in(1),
-            Delay(1),
-    
-            pulse_in(0),
-            Delay(22),
-    
-            pulse_in(1),
-            Delay(8),
-    
-            pulse_in(1),
-            Delay(10),
-    
-            pulse_in(0),
-            Delay(100),
-    
-            simulation.finish()
-        )
-    
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('i=i+1;')
-        )
-    
+
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((tres**2)+(wres**2)))
+
+        # Hard coded for now
+        inputs = [[0, 1, 0, 1, 0, 1, 1, 0]] # pulse_in
+        delays = [5, 1, 5, 1, 22, 8, 10, 100]
+
+        add_to_dump(dump, dut, inputs, delays)
+
         return m
 
     #############################################
@@ -173,7 +86,7 @@ class Test_TNN_Functions(TNN_Functions):
     def Tb_Adder(self, RES=4):
         m = Module('test_adder')
     
-        res = m.Parameter('RES', RES)
+        res = m.Parameter('RES', 3)
     
         adder, add_clk = self.tnn.Adder(res.value)
     
@@ -184,31 +97,15 @@ class Test_TNN_Functions(TNN_Functions):
         b = dut['b']
         cin = dut['cin']
     
-        i = m.Integer('i', 32, value=0)
-    
         dump = simulation.setup_waveform(m, dut, [a, b, cin, out])
-    
-        dump.add(
-            a(0),
-            b(0),
-            cin(0),
-            Delay(5),
-    
-            a(3),
-            Delay(5),
-    
-            b(int('1100', 2)),
-            Delay(10),
-    
-            cin(1),
-            Delay(10),
-    
-            cin(0),
-            Delay(22),
-            Delay(200),
-    
-            simulation.finish()
-        )
+
+        # Hard coded for now
+        inputs = [[0, 3, 0, 3, 2, 5, 0], # a
+                  [0, 0, 5, 5, 4, 4, 0], # b
+                  [0, 0, 0, 0, 1, 1, 0]] # cin
+        delays = [4, 4, 4, 4, 4, 4, 100]
+
+        add_to_dump(dump, dut, inputs, delays)
     
         return m
 
@@ -226,29 +123,14 @@ class Test_TNN_Functions(TNN_Functions):
         clk = dut['clk']
         pulse_out = dut['pulse_out']
 
-        i = m.Integer('i', 32, value=0)
-
         dump = simulation.setup_waveform(m, dut, [edge_in, clk, pulse_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            edge_in(0),
-            Delay(5),
+        # Hard coded for now
+        inputs = [[0, 1, 0, 1, 0, 1, 0]] # edge_in
+        delays = [5, 5, 8, 8, 2, 4, 100]
 
-            edge_in(1),
-            Delay(100),
-
-            simulation.finish()
-        )
-
-        m.Always(clk)(
-            EmbeddedCode('i = i%23;'),
-            # TODO: fix
-            # If(i == 0)(
-            #     EmbeddedCode('edge_in = ~edge_in;')
-            # ),
-            EmbeddedCode('i = i+1;')
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -271,78 +153,32 @@ class Test_TNN_Functions(TNN_Functions):
         fout = dut['fout_brv']
         inc = dut['inc']
         dec = dut['dec']
-    
-        i = m.Integer('i', 32, value=0)
-    
+
         dump = simulation.setup_waveform(
             m, dut, [cases, capture, minus, search, backoff, min_v, fout, inc, dec])
-        #clock = simulation.setup_clock(m, aclk, hperiod = 0.5)
+        
+        inputs = [[0, 1, 0, 2, 0, 4, 0, 8, 0], # cases
+                  [0, 1, 1, 1, 1, 1, 1, 1, 1], # capture
+                  [0, 1, 1, 1, 1, 1, 1, 1, 1], # minus
+                  [0, 1, 1, 1, 1, 1, 1, 1, 1], # search
+                  [0, 1, 1, 1, 1, 1, 1, 1, 1], # backoff
+                  [0, 1, 1, 1, 1, 1, 1, 1, 1], # min_v
+                  [0, 1, 1, 1, 1, 1, 1, 1, 1]] # fout
+        delays = [5, 5, 5, 5, 5, 5, 5, 5, 20]
 
-        dump.add(
-            cases(0),
-            capture(0),
-            minus(0),
-            search(0),
-            backoff(0),
-            min_v(0),
-            fout(0),
-            Delay(5),
-    
-            cases(int('1000', 2)),
-            Delay(5),
-    
-            capture(1),
-            Delay(5),
-    
-            fout(1),
-            Delay(5),
-    
-            cases(int('0100', 2)),
-            Delay(5),
-    
-            minus(1),
-            fout(0),
-            Delay(5),
-    
-            fout(1),
-            Delay(5),
-    
-            cases(int('0010', 2)),
-            Delay(5),
-    
-            search(1),
-            fout(0),
-            Delay(5),
-    
-            fout(1),
-            Delay(5),
-    
-            cases(1),
-            Delay(5),
-    
-            backoff(1),
-            fout(0),
-            Delay(5),
-    
-            fout(1),
-            Delay(10),
-    
-            cases(0),
-            Delay(200),
-    
-            simulation.finish()
-        )
-    
+        add_to_dump(dump, dut, inputs, delays)
+
         return m
 
     #############################################
     # wta
     #############################################
     def Tb_Wta(self, Q=4):
-    
+        self.tnn.layer_id = str(0)
+
         m = Module('test_wta')
 
-        q = m.Parameter('Q', Q)
+        q = m.Parameter('Q', 4)
         wta, wta_clk = self.tnn.Wta(q.value)
 
         dut = Submodule(m, wta, 'dut')
@@ -352,85 +188,23 @@ class Test_TNN_Functions(TNN_Functions):
         grst = dut['grst']
         rstb = dut['rstb']
         li_out = dut['li_out']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
     
         dump = simulation.setup_waveform(m, dut, [ec_spikes, clk, grst, rstb, li_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            ec_spikes(0),
-            Delay(5),
-    
-            ec_spikes[2](1),
-            ec_spikes[1](1),
-            Delay(1),
-    
-            ec_spikes[3](1),
-            Delay(5),
-    
-            ec_spikes[0](1),
-            Delay(2),
-    
-            ec_spikes[2](0),
-            ec_spikes[1](0),
-            Delay(1),
-    
-            ec_spikes[3](0),
-            Delay(5),
-    
-            ec_spikes[0](0),
-            Delay(9),
-    
-            ec_spikes[2](1),
-            ec_spikes[1](1),
-            ec_spikes[0](1),
-            ec_spikes[3](1),
-    
-            Delay(8),
-            ec_spikes[3](0),
-            ec_spikes[2](0),
-            ec_spikes[0](0),
-            ec_spikes[1](0),
-    
-            Delay(15),
-            ec_spikes[2](1),
-            ec_spikes[3](1),
-    
-            Delay(1),
-            ec_spikes[1](1),
-    
-            Delay(5),
-            ec_spikes[0](1),
-    
-            Delay(6),
-            ec_spikes[2](0),
-            ec_spikes[3](0),
-    
-            Delay(1),
-            ec_spikes[1](0),
-    
-            Delay(5),
-            ec_spikes[0](0),
-    
-            Delay(10),
-            ec_spikes(0),
-    
-            Delay(100),
-    
-            simulation.finish()
-        )
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((tres**2)+(wres**2)))
 
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('i=i+1;')
-        )
+        # Hard coded for now
+        inputs = [[int('0000', 2), int('0110', 2), int('1110', 2), int('1111', 2), 
+                   int('1001', 2), int('0001', 2), int('0000', 2), int('1111', 2),
+                   int('0000', 2), int('1100', 2), int('1110', 2), int('1111', 2), 
+                   int('0011', 2), int('0001', 2), int('0000', 2), int('0000', 2)]] # ec_spikes
+        delays = [5, 1, 5, 2, 1, 5, 9, 8, 15, 1, 5, 6, 1, 5, 10, 100]
+
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -438,6 +212,7 @@ class Test_TNN_Functions(TNN_Functions):
     # t_wta - TODO
     #############################################
     def Tb_T_wta(self, Q=4):
+        self.tnn.layer_id = str(0)
 
         m = Module('test_t_wta')
 
@@ -451,85 +226,23 @@ class Test_TNN_Functions(TNN_Functions):
         grst = dut['grst']
         rstb = dut['rstb']
         li_out = dut['li_out']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(m, dut, [ec_spikes, clk, grst, rstb, li_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            ec_spikes(0),
-            Delay(5),
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((tres**2)+(wres**2)))
 
-            ec_spikes[2](1),
-            ec_spikes[1](1),
-            Delay(1),
+        # Hard coded for now
+        inputs = [[int('0000', 2), int('0110', 2), int('1110', 2), int('1111', 2), 
+                   int('1001', 2), int('0001', 2), int('0000', 2), int('1111', 2),
+                   int('0000', 2), int('1100', 2), int('1110', 2), int('1111', 2), 
+                   int('0011', 2), int('0001', 2), int('0000', 2), int('0000', 2)]] # ec_spikes
+        delays = [5, 1, 5, 2, 1, 5, 9, 8, 15, 1, 5, 6, 1, 5, 10, 100]
 
-            ec_spikes[3](1),
-            Delay(5),
-
-            ec_spikes[0](1),
-            Delay(2),
-
-            ec_spikes[2](0),
-            ec_spikes[1](0),
-            Delay(1),
-
-            ec_spikes[3](0),
-            Delay(5),
-
-            ec_spikes[0](0),
-            Delay(9),
-
-            ec_spikes[2](1),
-            ec_spikes[1](1),
-            ec_spikes[0](1),
-            ec_spikes[3](1),
-
-            Delay(8),
-            ec_spikes[3](0),
-            ec_spikes[2](0),
-            ec_spikes[0](0),
-            ec_spikes[1](0),
-
-            Delay(15),
-            ec_spikes[2](1),
-            ec_spikes[3](1),
-
-            Delay(1),
-            ec_spikes[1](1),
-
-            Delay(5),
-            ec_spikes[0](1),
-
-            Delay(6),
-            ec_spikes[2](0),
-            ec_spikes[3](0),
-
-            Delay(1),
-            ec_spikes[1](0),
-
-            Delay(5),
-            ec_spikes[0](0),
-
-            Delay(10),
-            ec_spikes(0),
-
-            Delay(100),
-
-            simulation.finish()
-        )
-
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('i=i+1;')
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -537,6 +250,7 @@ class Test_TNN_Functions(TNN_Functions):
     # stabilize - previously: flogic
     #############################################
     def Tb_Flogic(self, wres = 3):
+        self.tnn.layer_id = str(0)
 
         m = Module('test_stabilize')
         flogic, flogic_clk = self.tnn.Stabilize_func(wres)
@@ -544,67 +258,23 @@ class Test_TNN_Functions(TNN_Functions):
         dut = Submodule(m, flogic, 'dut')
 
         weight = dut['weight']
-        F = dut['F_brv']
+        F_brv = dut['F_brv']
         out = dut['out']
 
-        dump = simulation.setup_waveform(m, dut, [weight, F, out])
+        dump = simulation.setup_waveform(m, dut, [weight, F_brv, out])
 
-        dump.add(
-            F(0),
-            weight(0),
-            Delay(5),
+        # Hard coded for now
+        inputs = [[0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7], # weight
+                  [0,
+                   int('111111', 2), int('111111', 2), int('011111', 2),
+                   int('111111', 2), int('101111', 2), int('111111', 2), 
+                   int('110111', 2), int('110111', 2), int('111011', 2), 
+                   int('111011', 2), int('111101', 2), int('111101', 2),
+                   int('111110', 2), int('111110', 2),
+                   0]] # F_brv
+        delays = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 100]
 
-            F(int('111111', 2)),
-            Delay(5),
-
-            weight(1),
-            Delay(5),
-
-            F(int('011111', 2)),
-            Delay(5),
-
-            weight(2),
-            F(int('111111', 2)),
-            Delay(5),
-
-            F(int('101111', 2)),
-            Delay(5),
-
-            weight(3),
-            F(int('111111', 2)),
-            Delay(5),
-
-            F(int('110111', 2)),
-            Delay(5),
-
-            weight(4),
-            Delay(5),
-
-            F(int('111011', 2)),
-            Delay(5),
-
-            weight(5),
-            Delay(5),
-
-            F(int('111101', 2)),
-            Delay(5),
-
-            weight(6),
-            Delay(5),
-
-            F(int('111110', 2)),
-            Delay(5),
-
-            weight(7),
-            Delay(5),
-
-            F(0),
-            Delay(5),
-
-            Delay(100),
-
-            simulation.finish()
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 

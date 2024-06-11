@@ -68,7 +68,7 @@ class TNN_Submod():
             obj = self.tb_f.Tb_Wta(q)
         elif name == 't_wta':
             obj = self.tb_f.Tb_T_wta()
-        elif name == 'stabilize':
+        elif name == 'stabilize_func':
             wres = self._param_query('wres', 3)
             obj = self.tb_f.Tb_Flogic(wres)
         elif name == 'stdp_casegen':

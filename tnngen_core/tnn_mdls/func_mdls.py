@@ -295,8 +295,6 @@ assign out = out_reg;
             """)
 
 
-
-
         return m, None
 
     # case generator for STDP
