@@ -37,7 +37,7 @@ class Test_TNN_Functions(TNN_Functions):
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
         rstb_gen(dump, rstb, 5)
-        grst_gen(m, ((tres**2)+(wres**2)))
+        grst_gen(m, ((2**tres)+(2**wres)))
 
         # Hard coded for now
         inputs = [[0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0], # data_in
@@ -70,7 +70,7 @@ class Test_TNN_Functions(TNN_Functions):
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
         rstb_gen(dump, rstb, 5)
-        grst_gen(m, ((tres**2)+(wres**2)))
+        grst_gen(m, ((2**tres)+(2**wres)))
 
         # Hard coded for now
         inputs = [[0, 1, 0, 1, 0, 1, 1, 0]] # pulse_in
@@ -195,7 +195,7 @@ class Test_TNN_Functions(TNN_Functions):
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
         rstb_gen(dump, rstb, 5)
-        grst_gen(m, ((tres**2)+(wres**2)))
+        grst_gen(m, ((2**tres)+(2**wres)))
 
         # Hard coded for now
         inputs = [[int('0000', 2), int('0110', 2), int('1110', 2), int('1111', 2), 
@@ -233,7 +233,7 @@ class Test_TNN_Functions(TNN_Functions):
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
         rstb_gen(dump, rstb, 5)
-        grst_gen(m, ((tres**2)+(wres**2)))
+        grst_gen(m, ((2**tres)+(2**wres)))
 
         # Hard coded for now
         inputs = [[int('0000', 2), int('0110', 2), int('1110', 2), int('1111', 2), 
@@ -294,81 +294,22 @@ class Test_TNN_Functions(TNN_Functions):
         grst = dut['grst']
         rstb = dut['rstb']
         stdp_cases = dut['stdp_cases']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(m, dut, [ein, eout, clk, grst, rstb, stdp_cases])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            ein(0),
-            eout(0),
-            Delay(5),
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((2**tres)+(2**wres)))
 
-            ein(1),
-            Delay(2),
+        # Hard coded for now
+        inputs = [[0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], # ein
+                  [0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]] # eout
+        delays = [5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 9, 10, 100]
 
-            eout(1),
-            Delay(16),
 
-            ein(0),
-            eout(0),
-            Delay(5),
-
-            eout(1),
-            Delay(2),
-
-            ein(1),
-            Delay(16),
-    
-            ein(0),
-            eout(0),
-    
-            Delay(5),
-            ein(1),
-    
-            Delay(18),
-            ein(0),
-    
-            Delay(16),
-            eout(1),
-    
-            Delay(7),
-            eout(0),
-    
-            Delay(5),
-            ein(0),
-    
-            Delay(2),
-            eout(0),
-    
-            Delay(6),
-            ein(0),
-    
-            Delay(9),
-            eout(0),
-    
-            Delay(10),
-            ein(0),
-            eout(0),
-    
-            Delay(10),
-    
-            Delay(100),
-    
-            simulation.finish()
-        )
-    
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('i=i+1;')
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -376,6 +317,7 @@ class Test_TNN_Functions(TNN_Functions):
     # fsm_convert
     #############################################
     def Tb_Fsm_convert(self, wres = 3):
+        self.tnn.layer_id = str(0)
 
         m = Module('test_fsm_convert')
         fsm_convert, simple_clk = self.tnn.Fsm_convert(wres)
@@ -386,44 +328,24 @@ class Test_TNN_Functions(TNN_Functions):
         rstb = dut['rstb']
         out_v = dut['out']
 
-        i = m.Integer('i', 32, value=0)
-
         dump = simulation.setup_waveform(m, dut, [in_v, clk, rstb, out_v])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
+        rstb_gen(dump, rstb, 5)
 
-            in_v(0),
-            rstb(1),
-            Delay(25),
+        # Hard coded for now
+        inputs = [[0, 1, 0, 1, 0, 0]] # in_v
+        delays = [5, 1, 12, 5, 3, 100]
 
-            rstb(0),
-            Delay(5.001),
-
-            in_v(1),
-            Delay(1),
-
-            in_v(0),
-            Delay(12),
-
-            in_v(1),
-            Delay(5),
-
-            in_v(0),
-            Delay(3),
-
-            rstb(0),
-            Delay(200),
-
-            simulation.finish()
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
     #############################################
-    # fsm_synapse - TODO: improve
+    # fsm_synapse - TODO: fix
     #############################################
     def Tb_Fsm_synapse(self, wres = 3):
+        self.tnn.layer_id = str(0)
 
         m = Module('test_fsm_synapse')
         synapse, synapse_clk= self.tnn.Fsm_synapse(wres)
@@ -438,80 +360,26 @@ class Test_TNN_Functions(TNN_Functions):
         rstb = dut['rstb']
         w_out = dut['w_out']
         syn_out = dut['syn_out']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(m, dut,
             [input_spike, w_init, inc, dec, clk, grst, rstb, w_out, syn_out])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-    
-            input_spike(0),
-            inc(0),
-            dec(0),
-            clk(0),
-            grst(1),
-            Delay(25),
-    
-            grst(0),
-            Delay(5),
-    
-            input_spike(1),
-            Delay(8),
-    
-            input_spike(0),
-            Delay(2),
-    
-            inc(1),
-            Delay(14),
-    
-            input_spike(1),
-            Delay(8),
-    
-            input_spike(0),
-            Delay(17),
-    
-            input_spike(1),
-            Delay(8),
-    
-            input_spike(0),
-            Delay(5),
-    
-            inc(0),
-            dec(1),
-            Delay(20),
-    
-            input_spike(1),
-            Delay(8),
-    
-            input_spike(0),
-            Delay(5),
-    
-            inc(0),
-            dec(1),
-            Delay(25),
-    
-            grst(1),
-            Delay(5),
-    
-            grst(0),
-            inc(0),
-            dec(0),
-            Delay(5),
-    
-            Delay(200),
-    
-            simulation.finish()
-        )
+        dump.add(w_init(0))
 
-        m.Always(clk)(
-            EmbeddedCode('i = i%23;'),
-            # If(i == 0)(
-            #     EmbeddedCode('gclk = ~gclk;')
-            # ),
-            EmbeddedCode('i=i+1;')
-        )
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((2**tres)+(2**wres)))
+
+        # Hard coded for now
+        inputs = [[0, 1, 0,  1, 0, 0, 1, 0,  0, 1, 0,  0, 1, 0,  0], # input_spike
+                  [0, 0, 0,  0, 0, 0, 0, 0,  0, 0, 0,  0, 0, 0,  0], # w_init
+                  [0, 1, 1,  1, 1, 1, 1, 1,  0, 0, 0,  0, 0, 0,  0], # inc
+                  [0, 0, 0,  0, 0, 0, 0, 0,  1, 1, 1,  1, 1, 1,  0]] # dec
+        delays = [2, 3, 15,  4, 9, 1, 2, 13, 1, 5, 10, 1, 3, 12, 100]
+
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -519,6 +387,8 @@ class Test_TNN_Functions(TNN_Functions):
     # stdp
     #############################################
     def Tb_Stdp(self, wres = 3):
+        self.tnn.layer_id = str(0)
+
         m = Module('test_stdp')
         stdp, stdp_clk = self.tnn.Stdp(wres)
         dut = Submodule(m, stdp, 'dut')
@@ -537,137 +407,35 @@ class Test_TNN_Functions(TNN_Functions):
         rstb = dut['rstb']
         inc = dut['inc']
         dec = dut['dec']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(m, dut,
            [input_weight, ein, eout, capture, minus, search, backoff, min_v, F, clk, grst, rstb, inc, dec])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
+        input_init = [[5],[0],[0],[1],[1],[1],[1],[1],[int('111111', 2)]]
+        delay_init = [5]
 
-            ein(0),
-            input_weight(int('101', 2)),
-            eout(0),
-            clk(1),
-            capture(1),
-            minus(1),
-            search(1),
-            backoff(1),
-            min_v(1),
-            F(int('111111', 2)),
-            Delay(5),
+        add_to_dump(dump, dut, input_init, delay_init, 1)
 
-            ein(1),
-            Delay(2),
+        rstb_gen(dump, rstb, 5)
+        grst_gen(m, ((2**tres)+(2**wres)))
 
-            eout(1),
-            Delay(16),
+        # Hard coded for now
+        inputs = [[5, 5, 5, 5, 5, 5,  5, 5,  5,  5, 5, 5, 5, 5,  5, 5, 5,  5, 5, 5,  5, 5, 5,  5, 5, 5, 5, 5, 5, 5], # weight_in
+                  [0, 1, 1, 0, 0, 1,  0, 1,  0,  0, 0, 0, 0, 0,  0, 0, 0,  0, 0, 1,  0, 1, 0,  0, 0, 0, 0, 0, 0, 0], # ein
+                  [0, 0, 1, 0, 1, 1,  0, 0,  0,  1, 0, 0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 0, 0,  1, 0, 0, 0, 0, 0, 0], # eout
+                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # capture_brv
+                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1, 1, 1, 1, 1], # minus_brv
+                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # search_brv
+                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1, 1, 1, 1, 1], # backoff_brv
+                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # min_brv
+                  [63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+                   61, 61, 61, 63, 63, 63, 63, 63, 63, 63, 63, 63]] # F_brv
+        delays = [5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 10, 5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 9, 10, 10]
 
-            ein(0),
-            eout(0),
-            Delay(5),
-
-            eout(1),
-            Delay(2),
-
-            ein(1),
-            Delay(16),
-
-            ein(0),
-            eout(0),
-            Delay(5),
-
-            ein(1),
-            Delay(18),
-
-            ein(0),
-            Delay(16),
-
-            eout(1),
-            Delay(7),
-
-            eout(0),
-            Delay(5),
-
-            ein(0),
-            Delay(2),
-
-            eout(0),
-            Delay(6),
-
-            ein(0),
-            Delay(10),
-
-            eout(0),
-            Delay(5),
-
-            search(0),
-            capture(0),
-            ein(0),
-            Delay(2),
-
-            eout(1),
-            Delay(16),
-
-            min_v(0),
-            ein(0),
-            eout(0),
-            Delay(5),
-
-            F(int('111101', 2)),
-            eout(1),
-            Delay(2),
-
-            ein(1),
-            Delay(16),
-
-            ein(0),
-            eout(0),
-            Delay(5),
-
-            F(int('111111', 2)),
-            ein(1),
-            Delay(18),
-
-            ein(0),
-            Delay(16),
-
-            eout(1),
-            Delay(7),
-
-            eout(0),
-            Delay(5),
-
-            ein(0),
-            Delay(2),
-
-            eout(0),
-            Delay(6),
-
-            ein(0),
-            Delay(9),
-
-            eout(0),
-            Delay(10),
-
-            ein(0),
-            eout(0),
-            Delay(10),
-
-            simulation.finish()
-        )
-
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
-            # TODO: fix
-            # If(i == 0)(
-            #     clk(1))
-            # .Else(
-            #     clk(0)
-            # ),
-            EmbeddedCode('i=i+1;')
-        )
+        add_to_dump(dump, dut, inputs, delays)
     
         return m
 
@@ -675,9 +443,13 @@ class Test_TNN_Functions(TNN_Functions):
     # pac
     #############################################
     def Tb_Pac(self, ip_size=4, thres=13):
+        self.tnn.layer_id = str(0)
+
         m = Module('test_pac')
-        ip_size = m.Parameter('IP_SIZE', ip_size)
-        thres = m.Parameter('THRESHOLD', thres)
+        # ip_size = m.Parameter('IP_SIZE', ip_size)
+        # thres = m.Parameter('THRESHOLD', thres)
+        ip_size = m.Parameter('IP_SIZE', 4)
+        thres = m.Parameter('THRESHOLD', 13)
 
         pac, pac_clk = self.tnn.Pac(ip_size=ip_size.value, thres=thres.value)
         dut = Submodule(m, pac, 'dut')
@@ -687,54 +459,25 @@ class Test_TNN_Functions(TNN_Functions):
         grst = dut['grst']
         rstb = dut['rstb']
         out_v = dut['pac_out']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(m, dut, [in_v, clk, grst, rstb, out_v])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            i(0),
-            in_v(0),
-            Delay(5),
-    
-            in_v(int('0001', 2)),
-            Delay(3),
+        input_init = [[0]]
+        delay_init = [5]
 
-            in_v(int('1001', 2)),
-            Delay(2),
+        add_to_dump(dump, dut, input_init, delay_init, 1)
 
-            in_v(int('1000', 2)),
-            Delay(2),
+        rstb_gen(dump, rstb, 4)
+        grst_gen(m, ((2**tres)+(2**wres)))
 
-            in_v(int('1100', 2)),
-            Delay(2),
+        # Hard coded for now
+        inputs = [[int('0001', 2), int('1001', 2), int('1000', 2), int('1100', 2), int('1000', 2), int('0000', 2), int('0000', 2), int('0000', 2)]] # in_v
+        delays = [3, 2, 2, 2, 2, 3, 20, 100]
 
-            in_v(int('1000', 2)),
-            Delay(2),
-
-            in_v(int('0000', 2)),
-            Delay(3),
-
-            in_v(int('0000', 2)),
-            Delay(20),
-
-            in_v(int('0000', 2)),
-            Delay(200),
-
-            simulation.finish()
-        )
-
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('i=i+1;')
-        )
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -742,80 +485,46 @@ class Test_TNN_Functions(TNN_Functions):
     # neuron_body
     #############################################
     def Tb_Neuronbody(self, ip_size=4, thres=13, wres = 3):
+        self.tnn.layer_id = str(0)
 
         m = Module('test_neuron_body')
-        ip_size = m.Parameter('IP_SIZE', ip_size)
-        thres = m.Parameter('THRESHOLD', thres)
-        wres = m.Parameter('WRES', wres)
+        # ip_size = m.Parameter('IP_SIZE', ip_size)
+        # thres = m.Parameter('THRESHOLD', thres)
+        # wres = m.Parameter('WRES', wres)
+        ip_size = m.Parameter('IP_SIZE', 4)
+        thres = m.Parameter('THRESHOLD', 13)
+        wres = m.Parameter('WRES', 3)
+
 
         nb, bdy_clk = self.tnn.Neuronbody(ip_size=ip_size.value, thres=thres.value, wres=wres.value)
         dut = Submodule(m, nb, 'dut')
 
         acc_in = dut['acc_in']
         clk = dut['clk']
-        pac_rst = dut['grst']
-        rst = dut['rstb']
+        grst = dut['grst']
+        rstb = dut['rstb']
         out_v = dut['output_spike']
-
-        i = m.Integer('i', 32, value=0)
+        tres = 3
+        wres = 3
 
         dump = simulation.setup_waveform(
-            m, dut, [acc_in, clk, pac_rst, rst, out_v])
+            m, dut, [acc_in, clk, grst, rstb, out_v])
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        dump.add(
-            i(0),
-            acc_in(0),
-            rst(1),
-            Delay(5),
+        input_init = [[0]]
+        delay_init = [5]
 
-            rst(0),
-            Delay(46),
+        add_to_dump(dump, dut, input_init, delay_init, 1)
 
-            rst(0),
-            Delay(1),
+        rstb_gen(dump, rstb, 4)
+        grst_gen(m, ((2**tres)+(2**wres)))
 
-            acc_in(int('0001', 2)),
-            Delay(1),
+        # Hard coded for now
+        inputs = [[0, 0, int('0001', 2), int('1001', 2), int('1000', 2), int('1100', 2), int('0100', 2), int('0000', 2), 0, 0, 0]] # acc_in
+        delays = [32, 1, 1, 4, 2, 1, 1, 20, 20, 20, 200]
 
-            acc_in(int('1001', 2)),
-            Delay(4),
+        add_to_dump(dump, dut, inputs, delays)
 
-            acc_in(int('1000', 2)),
-            Delay(2),
-
-            acc_in(int('1100', 2)),
-            Delay(1),
-
-            acc_in(int('0100', 2)),
-            Delay(1),
-
-            acc_in(int('0000', 2)),
-            Delay(20),
-
-            rst(1),
-            Delay(20),
-
-            acc_in(0),
-            Delay(20),
-
-            acc_in(0),
-            Delay(200),
-
-            simulation.finish()
-        )
-
-        m.Always(Posedge(clk))(
-            EmbeddedCode('i= i%23;'),
-            If(i == 0)(
-                pac_rst(1)
-            )
-            .Else(
-                pac_rst(0)
-            ),
-            EmbeddedCode('i = i+1;')
-        )
-    
         return m
 
     #############################################

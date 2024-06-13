@@ -6,10 +6,13 @@ def grst_gen(m=None, g_period=16):
 initial i = 0;
 always @ (posedge dut_clk)
     begin
-        i = i % ''' + str(g_period) + ''';
-        if (i==0) dut_grst = 1;
-        if (i==1) dut_grst = 0;
-        i = i + 1;
+        if (dut_rstb) 
+            begin
+            i = i % ''' + str(g_period) + ''';
+            if (i==0) dut_grst = 1;
+            if (i==1) dut_grst = 0;
+            i = i + 1;
+        end
     end''')
 
 def rstb_gen(dump=None, rstb=None, delay_cycles=5):
@@ -19,7 +22,7 @@ def rstb_gen(dump=None, rstb=None, delay_cycles=5):
         rstb(1)
     )
     
-def add_to_dump(dump, dut, inputs, delays):
+def add_to_dump(dump, dut, inputs, delays, init=0):
     ports = dut.get_raw_inst_ports()
     ports = list(ports.items())
 
@@ -41,4 +44,5 @@ def add_to_dump(dump, dut, inputs, delays):
             dump.add(input_ports[j](inputs[j][i]))
         dump.add(Delay(delays[i]))
 
-    dump.add(simulation.finish())
+    if (init==0):
+        dump.add(simulation.finish())
