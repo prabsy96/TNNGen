@@ -1,5 +1,19 @@
 from veriloggen import *
 
+def init_dump(dut, m):
+    clk, grst, rstb = None, None, None
+    if 'clk' in dut.all_ports:
+        clk = dut['clk']
+        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+    if 'grst' in dut.all_ports:
+        grst = dut['grst']
+    if 'rstb' in dut.all_ports:
+        rstb = dut['rstb']
+    
+    dump = simulation.setup_waveform(m, dut, list((dut.all_raw_ports).values()))
+
+    return dump, clk, grst, rstb
+
 def grst_gen(m=None, g_period=16):
     i = m.Integer('i', 32, value=0)
     m.EmbeddedCode('''

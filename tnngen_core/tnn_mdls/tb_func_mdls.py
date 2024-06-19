@@ -2,7 +2,7 @@
 #
 # Migrated to separate file <YoungSeok Na>
 #
-# Additional Testbenches <Yuyang Kang>
+# Additional Testbenches <Wei-Che Huang>
 #
 # Testbench class
 
@@ -12,6 +12,7 @@ from tnn_mdls.sim_utils import *
 class Test_TNN_Functions(TNN_Functions):
 
     tnn = TNN_Functions()
+    tnn.layer_id = str(0)
 
     #############################################
     # less_equal
@@ -485,31 +486,21 @@ class Test_TNN_Functions(TNN_Functions):
     # neuron_body
     #############################################
     def Tb_Neuronbody(self, ip_size=4, thres=13, wres = 3):
-        self.tnn.layer_id = str(0)
 
         m = Module('test_neuron_body')
-        # ip_size = m.Parameter('IP_SIZE', ip_size)
-        # thres = m.Parameter('THRESHOLD', thres)
-        # wres = m.Parameter('WRES', wres)
-        ip_size = m.Parameter('IP_SIZE', 4)
-        thres = m.Parameter('THRESHOLD', 13)
-        wres = m.Parameter('WRES', 3)
 
-
-        nb, bdy_clk = self.tnn.Neuronbody(ip_size=ip_size.value, thres=thres.value, wres=wres.value)
-        dut = Submodule(m, nb, 'dut')
-
-        acc_in = dut['acc_in']
-        clk = dut['clk']
-        grst = dut['grst']
-        rstb = dut['rstb']
-        out_v = dut['output_spike']
+        # parameters
         tres = 3
         wres = 3
+        ip_size = m.Parameter('IP_SIZE', 4)
+        thres = m.Parameter('THRESHOLD', 6)
+        wres_v = m.Parameter('WRES', wres)
 
-        dump = simulation.setup_waveform(
-            m, dut, [acc_in, clk, grst, rstb, out_v])
-        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+        nb, bdy_clk = self.tnn.Neuronbody(ip_size=ip_size.value, thres=thres.value, wres=wres_v.value)
+        dut = Submodule(m, nb, 'dut')
+
+        # Setup waveform dump and simulation environment
+        dump, clk, grst, rstb = init_dump(dut, m)
 
         input_init = [[0]]
         delay_init = [5]
@@ -528,451 +519,130 @@ class Test_TNN_Functions(TNN_Functions):
         return m
 
     #############################################
-    # neuron_rnl
-    #############################################
-    def Tb_NeuronRNL(self, ip_size=4, thres=13, wres = 3):
-        m = Module('test_neuron_rnl')
-        ip_size = m.Parameter('IP_SIZE', ip_size)
-        thres = m.Parameter('THRESHOLD', thres)
-        wres = m.Parameter('WRES', wres)
-
-        rnl, rnl_clk = self.tnn.NeuronRNL(ip_size=ip_size.value, thres=thres.value, wres=wres)
-
-        here = m.copy_sim_ports(rnl)
-
-        input_spikes = here['input_spikes']
-        inc = here['inc']
-        dec = here['dec']
-        weight_en = here['weight_update_en']
-        aclk = here['aclk']
-        gclk = here['gclk']
-        grst = here['grst']
-        rst = here['rst']
-        out_v = here['out_spike']
-
-        dut = m.Instance(rnl, 'dut', ports=m.connect_ports(rnl))
-
-        i = m.Integer('i', 32, value=0)
-        j = m.Integer('j', 32, value=0)
-
-        dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(rnl))
-        clock = simulation.setup_clock(m, aclk, hperiod=0.5)
-
-        dump.add(
-            input_spikes(0),
-            inc(0),
-            dec(0),
-            rst(1),
-            Delay(18),
-
-            rst(0),
-            # /* Computational Wave 1 */
-
-            Delay(29),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            # /* Computational Wave 2 */
-
-            Delay(6),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-    
-            Delay(1),
-            input_spikes[2](0),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            Delay(4),
-            input_spikes[1](0),
-    
-            Delay(2),
-            input_spikes[2](0),
-    
-            # /* Computational Wave 3 */
-    
-            Delay(5),
-            inc[0](1),
-            inc[1](1),
-            inc[3](1),
-    
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-    
-            Delay(3),
-            input_spikes[0](1),
-    
-            Delay(4),
-            input_spikes[1](1),
-    
-            Delay(1),
-            input_spikes[3](0),
-    
-            Delay(1),
-            input_spikes[2](1),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            Delay(4),
-            input_spikes[1](0),
-    
-            Delay(2),
-            input_spikes[2](0),
-    
-            # /* Computational Wave 4 */
-    
-            Delay(5),
-            inc(1),
-    
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-    
-            Delay(3),
-            input_spikes[0](1),
-    
-            Delay(4),
-            input_spikes[1](1),
-    
-            Delay(1),
-            input_spikes[3](0),
-    
-            Delay(1),
-            input_spikes[2](1),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            Delay(4),
-            input_spikes[1](0),
-    
-            Delay(2),
-            input_spikes[2](0),
-    
-            # /* Computational Wave 5 */
-    
-            Delay(5),
-            inc(1),
-    
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](1),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            # /* Computational Wave 6 */
-
-            Delay(5),
-            inc(1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-
-            Delay(1),
-            input_spikes[3](0),
-
-            Delay(1),
-            input_spikes[2](0),
-
-            Delay(2),
-            input_spikes[0](0),
-
-            Delay(4),
-            input_spikes[1](0),
-
-            Delay(2),
-            input_spikes[2](0),
-
-            # /* Computational Wave 7 */
-
-            Delay(5),
-            inc[0](1),
-            inc[1](1),
-            inc[3](1),
-
-            Delay(1),
-            inc(0),
-            input_spikes[3](1),
-
-            Delay(3),
-            input_spikes[0](1),
-
-            Delay(4),
-            input_spikes[1](1),
-    
-            Delay(1),
-            input_spikes[3](0),
-    
-            Delay(1),
-            input_spikes[2](1),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            Delay(4),
-            input_spikes[1](0),
-    
-            Delay(2),
-            input_spikes[2](0),
-    
-            # /* Computational Wave 8 */
-    
-            Delay(5),
-            inc[0](1),
-            inc[1](1),
-            dec[2](1),
-            inc[3](1),
-    
-            Delay(1),
-            inc(0),
-            dec(0),
-            input_spikes[3](1),
-    
-            Delay(3),
-            input_spikes[0](1),
-    
-            Delay(4),
-            input_spikes[1](1),
-    
-            Delay(1),
-            input_spikes[3](0),
-    
-            Delay(1),
-            input_spikes[2](1),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            Delay(4),
-            input_spikes[1](0),
-    
-            Delay(2),
-            input_spikes[2](0),
-    
-            # /* Computational Wave 9 */
-    
-            Delay(5),
-            inc(1),
-    
-            Delay(1),
-            inc(0),
-            input_spikes[2](1),
-    
-            Delay(3),
-            input_spikes[1](1),
-    
-            Delay(4),
-            input_spikes[3](1),
-    
-            Delay(1),
-            input_spikes[2](0),
-    
-            Delay(1),
-            input_spikes[0](1),
-    
-            Delay(2),
-            input_spikes[1](0),
-    
-            Delay(4),
-            input_spikes[3](0),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            # /* Computational Wave 10 */
-    
-            Delay(5),
-            inc(1),
-    
-            Delay(1),
-            inc(0),
-            input_spikes[1](1),
-    
-            Delay(3),
-            input_spikes[0](1),
-    
-            Delay(4),
-            input_spikes[3](1),
-    
-            Delay(1),
-            input_spikes[1](0),
-    
-            Delay(1),
-            input_spikes[2](1),
-    
-            Delay(2),
-            input_spikes[0](0),
-    
-            Delay(4),
-            input_spikes[3](0),
-    
-            Delay(2),
-            input_spikes[2](0),
-    
-            Delay(10),
-            input_spikes(0),
-    
-            Delay(10),
-            simulation.finish()
-        )
-    
-        m.Initial(i(0))
-        m.Always(aclk)(
-            EmbeddedCode('i = i%23;'),
-            If(i == 0)(
-                EmbeddedCode('gclk = ~gclk;')
-            ),
-            EmbeddedCode('i = i+1;')
-        )
-    
-        m.Initial(j(0))
-        m.Always(Posedge(aclk))(
-            EmbeddedCode('j = j%23;'),
-            If(j == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('j = j+1;')
-        )
-    
-        return m
-
-    #############################################
     # segment - TODO
     #############################################
     def Tb_Segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
+
         m = Module('test_segment')
-        
-        j = m.Integer('j', 32, value=0)
+
+        # parameters
+        tres = 3
+        wres = 3
+        ip_size_dist = m.Parameter('INP_DIST', 4)
+        ip_size_prox = m.Parameter('INP_PROX', 1)
+        wres_dist = m.Parameter('WRES_DIST', 3)
+        wres_prox = m.Parameter('WRES_PROX', 3)
+        thres = m.Parameter('THRESHOLD', 4)
 
         # Instantiate the segment module
-        segment_mod, segment_clk = self.segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
+        segment_mod, segment_clk = self.tnn.segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
+        dut = Submodule(m, segment_mod, 'dut')
+        
+        # Setup waveform dump and simulation environment
+        dump, clk, grst, rstb = init_dump(dut, m)
+
+        input_init = [[0], # input_spikes_dist
+                      [1], # input_spikes_prox
+                      [0], # inc_dist
+                      [0], # inc_prox
+                      [0], # dec_dist
+                      [0], # dec_prox
+                      [0], # w_init_dist
+                      [0]] # w_init_prox
+        delay_init = [0]
+
+        add_to_dump(dump, dut, input_init, delay_init, 1)
+
+        rstb_gen(dump, rstb, 8)
+        grst_gen(m, ((2**tres)+(2**wres)))
+
+        # Hard coded for now
+        inputs = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # input_spikes_dist
+                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], # input_spikes_prox
+                  [0, 1, 1, 1, 3, 0, 2, 0, 0, 0, 0], # inc_dist
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # inc_prox
+                  [0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0], # dec_dist
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # dec_prox
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # w_init_dist
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] # w_init_prox
+        delays = [0, 16, 1, 8, 8, 8, 8, 8, 8, 8, 8]
+
+        add_to_dump(dump, dut, inputs, delays)
+
+        return m
+
+    #############################################
+    # Dendrite - TODO
+    #############################################
+    def Tb_Dendrite(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
+        self.tnn.layer_id = str(0)
+
+        m = Module('test_segment')
+
+        # parameters
+        ip_size_dist = m.Parameter('INP_DIST', 4)
+        ip_size_prox = m.Parameter('INP_PROX', 1)
+        wres_dist = m.Parameter('WRES_DIST', 3)
+        wres_prox = m.Parameter('WRES_PROX', 3)
+        thres = m.Parameter('THRESHOLD', 4)
+
+        # Instantiate the segment module
+        segment_mod, segment_clk = self.tnn.segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
+        dut = Submodule(m, segment_mod, 'dut')
 
         # Connect simulation ports
-        here = m.copy_sim_ports(segment_mod)
+        #here = m.copy_sim_ports(segment_mod)
         
-        input_spikes_dist = here['input_spikes_dist']
-        input_spikes_prox = here['input_spikes_prox']
-        inc_dist = here['inc_dist']
-        inc_prox = here['inc_prox']
-        dec_dist = here['dec_dist']
-        dec_prox = here['dec_prox']
-        clk = here['clk']
-        grst = here['grst']
-        rstb = here['rstb']
-        output_spike = here['output_spike']
-        
-        weights_dist = [here['weights_dist_'+str(i)] for i in range(ip_size_dist)]
-        weights_prox = [here['weights_prox_'+str(i)] for i in range(ip_size_prox)]
+        input_spikes_dist = dut['input_spikes_dist']
+        input_spikes_prox = dut['input_spikes_prox']
+        inc_dist = dut['inc_dist']
+        inc_prox = dut['inc_prox']
+        dec_dist = dut['dec_dist']
+        dec_prox = dut['dec_prox']
+        clk = dut['clk']
+        grst = dut['grst']
+        rstb = dut['rstb']
+        output_spike = dut['output_spike']
+        w_init_dist = dut['w_init_dist']
+        w_init_prox = dut['w_init_prox']
+        weights_dist = [dut['weights_dist_'+str(i)] for i in range(ip_size_dist.value)]
+        weights_prox = [dut['weights_prox_'+str(i)] for i in range(ip_size_prox.value)]
+        tres = 3
+        wres = 3
 
-        dut = m.Instance(segment_mod, 'dut', ports=m.connect_ports(segment_mod))
+        #dut = m.Instance(segment_mod, 'dut', ports=m.connect_ports(segment_mod))
 
         # Setup waveform dump and simulation environment
-        dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(segment_mod))
+        #dump = simulation.setup_waveform(m, dut, ports=m.connect_ports(segment_mod))
+        dump = simulation.setup_waveform(m, dut, [input_spikes_dist, input_spikes_prox, inc_dist, inc_prox, dec_dist, dec_prox, clk, grst, rstb, output_spike, w_init_dist, w_init_prox] + weights_dist + weights_prox)
         clock = simulation.setup_clock(m, clk, hperiod=0.5)
 
-        # Reset and weight initialization in the simulation sequence
-        dump.add(rstb(1), Delay(1), rstb(0), Delay(1))
-        for index in range(ip_size_dist):
-            dump.add(here['w_init_dist_' + str(index)](1))
-        for index in range(ip_size_prox):
-            dump.add(here['w_init_prox_' + str(index)](1))
-        
-        # Simulate input spikes and control operations for distal synapses
-        for cycle in range(5):
-            dump.add(
-                input_spikes_dist(1),
-                inc_dist(1),
-                Delay(15),
-                dec_dist(1),
-                Delay(15),
-                dec_dist(0),
-                Delay(15)
-            )
+        input_init = [[0], # input_spikes_dist
+                      [1], # input_spikes_prox
+                      [0], # inc_dist
+                      [0], # inc_prox
+                      [0], # dec_dist
+                      [0], # dec_prox
+                      [0], # w_init_dist
+                      [0]] # w_init_prox
+        delay_init = [0]
 
-        # Simulate input spikes and control operations for proximal synapses
-        for cycle in range(5):
-            dump.add(
-                input_spikes_prox(1),
-                inc_prox(1),
-                Delay(15),
-                dec_prox(1),
-                Delay(15),
-                dec_prox(0),
-                Delay(15)
-            )
-            
-        dump.add(simulation.finish())
+        add_to_dump(dump, dut, input_init, delay_init, 1)
 
-        m.Initial(j(0))
-        m.Always(Posedge(clk))(
-            EmbeddedCode('j = j%8;'),
-            If(j == 0)(
-                grst(1)
-            )
-            .Else(
-                grst(0)
-            ),
-            EmbeddedCode('j = j+1;')
-        )
+        rstb_gen(dump, rstb, 8)
+        grst_gen(m, ((2**tres)+(2**wres)))
+
+        # Hard coded for now
+        inputs = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # input_spikes_dist
+                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], # input_spikes_prox
+                  [0, 1, 1, 1, 3, 0, 2, 0, 0, 0, 0], # inc_dist
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # inc_prox
+                  [0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0], # dec_dist
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # dec_prox
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # w_init_dist
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] # w_init_prox
+        delays = [0, 16, 1, 8, 8, 8, 8, 8, 8, 8, 8]
+
+        add_to_dump(dump, dut, inputs, delays)
 
         return m
