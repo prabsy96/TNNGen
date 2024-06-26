@@ -491,30 +491,36 @@ class Test_TNN_Functions(TNN_Functions):
 
         # parameters
         tres = 3
-        wres = 3
+        wres = 4
         ip_size = m.Parameter('IP_SIZE', 4)
-        thres = m.Parameter('THRESHOLD', 6)
+        thres = m.Parameter('THRESHOLD', 11)
         wres_v = m.Parameter('WRES', wres)
 
         nb, bdy_clk = self.tnn.Neuronbody(ip_size=ip_size.value, thres=thres.value, wres=wres_v.value)
         dut = Submodule(m, nb, 'dut')
 
+        # input
+        acc_in = dut['acc_in']
+
         # Setup waveform dump and simulation environment
         dump, clk, grst, rstb = init_dump(dut, m)
 
-        input_init = [[0]]
-        delay_init = [5]
-
-        add_to_dump(dump, dut, input_init, delay_init, 1)
-
-        rstb_gen(dump, rstb, 4)
         grst_gen(m, ((2**tres)+(2**wres)))
+        add_to_dump_from_file(dump, dut, "tnn_mdls/neuronbody_test")
 
-        # Hard coded for now
-        inputs = [[0, 0, int('0001', 2), int('1001', 2), int('1000', 2), int('1100', 2), int('0100', 2), int('0000', 2), 0, 0, 0]] # acc_in
-        delays = [32, 1, 1, 4, 2, 1, 1, 20, 20, 20, 200]
+        # input_init = [[0]]
+        # delay_init = [5]
 
-        add_to_dump(dump, dut, inputs, delays)
+        # add_to_dump(dump, dut, input_init, delay_init, 1)
+
+        # rstb_gen(dump, rstb, 4)
+        # grst_gen(m, ((2**tres)+(2**wres)))
+
+        # # Hard coded for now
+        # inputs = [[0, 0, int('0001', 2), int('1001', 2), int('1000', 2), int('1100', 2), int('0100', 2), int('0000', 2), 0, 0, 0]] # acc_in
+        # delays = [32, 1, 1, 4, 2, 1, 1, 20, 20, 20, 200]
+
+        # add_to_dump(dump, dut, inputs, delays)
 
         return m
 
@@ -556,6 +562,8 @@ class Test_TNN_Functions(TNN_Functions):
         rstb_gen(dump, rstb, 8)
         grst_gen(m, ((2**tres)+(2**wres)))
 
+        # inputs = gen_inputs(file=inputs.txt) TODO
+
         # Hard coded for now
         inputs = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # input_spikes_dist
                   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], # input_spikes_prox
@@ -566,7 +574,8 @@ class Test_TNN_Functions(TNN_Functions):
                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # w_init_dist
                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] # w_init_prox
         delays = [0, 16, 1, 8, 8, 8, 8, 8, 8, 8, 8]
-
+        # output = [[]] TODO
+    
         add_to_dump(dump, dut, inputs, delays)
 
         return m

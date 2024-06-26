@@ -60,3 +60,20 @@ def add_to_dump(dump, dut, inputs, delays, init=0):
 
     if (init==0):
         dump.add(simulation.finish())
+
+def add_to_dump_from_file(dump, dut, filename):
+    ports = list((dut.all_ports).keys())
+    for i in range(len(ports)):
+        exec(ports[i]+'=dut[\"'+ports[i]+'\"]')
+    f = open(filename)
+    while True:
+        line = f.readline()
+        if not line:
+            dump.add(simulation.finish())
+            break
+        elif line.startswith("#"):
+            pass
+        else:
+            line = line.rstrip()
+            if line:
+                dump.add(eval(line.rstrip()))
