@@ -391,52 +391,56 @@ class Test_TNN_Functions(TNN_Functions):
         self.tnn.layer_id = str(0)
 
         m = Module('test_stdp')
+
+        # parameters
+        tres = 3
+        wres = 4
+
         stdp, stdp_clk = self.tnn.Stdp(wres)
         dut = Submodule(m, stdp, 'dut')
 
-        input_weight = dut['weight_in']
-        ein = dut['ein']
-        eout = dut['eout']
-        capture = dut['capture_brv']
-        minus = dut['minus_brv']
-        search = dut['search_brv']
-        backoff = dut['backoff_brv']
-        min_v = dut['min_brv']
-        F = dut['F_brv']
-        clk = dut['clk']
-        grst = dut['grst']
-        rstb = dut['rstb']
-        inc = dut['inc']
-        dec = dut['dec']
-        tres = 3
-        wres = 3
+        # input_weight = dut['weight_in']
+        # ein = dut['ein']
+        # eout = dut['eout']
+        # capture = dut['capture_brv']
+        # minus = dut['minus_brv']
+        # search = dut['search_brv']
+        # backoff = dut['backoff_brv']
+        # min_v = dut['min_brv']
+        # F = dut['F_brv']
+        # clk = dut['clk']
+        # grst = dut['grst']
+        # rstb = dut['rstb']
+        # inc = dut['inc']
+        # dec = dut['dec']
+        
 
-        dump = simulation.setup_waveform(m, dut,
-           [input_weight, ein, eout, capture, minus, search, backoff, min_v, F, clk, grst, rstb, inc, dec])
-        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+        # Setup waveform dump and simulation environment
+        dump, clk, grst, rstb = init_dump(dut, m)
 
         input_init = [[5],[0],[0],[1],[1],[1],[1],[1],[int('111111', 2)]]
         delay_init = [5]
 
         add_to_dump(dump, dut, input_init, delay_init, 1)
 
-        rstb_gen(dump, rstb, 5)
         grst_gen(m, ((2**tres)+(2**wres)))
+        rstb_gen(dump, rstb, 5)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/stdp_test")
 
-        # Hard coded for now
-        inputs = [[5, 5, 5, 5, 5, 5,  5, 5,  5,  5, 5, 5, 5, 5,  5, 5, 5,  5, 5, 5,  5, 5, 5,  5, 5, 5, 5, 5, 5, 5], # weight_in
-                  [0, 1, 1, 0, 0, 1,  0, 1,  0,  0, 0, 0, 0, 0,  0, 0, 0,  0, 0, 1,  0, 1, 0,  0, 0, 0, 0, 0, 0, 0], # ein
-                  [0, 0, 1, 0, 1, 1,  0, 0,  0,  1, 0, 0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 0, 0,  1, 0, 0, 0, 0, 0, 0], # eout
-                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # capture_brv
-                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1, 1, 1, 1, 1], # minus_brv
-                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # search_brv
-                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1, 1, 1, 1, 1], # backoff_brv
-                  [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # min_brv
-                  [63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
-                   61, 61, 61, 63, 63, 63, 63, 63, 63, 63, 63, 63]] # F_brv
-        delays = [5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 10, 5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 9, 10, 10]
+        # # Hard coded for now
+        # inputs = [[5, 5, 5, 5, 5, 5,  5, 5,  5,  5, 5, 5, 5, 5,  5, 5, 5,  5, 5, 5,  5, 5, 5,  5, 5, 5, 5, 5, 5, 5], # weight_in
+        #           [0, 1, 1, 0, 0, 1,  0, 1,  0,  0, 0, 0, 0, 0,  0, 0, 0,  0, 0, 1,  0, 1, 0,  0, 0, 0, 0, 0, 0, 0], # ein
+        #           [0, 0, 1, 0, 1, 1,  0, 0,  0,  1, 0, 0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 0, 0,  1, 0, 0, 0, 0, 0, 0], # eout
+        #           [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # capture_brv
+        #           [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1, 1, 1, 1, 1], # minus_brv
+        #           [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # search_brv
+        #           [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1, 1, 1, 1, 1], # backoff_brv
+        #           [1, 1, 1, 1, 1, 1,  1, 1,  1,  1, 1, 1, 1, 1,  1, 1, 1,  0, 0, 0,  0, 0, 0,  0, 0, 0, 0, 0, 0, 0], # min_brv
+        #           [63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
+        #            61, 61, 61, 63, 63, 63, 63, 63, 63, 63, 63, 63]] # F_brv
+        # delays = [5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 10, 5, 2, 16, 5, 2, 16, 5, 18, 16, 7, 5, 2, 6, 9, 10, 10]
 
-        add_to_dump(dump, dut, inputs, delays)
+        # add_to_dump(dump, dut, inputs, delays)
     
         return m
 
