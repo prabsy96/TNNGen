@@ -418,7 +418,7 @@ class Test_TNN_Functions(TNN_Functions):
         # Setup waveform dump and simulation environment
         dump, clk, grst, rstb = init_dump(dut, m)
 
-        input_init = [[5],[0],[0],[1],[1],[1],[1],[1],[int('111111', 2)]]
+        input_init = [[5],[0],[0],[1],[1],[1],[1],[1],[-1]]
         delay_init = [5]
 
         add_to_dump(dump, dut, input_init, delay_init, 1)
