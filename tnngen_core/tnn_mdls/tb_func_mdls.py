@@ -179,33 +179,27 @@ class Test_TNN_Functions(TNN_Functions):
 
         m = Module('test_wta')
 
+        # parameters
+        tres = 3
+        wres = 4
         q = m.Parameter('Q', 4)
-        wta, wta_clk = self.tnn.Wta(q.value)
 
+        wta, wta_clk = self.tnn.Wta(q.value)
         dut = Submodule(m, wta, 'dut')
 
-        ec_spikes = dut['ec_spikes']
-        clk = dut['clk']
-        grst = dut['grst']
-        rstb = dut['rstb']
-        li_out = dut['li_out']
-        tres = 3
-        wres = 3
+        # ec_spikes = dut['ec_spikes']
+        # clk = dut['clk']
+        # grst = dut['grst']
+        # rstb = dut['rstb']
+        # li_out = dut['li_out']
     
-        dump = simulation.setup_waveform(m, dut, [ec_spikes, clk, grst, rstb, li_out])
-        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+        # Setup waveform dump and simulation environment
+        dump, clk, grst, rstb = init_dump(dut, m)
 
         rstb_gen(dump, rstb, 5)
         grst_gen(m, ((2**tres)+(2**wres)))
 
-        # Hard coded for now
-        inputs = [[int('0000', 2), int('0110', 2), int('1110', 2), int('1111', 2), 
-                   int('1001', 2), int('0001', 2), int('0000', 2), int('1111', 2),
-                   int('0000', 2), int('1100', 2), int('1110', 2), int('1111', 2), 
-                   int('0011', 2), int('0001', 2), int('0000', 2), int('0000', 2)]] # ec_spikes
-        delays = [5, 1, 5, 2, 1, 5, 9, 8, 15, 1, 5, 6, 1, 5, 10, 100]
-
-        add_to_dump(dump, dut, inputs, delays)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/wta_test")
 
         return m
 
@@ -349,38 +343,35 @@ class Test_TNN_Functions(TNN_Functions):
         self.tnn.layer_id = str(0)
 
         m = Module('test_fsm_synapse')
+
+        # parameters
+        tres = 3
+        wres = 4
+
         synapse, synapse_clk= self.tnn.Fsm_synapse(wres)
         dut = Submodule(m, synapse, 'dut')
 
-        input_spike = dut['input_spike']
-        w_init = dut['w_init']
-        inc = dut['inc']
-        dec = dut['dec']
-        clk = dut['clk']
-        grst = dut['grst']
-        rstb = dut['rstb']
-        w_out = dut['w_out']
-        syn_out = dut['syn_out']
-        tres = 3
-        wres = 3
+        # input_spike = dut['input_spike']
+        # w_init = dut['w_init']
+        # inc = dut['inc']
+        # dec = dut['dec']
+        # clk = dut['clk']
+        # grst = dut['grst']
+        # rstb = dut['rstb']
+        # w_out = dut['w_out']
+        # syn_out = dut['syn_out']
+    
+        # Setup waveform dump and simulation environment
+        dump, clk, grst, rstb = init_dump(dut, m)
 
-        dump = simulation.setup_waveform(m, dut,
-            [input_spike, w_init, inc, dec, clk, grst, rstb, w_out, syn_out])
-        clock = simulation.setup_clock(m, clk, hperiod=0.5)
+        input_init = [[0],[0],[0],[0]]
+        delay_init = [5]
 
-        dump.add(w_init(0))
+        add_to_dump(dump, dut, input_init, delay_init, 1)
 
-        rstb_gen(dump, rstb, 5)
         grst_gen(m, ((2**tres)+(2**wres)))
-
-        # Hard coded for now
-        inputs = [[0, 1, 0,  1, 0, 0, 1, 0,  0, 1, 0,  0, 1, 0,  0], # input_spike
-                  [0, 0, 0,  0, 0, 0, 0, 0,  0, 0, 0,  0, 0, 0,  0], # w_init
-                  [0, 1, 1,  1, 1, 1, 1, 1,  0, 0, 0,  0, 0, 0,  0], # inc
-                  [0, 0, 0,  0, 0, 0, 0, 0,  1, 1, 1,  1, 1, 1,  0]] # dec
-        delays = [2, 3, 15,  4, 9, 1, 2, 13, 1, 5, 10, 1, 3, 12, 100]
-
-        add_to_dump(dump, dut, inputs, delays)
+        rstb_gen(dump, rstb, 5)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/fsm_synapse_test")
 
         return m
 
@@ -537,12 +528,12 @@ class Test_TNN_Functions(TNN_Functions):
 
         # parameters
         tres = 3
-        wres = 3
+        wres = 4
         ip_size_dist = m.Parameter('INP_DIST', 4)
         ip_size_prox = m.Parameter('INP_PROX', 1)
-        wres_dist = m.Parameter('WRES_DIST', 3)
-        wres_prox = m.Parameter('WRES_PROX', 3)
-        thres = m.Parameter('THRESHOLD', 4)
+        wres_dist = m.Parameter('WRES_DIST', wres)
+        wres_prox = m.Parameter('WRES_PROX', wres)
+        thres = m.Parameter('THRESHOLD', 13)
 
         # Instantiate the segment module
         segment_mod, segment_clk = self.tnn.segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres_dist, wres_prox=wres_prox, thres=thres)
@@ -566,21 +557,7 @@ class Test_TNN_Functions(TNN_Functions):
         rstb_gen(dump, rstb, 8)
         grst_gen(m, ((2**tres)+(2**wres)))
 
-        # inputs = gen_inputs(file=inputs.txt) TODO
-
-        # Hard coded for now
-        inputs = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # input_spikes_dist
-                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], # input_spikes_prox
-                  [0, 1, 1, 1, 3, 0, 2, 0, 0, 0, 0], # inc_dist
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # inc_prox
-                  [0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0], # dec_dist
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # dec_prox
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # w_init_dist
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] # w_init_prox
-        delays = [0, 16, 1, 8, 8, 8, 8, 8, 8, 8, 8]
-        # output = [[]] TODO
-    
-        add_to_dump(dump, dut, inputs, delays)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/segment_test")
 
         return m
 

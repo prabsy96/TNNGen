@@ -1,5 +1,43 @@
-weight_in(1),
+weight_in(14),
 # Wave: 0
+ein(0),
+eout(0),
+Delay(6),
+
+ein(1),
+eout(0),
+Delay(1),
+
+ein(1),
+eout(1),
+Delay(17),
+
+weight_in(7),
+# Wave: 1
+ein(0),
+eout(0),
+Delay(3),
+
+ein(1),
+eout(0),
+Delay(21),
+
+weight_in(0),
+# Wave: 2
+ein(0),
+eout(0),
+Delay(3),
+
+ein(1),
+eout(0),
+Delay(3),
+
+ein(1),
+eout(1),
+Delay(18),
+
+weight_in(4),
+# Wave: 3
 ein(0),
 eout(0),
 Delay(3),
@@ -12,74 +50,8 @@ ein(1),
 eout(1),
 Delay(17),
 
-weight_in(2),
-# Wave: 1
-ein(0),
-eout(0),
-Delay(1),
-
-ein(1),
-eout(0),
-Delay(23),
-
-weight_in(9),
-# Wave: 2
-ein(0),
-eout(0),
-Delay(1),
-
-ein(1),
-eout(0),
-Delay(23),
-
-weight_in(4),
-# Wave: 3
-ein(0),
-eout(0),
-Delay(24),
-
 weight_in(12),
 # Wave: 4
-ein(0),
-eout(0),
-Delay(3),
-
-ein(0),
-eout(1),
-Delay(2),
-
-ein(1),
-eout(1),
-Delay(19),
-
-weight_in(0),
-# Wave: 5
-ein(0),
-eout(0),
-Delay(24),
-
-weight_in(14),
-# Wave: 6
-ein(0),
-eout(0),
-Delay(7),
-
-ein(1),
-eout(0),
-Delay(17),
-
-weight_in(15),
-# Wave: 7
-ein(0),
-eout(0),
-Delay(6),
-
-ein(1),
-eout(0),
-Delay(18),
-
-weight_in(0),
-# Wave: 8
 ein(0),
 eout(0),
 Delay(3),
@@ -88,17 +60,65 @@ ein(1),
 eout(0),
 Delay(21),
 
-weight_in(2),
-# Wave: 9
+weight_in(12),
+# Wave: 5
 ein(0),
 eout(0),
 Delay(3),
 
 ein(1),
 eout(0),
+Delay(4),
+
+ein(1),
+eout(1),
+Delay(17),
+
+weight_in(7),
+# Wave: 6
+ein(0),
+eout(0),
+Delay(2),
+
+ein(1),
+eout(0),
+Delay(22),
+
+weight_in(11),
+# Wave: 7
+ein(0),
+eout(0),
 Delay(1),
+
+ein(0),
+eout(1),
+Delay(3),
 
 ein(1),
 eout(1),
 Delay(20),
+
+weight_in(5),
+# Wave: 8
+ein(0),
+eout(0),
+Delay(4),
+
+ein(0),
+eout(1),
+Delay(2),
+
+ein(1),
+eout(1),
+Delay(18),
+
+weight_in(14),
+# Wave: 9
+ein(0),
+eout(0),
+Delay(7),
+
+ein(0),
+eout(1),
+Delay(17),
 
