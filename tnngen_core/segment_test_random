@@ -13,16 +13,12 @@ input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(1),
 
+input_spikes_dist(0),
+input_spikes_prox(1),
+Delay(5),
+
 input_spikes_dist(8),
-input_spikes_prox(0),
-Delay(2),
-
-input_spikes_dist(10),
-input_spikes_prox(0),
-Delay(3),
-
-input_spikes_dist(11),
-input_spikes_prox(0),
+input_spikes_prox(1),
 Delay(1),
 
 input_spikes_dist(15),
@@ -33,16 +29,12 @@ input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(9),
 
+input_spikes_dist(15),
+input_spikes_prox(0),
+Delay(5),
+
 input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(2),
-
-input_spikes_dist(5),
-input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(4),
-input_spikes_prox(1),
+input_spikes_prox(0),
 Delay(1),
 
 input_spikes_dist(0),
@@ -52,182 +44,150 @@ Delay(1),
 # Wave: 1
 input_spikes_dist(0),
 input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(8),
+input_spikes_prox(1),
 Delay(1),
 
-input_spikes_dist(10),
-input_spikes_prox(0),
-Delay(2),
+input_spikes_dist(12),
+input_spikes_prox(1),
+Delay(1),
 
-input_spikes_dist(11),
-input_spikes_prox(0),
-Delay(2),
+input_spikes_dist(14),
+input_spikes_prox(1),
+Delay(3),
 
 input_spikes_dist(15),
-input_spikes_prox(0),
+input_spikes_prox(1),
 Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(2),
+Delay(10),
 
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(9),
+input_spikes_dist(7),
+input_spikes_prox(0),
+Delay(1),
 
-input_spikes_dist(5),
-input_spikes_prox(1),
-Delay(2),
+input_spikes_dist(3),
+input_spikes_prox(0),
+Delay(1),
 
-input_spikes_dist(4),
-input_spikes_prox(1),
-Delay(2),
+input_spikes_dist(1),
+input_spikes_prox(0),
+Delay(3),
 
 input_spikes_dist(0),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(2),
+Delay(1),
 
 # Wave: 2
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(0),
-input_spikes_prox(1),
 Delay(2),
 
-input_spikes_dist(6),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(2),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(2),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(9),
-
-input_spikes_dist(15),
+input_spikes_dist(1),
 input_spikes_prox(0),
 Delay(2),
 
-input_spikes_dist(9),
+input_spikes_dist(13),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(8),
-input_spikes_prox(0),
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(3),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(10),
+
+input_spikes_dist(14),
+input_spikes_prox(1),
 Delay(2),
 
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(2),
+input_spikes_dist(2),
+input_spikes_prox(1),
+Delay(1),
 
-# Wave: 3
 input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(3),
 
-input_spikes_dist(2),
+# Wave: 3
+input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(2),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(10),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(11),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(11),
-
-input_spikes_dist(13),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(13),
-input_spikes_prox(0),
-Delay(1),
+Delay(2),
 
 input_spikes_dist(5),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(4),
-input_spikes_prox(0),
+input_spikes_dist(5),
+input_spikes_prox(1),
+Delay(2),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(3),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(10),
+
+input_spikes_dist(10),
+input_spikes_prox(1),
 Delay(1),
+
+input_spikes_dist(10),
+input_spikes_prox(0),
+Delay(2),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
+Delay(3),
 
 # Wave: 4
 input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(2),
+input_spikes_dist(1),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(2),
-input_spikes_prox(1),
+input_spikes_dist(5),
+input_spikes_prox(0),
 Delay(2),
 
-input_spikes_dist(3),
+input_spikes_dist(5),
 input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(1),
+Delay(3),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(2),
+Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(9),
 
-input_spikes_dist(13),
+input_spikes_dist(14),
 input_spikes_prox(1),
 Delay(1),
 
-input_spikes_dist(13),
-input_spikes_prox(0),
+input_spikes_dist(10),
+input_spikes_prox(1),
 Delay(2),
 
-input_spikes_dist(12),
+input_spikes_dist(10),
 input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(8),
-input_spikes_prox(0),
-Delay(1),
+Delay(3),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(2),
+Delay(1),
 
 # Test inc prox:
 inc_dist(0),
@@ -240,66 +200,74 @@ input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(2),
 
-input_spikes_dist(11),
-input_spikes_prox(0),
-Delay(2),
+input_spikes_dist(8),
+input_spikes_prox(1),
+Delay(4),
+
+input_spikes_dist(14),
+input_spikes_prox(1),
+Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(4),
+Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(10),
 
-input_spikes_dist(4),
-input_spikes_prox(1),
-Delay(2),
+input_spikes_dist(7),
+input_spikes_prox(0),
+Delay(4),
+
+input_spikes_dist(1),
+input_spikes_prox(0),
+Delay(1),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(4),
+Delay(1),
 
 # Wave: 1
 input_spikes_dist(0),
 input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(2),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(14),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(14),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(3),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(10),
+
+input_spikes_dist(13),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(1),
+input_spikes_prox(1),
 Delay(1),
 
 input_spikes_dist(1),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(5),
-input_spikes_prox(1),
-Delay(4),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(9),
-
-input_spikes_dist(14),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(10),
-input_spikes_prox(0),
-Delay(4),
-
-input_spikes_dist(8),
-input_spikes_prox(0),
-Delay(1),
-
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
+Delay(3),
 
 # Wave: 2
 input_spikes_dist(0),
@@ -307,68 +275,84 @@ input_spikes_prox(0),
 Delay(1),
 
 input_spikes_dist(8),
-input_spikes_prox(0),
+input_spikes_prox(1),
 Delay(1),
 
-input_spikes_dist(9),
+input_spikes_dist(10),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(11),
 input_spikes_prox(1),
 Delay(3),
 
-input_spikes_dist(13),
-input_spikes_prox(1),
-Delay(2),
-
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(1),
+Delay(2),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(9),
 
 input_spikes_dist(7),
-input_spikes_prox(1),
+input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(6),
+input_spikes_dist(5),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(4),
 input_spikes_prox(0),
 Delay(3),
+
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(2),
+
+# Wave: 3
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(1),
 
 input_spikes_dist(2),
 input_spikes_prox(0),
 Delay(2),
 
-input_spikes_dist(0),
-input_spikes_prox(0),
+input_spikes_dist(2),
+input_spikes_prox(1),
 Delay(1),
 
-# Wave: 3
-input_spikes_dist(0),
-input_spikes_prox(0),
+input_spikes_dist(10),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(14),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
 Delay(2),
 
-input_spikes_dist(8),
-input_spikes_prox(0),
-Delay(3),
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(9),
+
+input_spikes_dist(13),
+input_spikes_prox(1),
+Delay(2),
 
 input_spikes_dist(13),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(2),
+input_spikes_dist(5),
+input_spikes_prox(0),
+Delay(1),
 
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(10),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(2),
-input_spikes_prox(1),
+input_spikes_dist(1),
+input_spikes_prox(0),
 Delay(1),
 
 input_spikes_dist(0),
@@ -378,43 +362,35 @@ Delay(2),
 # Wave: 4
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
+Delay(4),
 
-input_spikes_dist(8),
+input_spikes_dist(3),
 input_spikes_prox(0),
 Delay(2),
 
-input_spikes_dist(10),
+input_spikes_dist(3),
 input_spikes_prox(1),
 Delay(1),
-
-input_spikes_dist(11),
-input_spikes_prox(1),
-Delay(2),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(2),
+Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(9),
+Delay(12),
 
-input_spikes_dist(7),
+input_spikes_dist(12),
 input_spikes_prox(1),
 Delay(2),
 
-input_spikes_dist(5),
+input_spikes_dist(12),
 input_spikes_prox(0),
 Delay(1),
-
-input_spikes_dist(4),
-input_spikes_prox(0),
-Delay(2),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(2),
+Delay(1),
 
 # Test dec dist:
 inc_dist(0),
@@ -425,62 +401,124 @@ dec_prox(0),
 # Wave: 0
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(3),
-
-input_spikes_dist(8),
-input_spikes_prox(0),
-Delay(2),
-
-input_spikes_dist(10),
-input_spikes_prox(0),
-Delay(2),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
 Delay(1),
 
-input_spikes_dist(15),
+input_spikes_dist(4),
 input_spikes_prox(1),
-Delay(11),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(2),
+Delay(1),
 
 input_spikes_dist(5),
 input_spikes_prox(1),
-Delay(2),
-
-input_spikes_dist(0),
-input_spikes_prox(0),
 Delay(1),
 
-# Wave: 1
-input_spikes_dist(0),
-input_spikes_prox(0),
+input_spikes_dist(7),
+input_spikes_prox(1),
 Delay(3),
 
-input_spikes_dist(3),
-input_spikes_prox(0),
-Delay(1),
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(2),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(9),
 
 input_spikes_dist(11),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(15),
+input_spikes_dist(10),
 input_spikes_prox(0),
 Delay(1),
 
+input_spikes_dist(8),
+input_spikes_prox(0),
+Delay(3),
+
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(2),
+
+# Wave: 1
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(2),
+input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(6),
+input_spikes_prox(1),
+Delay(3),
+
 input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(10),
+
+input_spikes_dist(13),
+input_spikes_prox(1),
+Delay(2),
+
+input_spikes_dist(9),
+input_spikes_prox(0),
+Delay(3),
+
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(1),
+
+# Wave: 2
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(3),
+
+input_spikes_dist(4),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(12),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(14),
 input_spikes_prox(1),
 Delay(2),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
 Delay(11),
 
-input_spikes_dist(12),
+input_spikes_dist(11),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(3),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(1),
+input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(1),
+
+# Wave: 3
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(0),
 input_spikes_prox(1),
 Delay(1),
 
@@ -488,79 +526,25 @@ input_spikes_dist(4),
 input_spikes_prox(1),
 Delay(1),
 
-input_spikes_dist(0),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(2),
-
-# Wave: 2
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(1),
-input_spikes_prox(0),
-Delay(2),
-
-input_spikes_dist(5),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(7),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(9),
-
-input_spikes_dist(14),
-input_spikes_prox(1),
-Delay(2),
-
-input_spikes_dist(10),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(8),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(3),
-
-# Wave: 3
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(1),
-input_spikes_prox(0),
-Delay(4),
-
 input_spikes_dist(13),
 input_spikes_prox(1),
 Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(2),
+Delay(3),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(9),
+Delay(10),
 
-input_spikes_dist(14),
-input_spikes_prox(1),
-Delay(4),
+input_spikes_dist(15),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(11),
+input_spikes_prox(0),
+Delay(1),
 
 input_spikes_dist(2),
 input_spikes_prox(0),
@@ -568,7 +552,7 @@ Delay(1),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(2),
+Delay(3),
 
 # Wave: 4
 input_spikes_dist(0),
@@ -585,15 +569,11 @@ Delay(1),
 
 input_spikes_dist(12),
 input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(13),
-input_spikes_prox(1),
-Delay(1),
+Delay(2),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(1),
+Delay(3),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
@@ -609,15 +589,11 @@ Delay(1),
 
 input_spikes_dist(3),
 input_spikes_prox(0),
-Delay(3),
-
-input_spikes_dist(2),
-input_spikes_prox(0),
-Delay(1),
+Delay(2),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
+Delay(3),
 
 # Test dec prox:
 inc_dist(0),
@@ -630,17 +606,13 @@ input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(0),
-input_spikes_prox(1),
+input_spikes_dist(9),
+input_spikes_prox(0),
+Delay(4),
+
+input_spikes_dist(15),
+input_spikes_prox(0),
 Delay(2),
-
-input_spikes_dist(4),
-input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(13),
-input_spikes_prox(1),
-Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
@@ -650,17 +622,13 @@ input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(9),
 
-input_spikes_dist(15),
-input_spikes_prox(0),
+input_spikes_dist(6),
+input_spikes_prox(1),
+Delay(4),
+
+input_spikes_dist(0),
+input_spikes_prox(1),
 Delay(2),
-
-input_spikes_dist(11),
-input_spikes_prox(0),
-Delay(3),
-
-input_spikes_dist(2),
-input_spikes_prox(0),
-Delay(1),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
@@ -671,146 +639,130 @@ input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(1),
-input_spikes_prox(1),
-Delay(1),
+input_spikes_dist(2),
+input_spikes_prox(0),
+Delay(2),
 
-input_spikes_dist(3),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(1),
+input_spikes_dist(6),
+input_spikes_prox(0),
+Delay(3),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
-Delay(4),
+Delay(2),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(9),
 
-input_spikes_dist(14),
-input_spikes_prox(0),
-Delay(1),
+input_spikes_dist(13),
+input_spikes_prox(1),
+Delay(2),
 
-input_spikes_dist(12),
-input_spikes_prox(0),
-Delay(1),
+input_spikes_dist(9),
+input_spikes_prox(1),
+Delay(3),
 
-input_spikes_dist(8),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(4),
-
-# Wave: 2
 input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(2),
 
-input_spikes_dist(1),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(1),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(5),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(10),
-
-input_spikes_dist(14),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(14),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(10),
+# Wave: 2
+input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(1),
 
 input_spikes_dist(0),
+input_spikes_prox(1),
+Delay(2),
+
+input_spikes_dist(5),
+input_spikes_prox(1),
+Delay(3),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(2),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(9),
+
+input_spikes_dist(15),
+input_spikes_prox(0),
+Delay(2),
+
+input_spikes_dist(10),
 input_spikes_prox(0),
 Delay(3),
+
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(2),
 
 # Wave: 3
 input_spikes_dist(0),
 input_spikes_prox(0),
 Delay(1),
 
-input_spikes_dist(4),
+input_spikes_dist(8),
 input_spikes_prox(0),
-Delay(2),
+Delay(4),
 
-input_spikes_dist(12),
+input_spikes_dist(11),
 input_spikes_prox(1),
 Delay(1),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
+Delay(2),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(9),
+
+input_spikes_dist(7),
+input_spikes_prox(1),
 Delay(4),
+
+input_spikes_dist(4),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(2),
+
+# Wave: 4
+input_spikes_dist(0),
+input_spikes_prox(0),
+Delay(1),
+
+input_spikes_dist(4),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(7),
+input_spikes_prox(1),
+Delay(1),
+
+input_spikes_dist(15),
+input_spikes_prox(1),
+Delay(5),
 
 input_spikes_dist(15),
 input_spikes_prox(1),
 Delay(9),
 
 input_spikes_dist(11),
-input_spikes_prox(1),
-Delay(2),
-
-input_spikes_dist(3),
 input_spikes_prox(0),
 Delay(1),
-
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(4),
-
-# Wave: 4
-input_spikes_dist(0),
-input_spikes_prox(0),
-Delay(3),
 
 input_spikes_dist(8),
 input_spikes_prox(0),
-Delay(3),
-
-input_spikes_dist(11),
-input_spikes_prox(0),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(1),
-
-input_spikes_dist(15),
-input_spikes_prox(1),
-Delay(11),
-
-input_spikes_dist(7),
-input_spikes_prox(1),
-Delay(3),
-
-input_spikes_dist(4),
-input_spikes_prox(1),
 Delay(1),
 
 input_spikes_dist(0),
 input_spikes_prox(0),
-Delay(1),
+Delay(5),
 
