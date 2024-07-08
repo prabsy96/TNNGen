@@ -77,6 +77,100 @@ class Layer():
         layer_out.assign(temp_out)
 
         return m
+    
+    def Simple_Layer(self, layer_id=None):
+        m = Module('TNN_Layer_'+str(layer_id))
+        self.layer_id = str(layer_id)
+        num_col = m.Parameter('NUM_COL', int(self.num_col))
+        num_neurons = m.Parameter('NUM_NEURONS', int(self.num_neurons))
+        num_synapse = m.Parameter('NUM_SYNAPSE', int(self.p_dist))
+        wres = m.Parameter('WRES', int(self.wres_dist))
+        threshold = m.Parameter('THRESHOLD', int(self.thres))
+        in_width = m.Parameter('IN_WIDTH', int(num_col.value*num_neurons.value*num_synapse.value))
+        out_width = m.Parameter('OUT_WIDTH', int(num_col.value*num_neurons.value))
+        is_clk = m.Parameter('is_clk', 1)
+
+        ##################
+        # Inputs/Outputs #
+        ##################
+
+        clk = m.Input('clk')
+        grst = m.Input('grst')
+        rstb = m.Input('rstb')
+
+        # input_spikes (Different for each column, same for each neuron)
+        input_spikes_width = num_synapse.value
+        input_spikes = m.Input('layer_in', num_col.value*num_synapse.value)
+
+        # w_init
+        w_init_width = num_neurons.value*num_synapse.value*wres.value
+        w_init = m.Input('w_init', num_col.value*w_init_width)
+
+        # capture_brv
+        capture_brv_width = num_neurons.value*num_synapse.value
+        capture_brv = m.Input('capture_brv', num_col.value*capture_brv_width)
+
+        # minus_brv
+        minus_brv_width = num_neurons.value*num_synapse.value
+        minus_brv = m.Input('minus_brv', num_col.value*minus_brv_width)
+        
+        # search_brv
+        search_brv_width = num_neurons.value*num_synapse.value
+        search_brv = m.Input('search_brv', num_col.value*search_brv_width)
+        
+        # backoff_brv
+        backoff_brv_width = num_neurons.value*num_synapse.value
+        backoff_brv = m.Input('backoff_brv', num_col.value*backoff_brv_width)
+        
+        # min_brv
+        min_brv_width = num_neurons.value*num_synapse.value
+        min_brv = m.Input('min_brv', num_col.value*min_brv_width)
+        
+        # F_brv
+        F_brv_width = num_neurons.value*((1<<wres.value)-3 + 1)
+        F_brv = m.Input('F_brv', num_col.value*F_brv_width)
+
+        # Output_spikes
+        output_spikes = m.Output('layer_out', num_col.value*num_neurons.value)
+
+        ##################
+        # Instantiations #
+        ##################
+        tnn_func = TNN_Functions(self.layer_id, tnn7_en=self.tnn7_en)
+
+        column, _ = tnn_func.simple_column(num_neurons.value, num_synapse.value, wres.value, threshold.value)
+        for c in range(num_col.value):
+            col_ports = [clk, grst, rstb, 
+                         output_spikes.slice((c+1)*num_neurons.value-1, c*num_neurons.value)]
+            
+            # input_spikes
+            col_ports.append(input_spikes.slice((c+1)*input_spikes_width-1, c*input_spikes_width))
+
+            # w_init
+            col_ports.append(w_init.slice((c+1)*w_init_width-1, c*w_init_width))
+
+            # capture_brv
+            col_ports.append(capture_brv.slice((c+1)*capture_brv_width-1, c*capture_brv_width))
+
+            # minus_brv
+            col_ports.append(minus_brv.slice((c+1)*minus_brv_width-1, c*minus_brv_width))
+
+            # search_brv
+            col_ports.append(search_brv.slice((c+1)*search_brv_width-1, c*search_brv_width))
+
+            # backoff_brv
+            col_ports.append(backoff_brv.slice((c+1)*backoff_brv_width-1, c*backoff_brv_width))
+
+            # min_brv
+            col_ports.append(min_brv.slice((c+1)*min_brv_width-1, c*min_brv_width))
+
+            # F_brv
+            col_ports.append(F_brv.slice((c+1)*F_brv_width-1, c*F_brv_width))
+
+            m.Instance(column, 'L'+str(self.layer_id)+'_column_inst_'+str(c), params=[num_neurons.value, num_synapse.value, wres.value, threshold.value],
+                       ports = col_ports)
+        
+        return m
 
     def TNN_Layer(self, layer_id=None):
         m = Module('TNN_Layer_'+str(layer_id))

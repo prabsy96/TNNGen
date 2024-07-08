@@ -715,6 +715,155 @@ assign out = out_reg;
                   ports=[Cat(resp_func_prox,resp_func_dist), clk, grst, rstb, output_spike])
 
         return m, ('clk')
+
+    def simple_neuron(self, ip_size=16, wres=3, thres=13):
+
+        m = Module('L'+self.layer_id+'_simple_neuron')
+        # parameters
+        in_size = m.Parameter('INP', ip_size)
+        wres = m.Parameter('WRES', wres)
+        thres = m.Parameter('THRESHOLD', thres)
+
+        # inputs and outputs
+        input_spikes = m.Input('input_spikes', in_size.value)
+        inc = m.Input('inc', in_size.value)
+        dec = m.Input('dec', in_size.value)
+        clk = m.Input('clk', 1)
+        grst = m.Input('grst', 1)
+        rstb = m.Input('rstb', 1)
+        output_spike = m.Output('output_spike', 1)
+
+        w_init_width = wres.value
+        w_init = m.Input('w_init', in_size.value*w_init_width)
+
+        weights = []
+        for i in range(in_size.value):
+            weights.append(m.Output('weights_'+str(i), wres.value))
+
+        # wires/regs
+        resp_func = m.Wire('resp_func', in_size.value)
+            
+        # submodules
+        fsm_s, fsm_clk = self.Fsm_synapse(wres.value)
+        for i in range(in_size.value):
+            m.Instance(fsm_s, 'syn_'+str(i), params=None,
+                       ports=[input_spikes[i], w_init.slice((i+1)*w_init_width-1, i*w_init_width), inc[i], dec[i], clk, grst, rstb, weights[i], resp_func[i]])
+
+        # Neuron body
+        soma, soma_clk = self.Neuronbody(ip_size=in_size.value, thres=thres.value, wres=wres.value)
+        m.Instance(soma, 'soma', params=[in_size.value, thres.value, wres.value],
+                  ports=[resp_func, clk, grst, rstb, output_spike])
+
+        return m, ('clk')
+
+    def simple_column(self, num_neuron=2, num_synapse=3, wres=3, thres=13):
+
+        m = Module('L'+self.layer_id+'_simple_column')
+        num_neuron = m.Parameter('num_neuron', int(num_neuron))
+        num_synapse = m.Parameter('num_synapse', int(num_synapse))
+        wres = m.Parameter('WRES', int(wres))
+        thres = m.Parameter('THRESHOLD', int(thres))
+
+        ##################
+        # Inputs/Outputs #
+        ##################
+
+        # Control signals
+        clk = m.Input('clk')
+        grst = m.Input('grst')
+        rstb = m.Input('rstb')
+        # Output_spike
+        out_spike = m.Output('output_spike', num_neuron.value)
+        # Input Spikes
+        input_spikes = m.Input('input_spikes', num_synapse.value)
+
+        # STDP
+        w_init_width = num_synapse.value*wres.value
+        w_init = m.Input('w_init', num_neuron.value*w_init_width)
+
+        capture_brv_width = num_synapse.value
+        capture_brv = m.Input('capture_brv', num_neuron.value*capture_brv_width)
+        minus_brv_width = num_synapse.value
+        minus_brv = m.Input('minus_brv', num_neuron.value*minus_brv_width)
+        search_brv_width = num_synapse.value
+        search_brv = m.Input('search_brv', num_neuron.value*search_brv_width)
+        backoff_brv_width = num_synapse.value
+        backoff_brv = m.Input('backoff_brv', num_neuron.value*backoff_brv_width)
+        min_brv_width = num_synapse.value
+        min_brv = m.Input('min_brv', num_neuron.value*min_brv_width)
+        F_brv_width = ((1<<wres.value)-3 + 1)
+        F_brv = m.Input('F_brv', num_neuron.value*F_brv_width)
+
+        ##############
+        # Wires/Regs #
+        ##############
+
+        ein = m.Wire('ein', num_synapse.value)
+        eout = m.Wire('eout', num_neuron.value)
+        ec_spikes = m.Wire('ec_spikes', num_neuron.value)
+        li_spikes = m.Wire('li_spikes', num_neuron.value)
+
+        inc, dec, weights = [], [], []
+        for i in range(num_neuron.value):
+            inc.append(m.Wire('inc_'+str(i), num_synapse.value))
+            dec.append(m.Wire('dec_'+str(i), num_synapse.value))
+            for j in range(num_synapse.value):
+                weights.append(m.Wire('weights_'+str(i)+'_'+str(j), wres.value))
+
+        ##################
+        # Instantiations #
+        ##################
+
+        # edge_input_gen
+        pulse, pulse_clk = self.Pulse2edge()
+        for i in range(num_synapse.value):
+            m.Instance(pulse, 'pe_in_'+str(i), ports = [input_spikes[i], clk, grst, rstb, ein[i]])
+
+        # RNL neuron
+        n_neuron, _ = self.simple_neuron(num_synapse.value, wres.value, thres.value)
+        for i in range(num_neuron.value):
+            neuron_ports = [input_spikes, inc[i], dec[i], clk, grst, rstb, ec_spikes[i]]
+            neuron_ports.append(w_init.slice((i+1)*w_init_width-1, i*w_init_width))
+            for j in range(num_synapse.value):
+                neuron_ports.append(weights[i*num_synapse.value+j])
+
+            m.Instance(n_neuron, str('L')+self.layer_id+'_ec_'+str(i), params = [num_synapse.value, wres.value, thres.value],
+                       ports = neuron_ports)
+
+        # WTA
+        wta, _ = self.Wta(num_neuron.value)
+        m.Instance(wta, str('L')+self.layer_id+'_li', params = [num_neuron.value], ports = [ec_spikes, clk, grst, rstb, li_spikes])
+
+        # edge_output_gen
+        pulse, pulse_clk = self.Pulse2edge()
+        for i in range(num_neuron.value):
+            m.Instance(pulse, 'pe_out_'+str(i), ports = [li_spikes[i], clk, grst, rstb, eout[i]])
+
+        # stdp
+        stdp, _ = self.Stdp(wres.value)
+        for i in range(num_neuron.value):
+            for j in range(num_synapse.value):
+                m.Instance(stdp, str('L')+self.layer_id+'_stdp_'+str(i)+'_'+str(j), params = [wres.value],
+                    ports = [
+                    weights[i*num_synapse.value+j],
+                    ein[j],
+                    eout[i],
+                    capture_brv[i*num_synapse.value+j],
+                    minus_brv[i*num_synapse.value+j],
+                    search_brv[i*num_synapse.value+j],
+                    backoff_brv[i*num_synapse.value+j],
+                    min_brv[i*num_synapse.value+j],
+                    F_brv.slice((i+1)*F_brv_width-1, i*F_brv_width),
+                    clk,
+                    grst,
+                    rstb,
+                    inc[i][j],
+                    dec[i][j]
+                    ])
+
+        m.EmbeddedCode('assign output_spike = li_spikes;')
+
+        return m, clk.name
     
     # Minicolumn
     def Minicolumn(self, num_neurons=10, num_dend=1, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):

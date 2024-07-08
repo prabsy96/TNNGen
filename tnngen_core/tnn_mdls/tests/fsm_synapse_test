@@ -1,5 +1,4 @@
 w_init(str(w_init)),
-
 # Increment tests
 
 dec(0),
