@@ -11,7 +11,7 @@ def init_dump(dut, m):
         rstb = dut['rstb']
     
     dump = simulation.setup_waveform(m, dut, list((dut.all_raw_ports).values()))
-
+    dump.add(Delay(0.5))
     return dump, clk, grst, rstb
 
 def grst_gen(m=None, g_period=16):

@@ -19,3 +19,16 @@ tnngen_core/neuronbody_test_random
 tnngen_core/tnn_mdls/neuronbody_test
 tnngen_core/tnn_mdls/segment_tb.test
 tnngen_core/.ipynb_checkpoints/tb_test-checkpoint.ipynb
+tnngen_core/data/MNIST/processed/test.pt
+tnngen_core/data/MNIST/processed/training.pt
+tnngen_core/data/MNIST/raw/t10k-images-idx3-ubyte
+tnngen_core/data/MNIST/raw/t10k-images-idx3-ubyte.gz
+tnngen_core/data/MNIST/raw/t10k-labels-idx1-ubyte
+tnngen_core/data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+tnngen_core/data/MNIST/raw/train-images-idx3-ubyte
+tnngen_core/data/MNIST/raw/train-images-idx3-ubyte.gz
+tnngen_core/data/MNIST/raw/train-labels-idx1-ubyte
+tnngen_core/data/MNIST/raw/train-labels-idx1-ubyte.gz
+tnngen_core/MNIST_single_column
+tnngen_core/.ipynb_checkpoints/tb_test-checkpoint.ipynb
+tnngen_core/.ipynb_checkpoints/tb_test-checkpoint.ipynb

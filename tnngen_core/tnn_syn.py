@@ -13,6 +13,7 @@ from tnn_mdls.func_mdls import *
 from tnn_mdls.tb_func_mdls import *
 import time
 from model import Model
+from layer_tb import Test_Layers
 
 FLOW = ('rtl', 'sim', 'syn', 'pnr')
 TOOL = ('Synopsys', 'Cadence')
@@ -27,7 +28,7 @@ def convert_int(args, vid):
         raise TypeError(err_str)
 
 # Main procedure
-def tnn_syn(module_name, submodule_name, args):
+def tnn_syn(module_name, submodule_name, layer_name, args):
     console = Console()
     console.print("[bold magenta]   --> Starting TNN Syn!")
 
@@ -147,6 +148,9 @@ def tnn_syn(module_name, submodule_name, args):
             obj = tnn_sm.sm_testbench(submodule_name)
         else:
             obj, clk_name = tnn_sm.sm_rtl(submodule_name)
+    # Layers
+    elif layer_name != None:
+        obj = Test_Layers.Tb_Simple()
     else:
         raise ValueError('No valid model name to generate RTL for')
 
@@ -164,6 +168,9 @@ def tnn_syn(module_name, submodule_name, args):
     # Submodule
     elif submodule_name != None:
         filename = submodule_name+'.sv'
+    # Layers
+    elif layer_name != None:
+        filename = layer_name+'.sv'
     else:
         raise ValueError('No valid model name to generate RTL for')
 
