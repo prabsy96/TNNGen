@@ -733,8 +733,9 @@ assign out = out_reg;
         rstb = m.Input('rstb', 1)
         output_spike = m.Output('output_spike', 1)
 
-        w_init_width = wres.value
-        w_init = m.Input('w_init', in_size.value*w_init_width)
+        # w_init_width = wres.value
+        # w_init = m.Input('w_init', in_size.value*w_init_width)
+        w_init = m.Input('w_init', wres.value)
 
         weights = []
         for i in range(in_size.value):
@@ -746,8 +747,10 @@ assign out = out_reg;
         # submodules
         fsm_s, fsm_clk = self.Fsm_synapse(wres.value)
         for i in range(in_size.value):
+            # m.Instance(fsm_s, 'syn_'+str(i), params=None,
+            #            ports=[input_spikes[i], w_init.slice((i+1)*w_init_width-1, i*w_init_width), inc[i], dec[i], clk, grst, rstb, weights[i], resp_func[i]])
             m.Instance(fsm_s, 'syn_'+str(i), params=None,
-                       ports=[input_spikes[i], w_init.slice((i+1)*w_init_width-1, i*w_init_width), inc[i], dec[i], clk, grst, rstb, weights[i], resp_func[i]])
+                       ports=[input_spikes[i], w_init, inc[i], dec[i], clk, grst, rstb, weights[i], resp_func[i]])
 
         # Neuron body
         soma, soma_clk = self.Neuronbody(ip_size=in_size.value, thres=thres.value, wres=wres.value)
@@ -778,21 +781,29 @@ assign out = out_reg;
         input_spikes = m.Input('input_spikes', num_synapse.value)
 
         # STDP
-        w_init_width = num_synapse.value*wres.value
-        w_init = m.Input('w_init', num_neuron.value*w_init_width)
+        # w_init_width = num_synapse.value*wres.value
+        # w_init = m.Input('w_init', num_neuron.value*w_init_width)
 
-        capture_brv_width = num_synapse.value
-        capture_brv = m.Input('capture_brv', num_neuron.value*capture_brv_width)
-        minus_brv_width = num_synapse.value
-        minus_brv = m.Input('minus_brv', num_neuron.value*minus_brv_width)
-        search_brv_width = num_synapse.value
-        search_brv = m.Input('search_brv', num_neuron.value*search_brv_width)
-        backoff_brv_width = num_synapse.value
-        backoff_brv = m.Input('backoff_brv', num_neuron.value*backoff_brv_width)
-        min_brv_width = num_synapse.value
-        min_brv = m.Input('min_brv', num_neuron.value*min_brv_width)
-        F_brv_width = ((1<<wres.value)-3 + 1)
-        F_brv = m.Input('F_brv', num_neuron.value*F_brv_width)
+        # capture_brv_width = num_synapse.value
+        # capture_brv = m.Input('capture_brv', num_neuron.value*capture_brv_width)
+        # minus_brv_width = num_synapse.value
+        # minus_brv = m.Input('minus_brv', num_neuron.value*minus_brv_width)
+        # search_brv_width = num_synapse.value
+        # search_brv = m.Input('search_brv', num_neuron.value*search_brv_width)
+        # backoff_brv_width = num_synapse.value
+        # backoff_brv = m.Input('backoff_brv', num_neuron.value*backoff_brv_width)
+        # min_brv_width = num_synapse.value
+        # min_brv = m.Input('min_brv', num_neuron.value*min_brv_width)
+        # F_brv_width = ((1<<wres.value)-3 + 1)
+        # F_brv = m.Input('F_brv', num_neuron.value*F_brv_width)
+
+        w_init = m.Input('w_init', wres.value)
+        capture_brv = m.Input('capture_brv', num_synapse.value)
+        minus_brv = m.Input('minus_brv', num_synapse.value)
+        search_brv = m.Input('search_brv', num_synapse.value)
+        backoff_brv = m.Input('backoff_brv', num_synapse.value)
+        min_brv = m.Input('min_brv', num_synapse.value)
+        F_brv = m.Input('F_brv', ((1<<wres.value)-3 + 1))
 
         ##############
         # Wires/Regs #
@@ -823,7 +834,8 @@ assign out = out_reg;
         n_neuron, _ = self.simple_neuron(num_synapse.value, wres.value, thres.value)
         for i in range(num_neuron.value):
             neuron_ports = [input_spikes, inc[i], dec[i], clk, grst, rstb, ec_spikes[i]]
-            neuron_ports.append(w_init.slice((i+1)*w_init_width-1, i*w_init_width))
+            #neuron_ports.append(w_init.slice((i+1)*w_init_width-1, i*w_init_width))
+            neuron_ports.append(w_init)
             for j in range(num_synapse.value):
                 neuron_ports.append(weights[i*num_synapse.value+j])
 
@@ -843,17 +855,35 @@ assign out = out_reg;
         stdp, _ = self.Stdp(wres.value)
         for i in range(num_neuron.value):
             for j in range(num_synapse.value):
+                # m.Instance(stdp, str('L')+self.layer_id+'_stdp_'+str(i)+'_'+str(j), params = [wres.value],
+                #     ports = [
+                #     weights[i*num_synapse.value+j],
+                #     ein[j],
+                #     eout[i],
+                #     capture_brv[i*num_synapse.value+j],
+                #     minus_brv[i*num_synapse.value+j],
+                #     search_brv[i*num_synapse.value+j],
+                #     backoff_brv[i*num_synapse.value+j],
+                #     min_brv[i*num_synapse.value+j],
+                #     F_brv.slice((i+1)*F_brv_width-1, i*F_brv_width),
+                #     clk,
+                #     grst,
+                #     rstb,
+                #     inc[i][j],
+                #     dec[i][j]
+                #     ])
+
                 m.Instance(stdp, str('L')+self.layer_id+'_stdp_'+str(i)+'_'+str(j), params = [wres.value],
                     ports = [
                     weights[i*num_synapse.value+j],
                     ein[j],
                     eout[i],
-                    capture_brv[i*num_synapse.value+j],
-                    minus_brv[i*num_synapse.value+j],
-                    search_brv[i*num_synapse.value+j],
-                    backoff_brv[i*num_synapse.value+j],
-                    min_brv[i*num_synapse.value+j],
-                    F_brv.slice((i+1)*F_brv_width-1, i*F_brv_width),
+                    capture_brv[j],
+                    minus_brv[j],
+                    search_brv[j],
+                    backoff_brv[j],
+                    min_brv[j],
+                    F_brv,
                     clk,
                     grst,
                     rstb,

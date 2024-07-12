@@ -102,33 +102,54 @@ class Layer():
         input_spikes_width = num_synapse.value
         input_spikes = m.Input('layer_in', num_col.value*num_synapse.value)
 
+        # # w_init
+        # w_init_width = num_neurons.value*num_synapse.value*wres.value
+        # w_init = m.Input('w_init', num_col.value*w_init_width)
+
+        # # capture_brv
+        # capture_brv_width = num_neurons.value*num_synapse.value
+        # capture_brv = m.Input('capture_brv', num_col.value*capture_brv_width)
+
+        # # minus_brv
+        # minus_brv_width = num_neurons.value*num_synapse.value
+        # minus_brv = m.Input('minus_brv', num_col.value*minus_brv_width)
+        
+        # # search_brv
+        # search_brv_width = num_neurons.value*num_synapse.value
+        # search_brv = m.Input('search_brv', num_col.value*search_brv_width)
+        
+        # # backoff_brv
+        # backoff_brv_width = num_neurons.value*num_synapse.value
+        # backoff_brv = m.Input('backoff_brv', num_col.value*backoff_brv_width)
+        
+        # # min_brv
+        # min_brv_width = num_neurons.value*num_synapse.value
+        # min_brv = m.Input('min_brv', num_col.value*min_brv_width)
+        
+        # # F_brv
+        # F_brv_width = num_neurons.value*((1<<wres.value)-3 + 1)
+        # F_brv = m.Input('F_brv', num_col.value*F_brv_width)
+
         # w_init
-        w_init_width = num_neurons.value*num_synapse.value*wres.value
-        w_init = m.Input('w_init', num_col.value*w_init_width)
+        w_init = m.Input('w_init', wres.value)
 
         # capture_brv
-        capture_brv_width = num_neurons.value*num_synapse.value
-        capture_brv = m.Input('capture_brv', num_col.value*capture_brv_width)
+        capture_brv = m.Input('capture_brv', num_synapse.value)
 
         # minus_brv
-        minus_brv_width = num_neurons.value*num_synapse.value
-        minus_brv = m.Input('minus_brv', num_col.value*minus_brv_width)
+        minus_brv = m.Input('minus_brv', num_synapse.value)
         
         # search_brv
-        search_brv_width = num_neurons.value*num_synapse.value
-        search_brv = m.Input('search_brv', num_col.value*search_brv_width)
+        search_brv = m.Input('search_brv', num_synapse.value)
         
         # backoff_brv
-        backoff_brv_width = num_neurons.value*num_synapse.value
-        backoff_brv = m.Input('backoff_brv', num_col.value*backoff_brv_width)
+        backoff_brv = m.Input('backoff_brv', num_synapse.value)
         
         # min_brv
-        min_brv_width = num_neurons.value*num_synapse.value
-        min_brv = m.Input('min_brv', num_col.value*min_brv_width)
+        min_brv = m.Input('min_brv', num_synapse.value)
         
         # F_brv
-        F_brv_width = num_neurons.value*((1<<wres.value)-3 + 1)
-        F_brv = m.Input('F_brv', num_col.value*F_brv_width)
+        F_brv = m.Input('F_brv', ((1<<wres.value)-3 + 1))
 
         # Output_spikes
         output_spikes = m.Output('layer_out', num_col.value*num_neurons.value)
@@ -146,26 +167,47 @@ class Layer():
             # input_spikes
             col_ports.append(input_spikes.slice((c+1)*input_spikes_width-1, c*input_spikes_width))
 
+            # # w_init
+            # col_ports.append(w_init.slice((c+1)*w_init_width-1, c*w_init_width))
+
+            # # capture_brv
+            # col_ports.append(capture_brv.slice((c+1)*capture_brv_width-1, c*capture_brv_width))
+
+            # # minus_brv
+            # col_ports.append(minus_brv.slice((c+1)*minus_brv_width-1, c*minus_brv_width))
+
+            # # search_brv
+            # col_ports.append(search_brv.slice((c+1)*search_brv_width-1, c*search_brv_width))
+
+            # # backoff_brv
+            # col_ports.append(backoff_brv.slice((c+1)*backoff_brv_width-1, c*backoff_brv_width))
+
+            # # min_brv
+            # col_ports.append(min_brv.slice((c+1)*min_brv_width-1, c*min_brv_width))
+
+            # # F_brv
+            # col_ports.append(F_brv.slice((c+1)*F_brv_width-1, c*F_brv_width))
+
             # w_init
-            col_ports.append(w_init.slice((c+1)*w_init_width-1, c*w_init_width))
+            col_ports.append(w_init)
 
             # capture_brv
-            col_ports.append(capture_brv.slice((c+1)*capture_brv_width-1, c*capture_brv_width))
+            col_ports.append(capture_brv)
 
             # minus_brv
-            col_ports.append(minus_brv.slice((c+1)*minus_brv_width-1, c*minus_brv_width))
+            col_ports.append(minus_brv)
 
             # search_brv
-            col_ports.append(search_brv.slice((c+1)*search_brv_width-1, c*search_brv_width))
+            col_ports.append(search_brv)
 
             # backoff_brv
-            col_ports.append(backoff_brv.slice((c+1)*backoff_brv_width-1, c*backoff_brv_width))
+            col_ports.append(backoff_brv)
 
             # min_brv
-            col_ports.append(min_brv.slice((c+1)*min_brv_width-1, c*min_brv_width))
+            col_ports.append(min_brv)
 
             # F_brv
-            col_ports.append(F_brv.slice((c+1)*F_brv_width-1, c*F_brv_width))
+            col_ports.append(F_brv)
 
             m.Instance(column, 'L'+str(self.layer_id)+'_column_inst_'+str(c), params=[num_neurons.value, num_synapse.value, wres.value, threshold.value],
                        ports = col_ports)
