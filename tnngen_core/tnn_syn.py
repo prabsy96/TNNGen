@@ -105,21 +105,11 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             synapse_cnt = (pd + pp) * ns * nn * nc * nd
             model_name = f"model_{nodestr}_{lt}_{str(synapse_cnt)}"
             myModel = Model(model_name)
-            # myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=2, p_dist=8, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=6))
-            #myModel.add(Layer(layer_type="TNN", num_col=16, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
-            #myModel.add(Layer(layer_type="Kernel", rfsize=2, stride=1, nprev=2, inputsize=4))
-            #myModel.add(Layer(layer_type="TNN", num_col=9, num_neurons=1, num_dend=1, p_dist=8, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
-
-            #myModel.add(Layer(layer_type="TNN", num_col=args['col_cnt'], num_neurons=args['neuron_cnt'], num_dend=args['dend_cnt'], p_dist=args['p_dist'], p_prox=args['p_prox'], num_seg=args['segment_cnt'], wres_dist=3, wres_prox=3, thres=6))
-            #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=2, num_dend=1, p_dist=18, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
 
             myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=3, wres_prox=3, thres=6, tnn7_en=en_tnn7))
 
-            #myModel.add(Layer(layer_type="TNN", num_col=2, num_neurons=4, num_dend=1, p_dist=4, p_prox=1, num_seg=4, wres_dist=3, wres_prox=3, thres=6))
-            #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=4, num_dend=1, p_dist=2, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
-            #myModel.add(Layer(layer_type="TNN", num_col=1, num_neurons=1, num_dend=1, p_dist=4, p_prox=1, num_seg=1, wres_dist=3, wres_prox=3, thres=6))
-            myModel.summary()
-            myModel.compile()
+            #myModel.summary()
+            #myModel.compile()
             #col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
 
         # default to column

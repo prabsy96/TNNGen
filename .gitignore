@@ -32,3 +32,5 @@ tnngen_core/data/MNIST/raw/train-labels-idx1-ubyte.gz
 tnngen_core/MNIST_single_column
 tnngen_core/.ipynb_checkpoints/tb_test-checkpoint.ipynb
 tnngen_core/.ipynb_checkpoints/tb_test-checkpoint.ipynb
+tnngen_core/.ipynb_checkpoints/tb_dev-checkpoint.ipynb
+tnngen_core/.ipynb_checkpoints/tb_test-checkpoint.ipynb

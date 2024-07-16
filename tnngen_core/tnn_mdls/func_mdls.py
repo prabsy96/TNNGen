@@ -798,11 +798,11 @@ assign out = out_reg;
         # F_brv = m.Input('F_brv', num_neuron.value*F_brv_width)
 
         w_init = m.Input('w_init', wres.value)
-        capture_brv = m.Input('capture_brv', num_synapse.value)
-        minus_brv = m.Input('minus_brv', num_synapse.value)
-        search_brv = m.Input('search_brv', num_synapse.value)
-        backoff_brv = m.Input('backoff_brv', num_synapse.value)
-        min_brv = m.Input('min_brv', num_synapse.value)
+        capture_brv = m.Input('capture_brv', 1)
+        minus_brv = m.Input('minus_brv', 1)
+        search_brv = m.Input('search_brv', 1)
+        backoff_brv = m.Input('backoff_brv', 1)
+        min_brv = m.Input('min_brv', 1)
         F_brv = m.Input('F_brv', ((1<<wres.value)-3 + 1))
 
         ##############
@@ -878,11 +878,11 @@ assign out = out_reg;
                     weights[i*num_synapse.value+j],
                     ein[j],
                     eout[i],
-                    capture_brv[j],
-                    minus_brv[j],
-                    search_brv[j],
-                    backoff_brv[j],
-                    min_brv[j],
+                    capture_brv,
+                    minus_brv,
+                    search_brv,
+                    backoff_brv,
+                    min_brv,
                     F_brv,
                     clk,
                     grst,

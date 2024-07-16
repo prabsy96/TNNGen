@@ -15,6 +15,7 @@ def init_dump(dut, m):
     return dump, clk, grst, rstb
 
 def grst_gen(m=None, g_period=16):
+    g_period-=1
     i = m.Integer('i', 32, value=0)
     m.EmbeddedCode('''
 initial i = 0;

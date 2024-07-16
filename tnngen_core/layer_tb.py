@@ -11,21 +11,21 @@ class Test_Layers():
 
         # parameters
         num_col = 1
-        num_neurons = 4
+        num_neurons = 1
         num_synapse = 18
         tres = 1
-        wres = 7
-        thres = 64
+        wres = 3
+        thres = 3
 
         # Initial inputs
         layer_in = 0
         w_init = 0
-        capture_brv = -1
-        minus_brv = -1
-        search_brv = -1
-        backoff_brv = -1
-        min_brv = -1
-        F_brv = -1
+        capture_brv = 0
+        minus_brv = 0
+        search_brv = 0
+        backoff_brv = 0
+        min_brv = 0
+        F_brv = 0
 
         L = Layer(layer_type="Simple", num_col=num_col, num_neurons=num_neurons, p_dist=num_synapse, wres_dist=wres, thres=thres)
         simple = L.Simple_Layer(0)
@@ -35,7 +35,7 @@ class Test_Layers():
         dump, clk, grst, rstb = init_dump(dut, m)
 
         input_init = [[0], # layer_in
-                    [0], # w_init
+                    [w_init], # w_init
                     [capture_brv], # capture_brv
                     [minus_brv], # minus_brv
                     [search_brv], # search_brv

@@ -293,7 +293,7 @@ class STDP():
         self.stoch          = stochasticity
         self.layer          = layer
         
-    def __call__(self, intimes, outtimes, weights, rvcapture, rvsearch, rvbackoff, rvmin, rvstickup, rvstickdown):
+    def __call__(self, intimes, outtimes, weights, rvcapture, rvsearch, rvbackoff, rvmin, rvF):
         if self.layer == 0:
             intimes         = torch.flatten(intimes)
             q               = outtimes.shape[0]
@@ -310,12 +310,12 @@ class STDP():
             # Case 1 (capture)
             weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)] \
                            += rvcapture * torch.max(rvmin, \
-                              rvstickup[weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)].long()])
+                              rvF[weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)].long()])
             
             # Case 2 (minus)
             weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)] \
                            -= rvbackoff * torch.max(rvmin, \
-                              rvstickdown[weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)].long()])
+                              rvF[weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)].long()])
             
             # Case 3 (search)
             weights[(ec_in!=float('Inf'))*(li_out==float('Inf'))] \
@@ -324,7 +324,7 @@ class STDP():
             # Case 4 (backoff)
             weights[(ec_in==float('Inf'))*(li_out!=float('Inf'))] \
                            -= rvbackoff * torch.max(rvmin, \
-                              rvstickdown[weights[(ec_in==float('Inf'))*(li_out!=float('Inf'))].long()])
+                              rvF[weights[(ec_in==float('Inf'))*(li_out!=float('Inf'))].long()])
         
         # High stochasticity - Each synapse has a separate Bernoulli random variable associated with it.  
         elif self.stoch == "high":
@@ -333,14 +333,14 @@ class STDP():
             weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)] \
                            += rvcapture[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)] \
                             * torch.max(rvmin[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)], \
-                              torch.diagonal(rvstickup[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)] \
+                              torch.diagonal(rvF[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)] \
                               [:,weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in<=li_out)].long()],0))
             
             # Case 2 (minus)
             weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)] \
                            -= rvcapture[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)] \
                             * torch.max(rvmin[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)], \
-                              torch.diagonal(rvstickdown[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)] \
+                              torch.diagonal(rvF[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)] \
                               [:,weights[(ec_in!=float('Inf'))*(li_out!=float('Inf'))*(ec_in>li_out)].long()],0))
             
             # Case 3 (search)
@@ -351,7 +351,7 @@ class STDP():
             weights[(ec_in==float('Inf'))*(li_out!=float('Inf'))] \
                            -= rvbackoff[(ec_in==float('Inf'))*(li_out!=float('Inf'))] \
                             * torch.max(rvmin[(ec_in==float('Inf'))*(li_out!=float('Inf'))], \
-                              torch.diagonal(rvstickdown[(ec_in==float('Inf'))*(li_out!=float('Inf'))] \
+                              torch.diagonal(rvF[(ec_in==float('Inf'))*(li_out!=float('Inf'))] \
                               [:,weights[(ec_in==float('Inf'))*(li_out!=float('Inf'))].long()],0))
         
         return weights.clamp_(0, self.wmax)

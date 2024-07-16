@@ -1,4 +1,5 @@
 w_init(str(w_init)),
+
 # Increment tests
 
 dec(0),
@@ -6,148 +7,426 @@ inc(1),
 # Wave: 0
 Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(14),
+Delay(-1),
 
 # Wave: 1
-Delay(4),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(11),
+Delay(-1),
 
 # Wave: 2
-Delay(10),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(5),
+Delay(-1),
 
 # Wave: 3
-Delay(5),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(10),
+Delay(-1),
 
 # Wave: 4
-Delay(3),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(12),
+Delay(-1),
 
 # Wave: 5
-Delay(8),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(7),
+Delay(-1),
 
 # Wave: 6
-Delay(10),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(5),
+Delay(-1),
 
 # Wave: 7
-Delay(7),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(8),
+Delay(-1),
 
 # Wave: 8
-Delay(9),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(6),
+Delay(-1),
 
 # Wave: 9
-Delay(12),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(3),
+Delay(-1),
+
+# Wave: 10
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 11
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 12
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 13
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 14
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 15
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 16
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 17
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 18
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 19
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 20
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 21
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 22
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 23
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 24
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 25
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 26
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 27
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 28
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 29
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
 
 # Decrement tests
 
 dec(1),
 inc(0),
 # Wave: 0
-Delay(12),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(3),
+Delay(-1),
 
 # Wave: 1
 Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(14),
+Delay(-1),
 
 # Wave: 2
-Delay(3),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(12),
+Delay(-1),
 
 # Wave: 3
-Delay(6),
+Delay(1),
 input_spike(1),
-Delay(16),
-input_spike(0),
 Delay(9),
+input_spike(0),
+Delay(-1),
 
 # Wave: 4
-Delay(11),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(4),
+Delay(-1),
 
 # Wave: 5
-Delay(9),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(6),
+Delay(-1),
 
 # Wave: 6
-Delay(14),
-input_spike(1),
-Delay(16),
-input_spike(0),
 Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
 
 # Wave: 7
-Delay(10),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(5),
+Delay(-1),
 
 # Wave: 8
-Delay(15),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(0),
+Delay(-1),
 
 # Wave: 9
-Delay(15),
+Delay(1),
 input_spike(1),
-Delay(16),
+Delay(9),
 input_spike(0),
-Delay(0),
+Delay(-1),
 
-inc(0),
-dec(0),
+# Wave: 10
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 11
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 12
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 13
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 14
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 15
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 16
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 17
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 18
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 19
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 20
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 21
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 22
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 23
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 24
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 25
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 26
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 27
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 28
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+# Wave: 29
+Delay(1),
+input_spike(1),
+Delay(9),
+input_spike(0),
+Delay(-1),
+
+input_spike(0),
 Delay(100),
-

@@ -339,8 +339,8 @@ class Test_TNN_Functions(TNN_Functions):
         m = Module('test_fsm_synapse')
 
         # parameters
-        tres = 3
-        wres = 4
+        tres = 1
+        wres = 3
 
         synapse, synapse_clk= self.tnn.Fsm_synapse(wres)
         dut = Submodule(m, synapse, 'dut')
