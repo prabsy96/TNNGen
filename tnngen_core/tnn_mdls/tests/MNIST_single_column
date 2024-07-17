@@ -1,10 +1,11 @@
 # Wave: 0
 capture_brv(0),
-search_brv(0),
+search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(32),
+F_brv(0),
+
 layer_in(0),
 Delay(1),
 
@@ -20,28 +21,32 @@ search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(2),
+F_brv(17),
+
 layer_in(0),
 Delay(1),
 
 layer_in(511),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(511),
 Delay(7),
 
 # Wave: 2
 capture_brv(0),
-search_brv(0),
-backoff_brv(1),
+search_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(20),
+minus_brv(0),
+F_brv(0),
+
 layer_in(0),
 Delay(1),
 
 layer_in(4088),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(4088),
 Delay(7),
@@ -52,12 +57,14 @@ search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(20),
+F_brv(8),
+
 layer_in(0),
 Delay(1),
 
 layer_in(38836),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(38836),
 Delay(7),
@@ -65,31 +72,35 @@ Delay(7),
 # Wave: 4
 capture_brv(1),
 search_brv(0),
-backoff_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
+minus_brv(0),
 F_brv(4),
+
 layer_in(0),
 Delay(1),
 
 layer_in(8176),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(8176),
 Delay(7),
 
 # Wave: 5
 capture_brv(0),
-search_brv(0),
-backoff_brv(1),
+search_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
+minus_brv(0),
 F_brv(0),
+
 layer_in(0),
 Delay(1),
 
 layer_in(4088),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(4088),
 Delay(7),
@@ -97,15 +108,17 @@ Delay(7),
 # Wave: 6
 capture_brv(0),
 search_brv(0),
-backoff_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(0),
+minus_brv(0),
+F_brv(24),
+
 layer_in(0),
 Delay(1),
 
 layer_in(112420),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(112420),
 Delay(7),
@@ -113,47 +126,53 @@ Delay(7),
 # Wave: 7
 capture_brv(1),
 search_brv(0),
-backoff_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(0),
+minus_brv(0),
+F_brv(8),
+
 layer_in(0),
 Delay(1),
 
 layer_in(32704),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(32704),
 Delay(7),
 
 # Wave: 8
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
+capture_brv(0),
+search_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(16),
+minus_brv(0),
+F_brv(2),
+
 layer_in(0),
 Delay(1),
 
 layer_in(112420),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(112420),
 Delay(7),
 
 # Wave: 9
 capture_brv(0),
-search_brv(1),
+search_brv(0),
 backoff_brv(1),
 min_brv(0),
 minus_brv(1),
 F_brv(0),
+
 layer_in(0),
 Delay(1),
 
 layer_in(149723),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(149723),
 Delay(7),
@@ -164,60 +183,68 @@ search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(1),
+F_brv(2),
+
 layer_in(0),
 Delay(1),
 
 layer_in(261632),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(261632),
 Delay(7),
 
 # Wave: 11
-capture_brv(0),
+capture_brv(1),
 search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(4),
+F_brv(8),
+
 layer_in(0),
 Delay(1),
 
 layer_in(223307),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(223307),
 Delay(7),
 
 # Wave: 12
 capture_brv(0),
-search_brv(0),
+search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
+F_brv(33),
+
 layer_in(0),
 Delay(1),
 
 layer_in(261632),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(261632),
 Delay(7),
 
 # Wave: 13
-capture_brv(1),
+capture_brv(0),
 search_brv(0),
-backoff_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(2),
+minus_brv(0),
+F_brv(10),
+
 layer_in(0),
 Delay(1),
 
 layer_in(1022),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(1022),
 Delay(7),
@@ -228,44 +255,50 @@ search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(1),
+F_brv(0),
+
 layer_in(0),
 Delay(1),
 
 layer_in(112420),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(112420),
 Delay(7),
 
 # Wave: 15
-capture_brv(0),
+capture_brv(1),
 search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(32),
+F_brv(9),
+
 layer_in(0),
 Delay(1),
 
 layer_in(511),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(511),
 Delay(7),
 
 # Wave: 16
 capture_brv(0),
-search_brv(0),
-backoff_brv(1),
+search_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(14),
+minus_brv(0),
+F_brv(18),
+
 layer_in(0),
 Delay(1),
 
 layer_in(511),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(511),
 Delay(7),
@@ -273,1329 +306,55 @@ Delay(7),
 # Wave: 17
 capture_brv(1),
 search_brv(0),
-backoff_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(32),
+minus_brv(0),
+F_brv(0),
+
 layer_in(0),
 Delay(1),
 
 layer_in(228928),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(228928),
 Delay(7),
 
 # Wave: 18
-capture_brv(0),
+capture_brv(1),
 search_brv(0),
-backoff_brv(1),
+backoff_brv(0),
 min_brv(0),
-minus_brv(1),
-F_brv(8),
+minus_brv(0),
+F_brv(24),
+
 layer_in(0),
 Delay(1),
 
 layer_in(1022),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(1022),
 Delay(7),
 
 # Wave: 19
-capture_brv(0),
-search_brv(0),
+capture_brv(1),
+search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(163520),
-Delay(1),
-
-layer_in(163520),
-Delay(7),
-
-# Wave: 20
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(16352),
-Delay(1),
-
-layer_in(16352),
-Delay(7),
-
-# Wave: 21
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 22
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 23
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(34),
-layer_in(0),
-Delay(1),
-
-layer_in(47012),
-Delay(1),
-
-layer_in(47012),
-Delay(7),
-
-# Wave: 24
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(1),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 25
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(16),
-layer_in(0),
-Delay(1),
-
-layer_in(49056),
-Delay(1),
-
-layer_in(49056),
-Delay(7),
-
-# Wave: 26
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(4088),
-Delay(1),
-
-layer_in(4088),
-Delay(7),
-
-# Wave: 27
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(261632),
-Delay(1),
-
-layer_in(261632),
-Delay(7),
-
-# Wave: 28
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(16),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 29
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(13),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 30
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(261632),
-Delay(1),
-
-layer_in(261632),
-Delay(7),
-
-# Wave: 31
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(114464),
-Delay(1),
-
-layer_in(114464),
-Delay(7),
-
-# Wave: 32
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 33
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(1),
-layer_in(0),
-Delay(1),
-
-layer_in(258055),
-Delay(1),
-
-layer_in(258055),
-Delay(7),
-
-# Wave: 34
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(257033),
-Delay(1),
-
-layer_in(257033),
-Delay(7),
-
-# Wave: 35
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(1),
-layer_in(0),
-Delay(1),
-
-layer_in(253967),
-Delay(1),
-
-layer_in(253967),
-Delay(7),
-
-# Wave: 36
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(228928),
-Delay(1),
-
-layer_in(228928),
-Delay(7),
-
-# Wave: 37
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(221263),
-Delay(1),
-
-layer_in(221263),
-Delay(7),
-
-# Wave: 38
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 39
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 40
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(18),
-layer_in(0),
-Delay(1),
-
-layer_in(112420),
-Delay(1),
-
-layer_in(112420),
-Delay(7),
-
-# Wave: 41
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(10),
-layer_in(0),
-Delay(1),
-
-layer_in(259588),
-Delay(1),
-
-layer_in(259588),
-Delay(7),
-
-# Wave: 42
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(17),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 43
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(226884),
-Delay(1),
-
-layer_in(226884),
-Delay(7),
-
-# Wave: 44
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(10),
-layer_in(0),
-Delay(1),
-
-layer_in(113953),
-Delay(1),
-
-layer_in(113953),
-Delay(7),
-
-# Wave: 45
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(52),
-layer_in(0),
-Delay(1),
-
-layer_in(8176),
-Delay(1),
-
-layer_in(8176),
-Delay(7),
-
-# Wave: 46
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(2),
-layer_in(0),
-Delay(1),
-
-layer_in(24528),
-Delay(1),
-
-layer_in(24528),
-Delay(7),
-
-# Wave: 47
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(134393),
-Delay(1),
-
-layer_in(134393),
-Delay(7),
-
-# Wave: 48
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(229439),
-Delay(1),
-
-layer_in(229439),
-Delay(7),
-
-# Wave: 49
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(32),
-layer_in(0),
-Delay(1),
-
-layer_in(259588),
-Delay(1),
-
-layer_in(259588),
-Delay(7),
-
-# Wave: 50
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(245791),
-Delay(1),
-
-layer_in(245791),
-Delay(7),
-
-# Wave: 51
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 52
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(11),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 53
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(24),
-layer_in(0),
-Delay(1),
-
-layer_in(155344),
-Delay(1),
-
-layer_in(155344),
-Delay(7),
-
-# Wave: 54
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(32704),
-Delay(1),
-
-layer_in(32704),
-Delay(7),
-
-# Wave: 55
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(10),
-layer_in(0),
-Delay(1),
-
-layer_in(159432),
-Delay(1),
-
-layer_in(159432),
-Delay(7),
-
-# Wave: 56
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(32),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 57
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(1022),
-Delay(1),
-
-layer_in(1022),
-Delay(7),
-
-# Wave: 58
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(32704),
-Delay(1),
-
-layer_in(32704),
-Delay(7),
-
-# Wave: 59
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(24),
-layer_in(0),
-Delay(1),
-
-layer_in(49056),
-Delay(1),
-
-layer_in(49056),
-Delay(7),
-
-# Wave: 60
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 61
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(132860),
-Delay(1),
-
-layer_in(132860),
-Delay(7),
-
-# Wave: 62
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(12),
-layer_in(0),
-Delay(1),
-
-layer_in(216664),
-Delay(1),
-
-layer_in(216664),
-Delay(7),
-
-# Wave: 63
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(10),
-layer_in(0),
-Delay(1),
-
-layer_in(233527),
-Delay(1),
-
-layer_in(233527),
-Delay(7),
-
-# Wave: 64
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 65
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(248857),
-Delay(1),
-
-layer_in(248857),
-Delay(7),
-
-# Wave: 66
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(261632),
-Delay(1),
-
-layer_in(261632),
-Delay(7),
-
-# Wave: 67
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(112420),
-Delay(1),
-
-layer_in(112420),
-Delay(7),
-
-# Wave: 68
-capture_brv(1),
-search_brv(0),
-backoff_brv(0),
-min_brv(1),
-minus_brv(0),
-F_brv(44),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 69
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(215131),
-Delay(1),
-
-layer_in(215131),
-Delay(7),
-
-# Wave: 70
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(16),
-layer_in(0),
-Delay(1),
-
-layer_in(112420),
-Delay(1),
-
-layer_in(112420),
-Delay(7),
-
-# Wave: 71
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(18),
-layer_in(0),
-Delay(1),
-
-layer_in(196735),
-Delay(1),
-
-layer_in(196735),
-Delay(7),
-
-# Wave: 72
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(1),
-minus_brv(1),
-F_brv(16),
-layer_in(0),
-Delay(1),
-
-layer_in(37814),
-Delay(1),
-
-layer_in(37814),
-Delay(7),
-
-# Wave: 73
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(18),
-layer_in(0),
-Delay(1),
-
-layer_in(135926),
-Delay(1),
-
-layer_in(135926),
-Delay(7),
-
-# Wave: 74
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(20),
-layer_in(0),
-Delay(1),
-
-layer_in(249879),
-Delay(1),
-
-layer_in(249879),
-Delay(7),
-
-# Wave: 75
-capture_brv(1),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(245791),
-Delay(1),
-
-layer_in(245791),
-Delay(7),
-
-# Wave: 76
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(114464),
-Delay(1),
-
-layer_in(114464),
-Delay(7),
-
-# Wave: 77
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(114464),
-Delay(1),
-
-layer_in(114464),
-Delay(7),
-
-# Wave: 78
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(38836),
-Delay(1),
-
-layer_in(38836),
-Delay(7),
-
-# Wave: 79
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(2),
-layer_in(0),
-Delay(1),
-
-layer_in(196735),
-Delay(1),
-
-layer_in(196735),
-Delay(7),
-
-# Wave: 80
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(44),
-layer_in(0),
-Delay(1),
-
-layer_in(229439),
-Delay(1),
-
-layer_in(229439),
-Delay(7),
-
-# Wave: 81
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
 F_brv(6),
+
 layer_in(0),
 Delay(1),
 
-layer_in(213087),
+layer_in(163520),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
-layer_in(213087),
-Delay(7),
-
-# Wave: 82
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 83
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(5110),
-Delay(1),
-
-layer_in(5110),
-Delay(7),
-
-# Wave: 84
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(27),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 85
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(245280),
-Delay(1),
-
-layer_in(245280),
-Delay(7),
-
-# Wave: 86
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(32),
-layer_in(0),
-Delay(1),
-
-layer_in(229439),
-Delay(1),
-
-layer_in(229439),
-Delay(7),
-
-# Wave: 87
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(52),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 88
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 89
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(24),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 90
-capture_brv(1),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 91
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(1),
-layer_in(0),
-Delay(1),
-
-layer_in(196735),
-Delay(1),
-
-layer_in(196735),
-Delay(7),
-
-# Wave: 92
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(1),
-minus_brv(1),
-F_brv(8),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 93
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-layer_in(0),
-Delay(1),
-
-layer_in(135926),
-Delay(1),
-
-layer_in(135926),
-Delay(7),
-
-# Wave: 94
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(228928),
-Delay(1),
-
-layer_in(228928),
-Delay(7),
-
-# Wave: 95
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(12),
-layer_in(0),
-Delay(1),
-
-layer_in(131327),
-Delay(1),
-
-layer_in(131327),
-Delay(7),
-
-# Wave: 96
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(4),
-layer_in(0),
-Delay(1),
-
-layer_in(511),
-Delay(1),
-
-layer_in(511),
-Delay(7),
-
-# Wave: 97
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(2),
-layer_in(0),
-Delay(1),
-
-layer_in(228928),
-Delay(1),
-
-layer_in(228928),
-Delay(7),
-
-# Wave: 98
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(18),
-layer_in(0),
-Delay(1),
-
-layer_in(261121),
-Delay(1),
-
-layer_in(261121),
-Delay(7),
-
-# Wave: 99
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(12),
-layer_in(0),
-Delay(1),
-
-layer_in(1022),
-Delay(1),
-
-layer_in(1022),
+layer_in(163520),
 Delay(7),
 
 layer_in(0),
