@@ -7,7 +7,8 @@
         "ntype", "ramp", "w_init", "k", "stoch", "ucapture", "usearch", "ubackoff",
         "ubackoff_simp", "umin", "inc_learn", "weights_save",
         "ltype", "p_dist", "p_prox", "segment_cnt", "neuron_cnt", "col_cnt", "dend_cnt",
-        "flow", "aclk_freq", "gclk_freq", "gen_eff", "tool", "node", "lib_path", "lef_path"
+        "flow", "aclk_freq", "gclk_freq", "gen_eff", "tool", "node", "lib_path", "lef_path",
+        "wres_dist", "wres_prox", "threshold"
     ],
     "switch_modes" : ["on", "off"],
     "common_param" : ["neurons", "rfsize", "theta", "nprev", "wres", "ip_size_dist", "ip_size_prox"],
@@ -18,7 +19,7 @@
         "ubackoff_simp", "umin", "inc_learn", "weights_save"
     ],
     "syn_only" : [
-        "ltype", "p_dist", "p_prox", "segment_cnt", "neuron_cnt", "col_cnt", "dend_cnt",
+        "ltype", "wres_dist", "wres_prox", "threshold", "p_dist", "p_prox", "segment_cnt", "neuron_cnt", "col_cnt", "dend_cnt",
         "flow", "aclk_freq", "gclk_freq", "gen_eff", "tool", "node", "lib_path", "lef_path"
     ]
 }

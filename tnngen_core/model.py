@@ -21,6 +21,8 @@ class Model:
             pass
         elif (layer.layer_type == "Kernel"):
             pass
+        elif (layer.layer_type == "Simple"):
+            pass
         else:
             raise ValueError("layer_type: '" + layer.layer_type + "' does not exist!")
         
@@ -30,6 +32,8 @@ class Model:
             self.layers.append(self.check_params(layer.CV_Layer(len(self.layers))))
         elif (layer.layer_type == "Kernel"):
             self.layers.append(self.check_params(layer.Kernel_Layer(len(self.layers))))
+        elif (layer.layer_type == "Simple"):
+            self.layers.append(self.check_params(layer.Simple_Layer(len(self.layers))))
         
 
     def check_params(self, layer):

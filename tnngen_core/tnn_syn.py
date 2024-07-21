@@ -92,7 +92,7 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
         elif module_name == 'dendrite':
             # Parameter parsing
             lt = args['ltype']
-            if lt not in ['TNN', 'CV']:
+            if lt not in ['TNN', 'CV', 'Simple']:
                 raise ValueError("Layer type must be \"TNN\" or \"CV\" for dendrite")
             nc = convert_int(args, 'col_cnt') 
             nn = convert_int(args, 'neuron_cnt')
@@ -100,17 +100,19 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             ns = convert_int(args, 'segment_cnt')
             pd = convert_int(args, 'p_dist')
             pp = convert_int(args, 'p_prox')
+            wd = convert_int(args, 'wres_dist')
+            wp = convert_int(args, 'wres_prox')
+            th = convert_int(args, 'threshold')
 
             # generate verilog
             synapse_cnt = (pd + pp) * ns * nn * nc * nd
             model_name = f"model_{nodestr}_{lt}_{str(synapse_cnt)}"
             myModel = Model(model_name)
 
-            myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=3, wres_prox=3, thres=6, tnn7_en=en_tnn7))
+            myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
 
-            #myModel.summary()
-            #myModel.compile()
-            #col = ActiveDendrite(num_col=2, num_neurons=10, num_dend=10, p_dist=18, p_prox=1, num_seg=8, wres_dist=wres, wres_prox=wres, thres=theta)
+            myModel.summary()
+            myModel.compile()
 
         # default to column
         else:
@@ -119,7 +121,6 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
         # Generate model objects
         if flow == 'syn' or flow == 'pnr': 
             if module_name == 'dendrite':
-                #obj, clk_name = col.CV_Layer()
                 obj = myModel.model
             else:
                 obj, clk_name = col.col_v()
@@ -127,7 +128,6 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             obj = col.col_tb()
         elif flow == 'rtl':
             if module_name == 'dendrite':
-                #obj, clk_name = col.CV_Layer()
                 obj = myModel.model
             else:
                 obj, clk_name = col.col_v()
@@ -161,6 +161,7 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
     # Layers
     elif layer_name != None:
         filename = layer_name+'.sv'
+        module_name = 'simple'
     else:
         raise ValueError('No valid model name to generate RTL for')
 

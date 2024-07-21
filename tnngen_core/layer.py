@@ -79,7 +79,7 @@ class Layer():
         return m
     
     def Simple_Layer(self, layer_id=None):
-        m = Module('TNN_Layer_'+str(layer_id))
+        m = Module('Simple_Layer_'+str(layer_id))
         self.layer_id = str(layer_id)
         num_col = m.Parameter('NUM_COL', int(self.num_col))
         num_neurons = m.Parameter('NUM_NEURONS', int(self.num_neurons))

@@ -51,13 +51,16 @@ dend_cnt        = 1              # Dendrite Count
 segment_cnt     = 1               # Segment
 p_dist          = 18              # Distal
 p_prox          = 1               # Proximal
+wres_dist	= 3
+wres_prox	= 1
+threshold	= 6
 
 ### Frequency
-flow            = pnr             # Hardware process flow
+flow            = sim             # Hardware process flow
 aclk_freq       = 2147483.00   # System Clock period in ps
 gclk_freq       = 2147483.00   # Gamma Clock period in ps
 tool            = Cadence         # Synopsys/Cadence
-node            = 77              # Process Node (45 - Nangate45, 7 - ASAP7, 77 - ASAP7+TNN7)
+node            = 7              # Process Node (45 - Nangate45, 7 - ASAP7, 77 - ASAP7+TNN7)
 #lib_path        =                 # path to cell library
 #lef_path        =                 # path to lef files
 #qrc_file        =
