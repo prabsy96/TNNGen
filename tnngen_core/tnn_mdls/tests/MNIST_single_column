@@ -1,13 +1,14 @@
 # Wave: 0
+Delay(0.5),
 capture_brv(0),
 search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
+F_brv(4),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
 layer_in(209510),
 Delay(1),
@@ -15,25 +16,75 @@ Delay(1),
 layer_in(209510),
 Delay(7),
 
+layer_in(0),
+Delay(8),
+
 # Wave: 1
+Delay(0.5),
 capture_brv(0),
 search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(17),
+F_brv(0),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
 layer_in(511),
 Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(511),
 Delay(7),
 
+layer_in(0),
+Delay(8),
+
 # Wave: 2
+Delay(0.5),
+capture_brv(1),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(9),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(4088),
+Delay(1),
+
+layer_in(4088),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 3
+Delay(0.5),
+capture_brv(1),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(0),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(38836),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(38836),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 4
+Delay(0.5),
 capture_brv(0),
 search_brv(1),
 backoff_brv(0),
@@ -42,34 +93,64 @@ minus_brv(0),
 F_brv(0),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
-layer_in(4088),
+layer_in(8176),
 Delay(1),
 EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
-layer_in(4088),
+layer_in(8176),
 Delay(7),
 
-# Wave: 3
+layer_in(0),
+Delay(8),
+
+# Wave: 5
+Delay(0.5),
 capture_brv(1),
 search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(8),
+F_brv(0),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
-layer_in(38836),
+layer_in(4088),
 Delay(1),
 EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
-layer_in(38836),
+layer_in(4088),
 Delay(7),
 
-# Wave: 4
+layer_in(0),
+Delay(8),
+
+# Wave: 6
+Delay(0.5),
+capture_brv(1),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(0),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(112420),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(112420),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 7
+Delay(0.5),
 capture_brv(1),
 search_brv(0),
 backoff_brv(0),
@@ -78,61 +159,7 @@ minus_brv(0),
 F_brv(4),
 
 layer_in(0),
-Delay(1),
-
-layer_in(8176),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(8176),
-Delay(7),
-
-# Wave: 5
-capture_brv(0),
-search_brv(1),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(0),
-
-layer_in(0),
-Delay(1),
-
-layer_in(4088),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(4088),
-Delay(7),
-
-# Wave: 6
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(24),
-
-layer_in(0),
-Delay(1),
-
-layer_in(112420),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(112420),
-Delay(7),
-
-# Wave: 7
-capture_brv(1),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(8),
-
-layer_in(0),
-Delay(1),
+Delay(0.5),
 
 layer_in(32704),
 Delay(1),
@@ -140,63 +167,13 @@ EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(32704),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 8
+Delay(0.5),
 capture_brv(0),
-search_brv(1),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(2),
-
-layer_in(0),
-Delay(1),
-
-layer_in(112420),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(112420),
-Delay(7),
-
-# Wave: 9
-capture_brv(0),
-search_brv(0),
-backoff_brv(1),
-min_brv(0),
-minus_brv(1),
-F_brv(0),
-
-layer_in(0),
-Delay(1),
-
-layer_in(149723),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(149723),
-Delay(7),
-
-# Wave: 10
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(2),
-
-layer_in(0),
-Delay(1),
-
-layer_in(261632),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(261632),
-Delay(7),
-
-# Wave: 11
-capture_brv(1),
 search_brv(0),
 backoff_brv(0),
 min_brv(0),
@@ -204,25 +181,51 @@ minus_brv(0),
 F_brv(8),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
-layer_in(223307),
+layer_in(112420),
 Delay(1),
 EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
-layer_in(223307),
+layer_in(112420),
 Delay(7),
 
-# Wave: 12
+layer_in(0),
+Delay(8),
+
+# Wave: 9
+Delay(0.5),
 capture_brv(0),
-search_brv(1),
+search_brv(0),
+backoff_brv(0),
+min_brv(1),
+minus_brv(0),
+F_brv(0),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(149723),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(149723),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 10
+Delay(0.5),
+capture_brv(0),
+search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
 F_brv(33),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
 layer_in(261632),
 Delay(1),
@@ -231,62 +234,56 @@ EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 layer_in(261632),
 Delay(7),
 
-# Wave: 13
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(10),
-
 layer_in(0),
-Delay(1),
+Delay(8),
 
-layer_in(1022),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(1022),
-Delay(7),
-
-# Wave: 14
-capture_brv(0),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(0),
-
-layer_in(0),
-Delay(1),
-
-layer_in(112420),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(112420),
-Delay(7),
-
-# Wave: 15
+# Wave: 11
+Delay(0.5),
 capture_brv(1),
 search_brv(0),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(9),
+F_brv(40),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
-layer_in(511),
+layer_in(223307),
 Delay(1),
 EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
-layer_in(511),
+layer_in(223307),
 Delay(7),
 
-# Wave: 16
+layer_in(0),
+Delay(8),
+
+# Wave: 12
+Delay(0.5),
 capture_brv(0),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(16),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(261632),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(261632),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 13
+Delay(0.5),
+capture_brv(1),
 search_brv(1),
 backoff_brv(0),
 min_brv(0),
@@ -294,7 +291,51 @@ minus_brv(0),
 F_brv(18),
 
 layer_in(0),
+Delay(0.5),
+
+layer_in(1022),
 Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(1022),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 14
+Delay(0.5),
+capture_brv(0),
+search_brv(1),
+backoff_brv(0),
+min_brv(1),
+minus_brv(0),
+F_brv(32),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(112420),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(112420),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 15
+Delay(0.5),
+capture_brv(0),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(20),
+
+layer_in(0),
+Delay(0.5),
 
 layer_in(511),
 Delay(1),
@@ -303,52 +344,86 @@ EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 layer_in(511),
 Delay(7),
 
-# Wave: 17
+layer_in(0),
+Delay(8),
+
+# Wave: 16
+Delay(0.5),
 capture_brv(1),
 search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(40),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(511),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(511),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 17
+Delay(0.5),
+capture_brv(1),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(8),
+
+layer_in(0),
+Delay(0.5),
+
+layer_in(228928),
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
+
+layer_in(228928),
+Delay(7),
+
+layer_in(0),
+Delay(8),
+
+# Wave: 18
+Delay(0.5),
+capture_brv(0),
+search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
 F_brv(0),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
-layer_in(228928),
+layer_in(1022),
 Delay(1),
 EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
-layer_in(228928),
+layer_in(1022),
 Delay(7),
-
-# Wave: 18
-capture_brv(1),
-search_brv(0),
-backoff_brv(0),
-min_brv(0),
-minus_brv(0),
-F_brv(24),
 
 layer_in(0),
-Delay(1),
-
-layer_in(1022),
-Delay(1),
-EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
-
-layer_in(1022),
-Delay(7),
+Delay(8),
 
 # Wave: 19
+Delay(0.5),
 capture_brv(1),
 search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(6),
+F_brv(10),
 
 layer_in(0),
-Delay(1),
+Delay(0.5),
 
 layer_in(163520),
 Delay(1),
@@ -356,6 +431,9 @@ EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),
 
 layer_in(163520),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 layer_in(0),
 Delay(100),

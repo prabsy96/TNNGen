@@ -4,7 +4,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
+F_brv(18),
 
 layer_in(0),
 Delay(1),
@@ -14,6 +14,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 1
 capture_brv(0),
@@ -21,7 +24,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(1),
+F_brv(8),
 
 layer_in(0),
 Delay(1),
@@ -31,6 +34,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 2
 capture_brv(0),
@@ -38,7 +44,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(12),
+F_brv(0),
 
 layer_in(0),
 Delay(1),
@@ -48,6 +54,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 3
 capture_brv(0),
@@ -55,7 +64,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
+F_brv(4),
 
 layer_in(0),
 Delay(1),
@@ -65,6 +74,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 4
 capture_brv(0),
@@ -72,7 +84,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(9),
+F_brv(8),
 
 layer_in(0),
 Delay(1),
@@ -82,6 +94,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 5
 capture_brv(0),
@@ -89,7 +104,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(1),
+F_brv(22),
 
 layer_in(0),
 Delay(1),
@@ -99,6 +114,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 6
 capture_brv(0),
@@ -106,7 +124,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(21),
+F_brv(0),
 
 layer_in(0),
 Delay(1),
@@ -116,6 +134,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 7
 capture_brv(0),
@@ -123,7 +144,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
+F_brv(8),
 
 layer_in(0),
 Delay(1),
@@ -133,6 +154,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 8
 capture_brv(0),
@@ -140,7 +164,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(14),
+F_brv(16),
 
 layer_in(0),
 Delay(1),
@@ -150,6 +174,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 # Wave: 9
 capture_brv(0),
@@ -157,7 +184,7 @@ search_brv(1),
 backoff_brv(0),
 min_brv(0),
 minus_brv(0),
-F_brv(0),
+F_brv(8),
 
 layer_in(0),
 Delay(1),
@@ -167,6 +194,9 @@ Delay(1),
 
 layer_in(3),
 Delay(7),
+
+layer_in(0),
+Delay(8),
 
 layer_in(0),
 Delay(100),

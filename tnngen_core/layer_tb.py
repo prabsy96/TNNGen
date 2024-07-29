@@ -15,7 +15,7 @@ class Test_Layers():
         num_synapse = 18
         tres = 1
         wres = 3
-        thres = 3
+        thres = 5
 
         # Initial inputs
         layer_in = 0
@@ -47,7 +47,7 @@ class Test_Layers():
         add_to_dump(dump, dut, input_init, delay_init, 1)
 
         rstb_gen(dump, rstb, 8)
-        grst_gen(m, ((2**tres)+(2**wres)))
+        grst_gen(m, ((2**tres)+(2**wres))+8)
 
         add_to_dump_from_file(dump, dut, "tnn_mdls/tests/MNIST_single_column")
 
