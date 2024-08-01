@@ -72,7 +72,6 @@ F_brv(0),
 
 layer_in(0),
 Delay(0.5),
-
 layer_in(38836),
 Delay(1),
 EmbeddedCode("""assert (dut_layer_out == 1) else $error(\"Output error\"); """),

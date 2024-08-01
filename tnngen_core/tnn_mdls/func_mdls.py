@@ -408,14 +408,21 @@ assign out = out_reg;
         weight = m.Reg('weight', wres_v)
         w_nonzero = m.Reg('w_nonzero', 1)
 
+        internal_spike = m.Reg('internal_spike', 1)
+
         m.Always(Posedge(clk)) (
             # Global reset to initialize weight to zero
             If(~rstb)(
                 weight(w_init),
-                w_nonzero(w_init > 0)
+                w_nonzero(w_init > 0),
+
+                internal_spike(Int(0, width=1, base=2))
+
             )
             # STDP update
             .Elif(grst)(
+                internal_spike(Int(0, width=1, base=2)),
+
                 If((inc == Int(1, width=1, base=2)) & (weight < Int(2**wres_v.value - 1, width=wres_v.value, base=2))) (
                     weight(weight + Int(1, width=wres_v.value, base=2)),
                     w_nonzero(Int(1, width=1, base=2))
@@ -430,12 +437,13 @@ assign out = out_reg;
             )
             # RNL readout
             .Elif(input_spike) (
+                internal_spike(input_spike),
                 weight(weight - Int(1, width=wres_v.value, base=2)),
                 If(w_nonzero == Int(0, width=1, base=2)) (
                     w_nonzero(Int(0, width=1, base=2))
                 )
                 .Else(
-                    If(Uor(Slice(weight, wres_v.value-1, 1)) == 0) (
+                    If(Uor(Slice(weight, wres_v.value-1, 0)) == 0) (
                         w_nonzero(Int(0, width=1, base=2))
                     )
                     .Else(
@@ -443,9 +451,10 @@ assign out = out_reg;
                     )
                 )
             )
+            .Else(internal_spike(input_spike))
         )
 
-        syn_out_v.assign(input_spike & w_nonzero)
+        syn_out_v.assign(internal_spike & w_nonzero)
         w_out.assign(weight)
 
         return m, ('clk')
