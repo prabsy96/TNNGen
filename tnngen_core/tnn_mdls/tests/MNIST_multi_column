@@ -1,0 +1,233 @@
+# Init: 
+layer_in(0),
+
+# Wave: 0
+Delay(0.5),
+capture_brv(0),
+search_brv(1),
+backoff_brv(0),
+min_brv(1),
+minus_brv(0),
+F_brv(14),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'hec8980df9007ffb027;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(8),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(8),
+
+# Wave: 1
+Delay(0.5),
+capture_brv(1),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(2),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'hc01fc01ff007fc01ff;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(8),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(8),
+
+# Wave: 2
+Delay(0.5),
+capture_brv(0),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(32),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h7fc01ff7c41fc01f;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(8),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(8),
+
+# Wave: 3
+Delay(0.5),
+capture_brv(0),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(5),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h7fdff002fe83684b;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h90) else $error(\"Output error\"); """),
+
+Delay(7),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(7),
+
+# Wave: 4
+Delay(0.5),
+capture_brv(1),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(36),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h803fc9fb07e40ffe00;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'ha0) else $error(\"Output error\"); """),
+
+Delay(7),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(7),
+
+# Wave: 5
+Delay(0.5),
+capture_brv(1),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(10),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h7fc01ff7c41ff604;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'hf0) else $error(\"Output error\"); """),
+
+Delay(7),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(7),
+
+# Wave: 6
+Delay(0.5),
+capture_brv(1),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(24),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h24edb6c4924edb6e48;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'ha1) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'ha5) else $error(\"Output error\"); """),
+
+Delay(6),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h4) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(6),
+
+# Wave: 7
+Delay(0.5),
+capture_brv(0),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(0),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h3fe03fe0fc01ff206;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'hf0) else $error(\"Output error\"); """),
+
+Delay(7),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(7),
+
+# Wave: 8
+Delay(0.5),
+capture_brv(0),
+search_brv(1),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(0),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'h24edb6c49246df6c49;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'hf0) else $error(\"Output error\"); """),
+
+Delay(7),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(7),
+
+# Wave: 9
+Delay(0.5),
+capture_brv(1),
+search_brv(0),
+backoff_brv(0),
+min_brv(0),
+minus_brv(0),
+F_brv(0),
+
+Delay(0.5),
+EmbeddedCode("""dut_layer_in = 'hfb02401ffdd910ff80;"""),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h61) else $error(\"Output error\"); """),
+
+Delay(7),
+EmbeddedCode("""dut_layer_in = 'h0;"""),
+
+Delay(1),
+EmbeddedCode("""assert (dut_layer_out == 'h0) else $error(\"Output error\"); """),
+
+Delay(7),
+
+layer_in(0),
+Delay(100),

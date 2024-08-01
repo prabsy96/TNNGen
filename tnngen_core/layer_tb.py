@@ -10,12 +10,13 @@ class Test_Layers():
         m = Module('test_simple')
 
         # parameters
-        num_col = 1
-        num_neurons = 1
+        num_col = 4
+        num_neurons = 2
         num_synapse = 18
         tres = 1
         wres = 3
-        thres = 5
+        thres = 11
+        extra_delay = 8
 
         # Initial inputs
         layer_in = 0
@@ -47,8 +48,8 @@ class Test_Layers():
         add_to_dump(dump, dut, input_init, delay_init, 1)
 
         rstb_gen(dump, rstb, 8)
-        grst_gen(m, ((2**tres)+(2**wres))+8)
+        grst_gen(m, ((2**tres)+(2**wres))+extra_delay)
 
-        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/MNIST_single_column")
+        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/MNIST_multi_column")
 
         return m
