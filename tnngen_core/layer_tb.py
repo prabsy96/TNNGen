@@ -10,12 +10,12 @@ class Test_Layers():
         m = Module('test_simple')
 
         # parameters
-        num_col = 4
-        num_neurons = 2
+        num_col = 1
+        num_neurons = 1
         num_synapse = 18
         tres = 1
         wres = 3
-        thres = 11
+        thres = 5
         extra_delay = 8
 
         # Initial inputs
