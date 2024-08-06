@@ -5,18 +5,9 @@ from layer import Layer
 class Test_Layers():
 
 
-    def Tb_Simple():   
+    def Tb_Simple(num_col=1, num_neurons=1, num_synapse=18, tres=1, wres=3, thres=5, extra_delay=8):   
         
         m = Module('test_simple')
-
-        # parameters
-        num_col = 1
-        num_neurons = 1
-        num_synapse = 18
-        tres = 1
-        wres = 3
-        thres = 5
-        extra_delay = 8
 
         # Initial inputs
         layer_in = 0
