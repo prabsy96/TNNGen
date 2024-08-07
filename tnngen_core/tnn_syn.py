@@ -140,7 +140,7 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             obj, clk_name = tnn_sm.sm_rtl(submodule_name)
     # Layers
     elif layer_name != None:
-        obj = Test_Layers.Tb_Simple(num_col=4, num_neurons=1, num_synapse=18, tres=1, wres=3, thres=5, extra_delay=8)
+        obj = Test_Layers.Tb_Simple(num_col=4, num_neurons=4, num_synapse=18, tres=1, wres=3, thres=11, extra_delay=8)
     else:
         raise ValueError('No valid model name to generate RTL for')
 
