@@ -14,6 +14,7 @@ from tnn_mdls.tb_func_mdls import *
 import time
 from model import Model
 from layer_tb import Test_Layers
+from MNIST_tb import *
 
 FLOW = ('rtl', 'sim', 'syn', 'pnr')
 TOOL = ('Synopsys', 'Cadence')
@@ -140,7 +141,23 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             obj, clk_name = tnn_sm.sm_rtl(submodule_name)
     # Layers
     elif layer_name != None:
-        obj = Test_Layers.Tb_Simple(num_col=4, num_neurons=4, num_synapse=18, tres=1, wres=3, thres=11, extra_delay=8)
+
+        wave = convert_int(args, 'wave')
+        inputsize = convert_int(args, 'inputsize')
+        rfsize = convert_int(args, 'rfsize')
+        stride = convert_int(args, 'stride')
+        nprev = convert_int(args, 'nprev')
+        neurons = convert_int(args, 'neurons')
+        thres = convert_int(args, 'theta')
+        tres = convert_int(args, 'tres')
+        wres = convert_int(args, 'wres')
+        ucapture = convert_int(args, 'ucapture')
+        usearch = convert_int(args, 'usearch')
+        ubackoff = convert_int(args, 'ubackoff')
+        umin = convert_int(args, 'umin')
+
+        MNIST_multi_column(inputsize=inputsize, rfsize=rfsize, stride=stride, nprev=nprev, num_neuron=neurons, num_synapse=int(nprev*(rfsize**2)), thres=thres, tres=tres, wres=wres, wave=wave, ucapture=ucapture, usearch=usearch, ubackoff=ubackoff, umin=umin, extra_delay=8, verbose=False)
+        obj = Test_Layers.Tb_Simple(num_col=int(((inputsize-rfsize)/stride + 1)**2), num_neurons=neurons, num_synapse=int(nprev*(rfsize**2)), tres=tres, wres=wres, thres=thres, extra_delay=8)
     else:
         raise ValueError('No valid model name to generate RTL for')
 
