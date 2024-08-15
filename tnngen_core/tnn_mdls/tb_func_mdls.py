@@ -8,6 +8,7 @@
 
 from tnn_mdls.func_mdls import *
 from tnn_mdls.sim_utils import *
+from tnn_mdls.random_tb import *
 
 class Test_TNN_Functions(TNN_Functions):
 
@@ -193,7 +194,8 @@ class Test_TNN_Functions(TNN_Functions):
         rstb_gen(dump, rstb, 5)
         grst_gen(m, ((2**tres)+(2**wres)))
 
-        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/wta_test")
+        wta_random(Q=q.value, tres=tres, wres=wres, wave=10, verbose=False)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/wta_test_random")
 
         return m
 
@@ -355,7 +357,8 @@ class Test_TNN_Functions(TNN_Functions):
 
         grst_gen(m, ((2**tres)+(2**wres)))
         rstb_gen(dump, rstb, 5)
-        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/fsm_synapse_test")
+        fsm_synapse_random(w_init=0, tres=tres, wres=wres, wave=30, verbose=False)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/fsm_synapse_test_random")
 
         return m
 
@@ -384,7 +387,9 @@ class Test_TNN_Functions(TNN_Functions):
 
         grst_gen(m, ((2**tres)+(2**wres)))
         rstb_gen(dump, rstb, 5)
-        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/stdp_test")
+
+        stdp_random(tres=tres, wres=wres, input_prob=0.75, output_prob=0.75, wave=10, verbose=False)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/stdp_test_random")
     
         return m
 
@@ -453,8 +458,10 @@ class Test_TNN_Functions(TNN_Functions):
         # Setup waveform dump and simulation environment
         dump, clk, grst, rstb = init_dump(dut, m)
 
+        rstb_gen(dump, rstb, 4)
         grst_gen(m, ((2**tres)+(2**wres)))
-        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/neuronbody_test")
+        neuronbody_random(ip_size=ip_size.value, thres=thres.value, tres=tres, wres=wres, wave=10, verbose=True)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/neuronbody_test_random")
 
         return m
 
@@ -496,7 +503,8 @@ class Test_TNN_Functions(TNN_Functions):
         rstb_gen(dump, rstb, 8)
         grst_gen(m, ((2**tres)+(2**wres)))
 
-        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/segment_test")
+        segment_random(ip_size_dist=ip_size_dist.value, ip_size_prox=ip_size_prox.value, thres=thres.value, tres=tres, wres=wres, wave=10, verbose=False)
+        add_to_dump_from_file(dump, dut, "tnn_mdls/tests/segment_test_random")
 
         return m
 

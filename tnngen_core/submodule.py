@@ -64,44 +64,28 @@ class TNN_Submod():
         elif name == 'incdec':
             obj = self.tb_f.Tb_Incdec()
         elif name == 'wta':
-            q = self._param_query('rfsize', 4)
-            obj = self.tb_f.Tb_Wta(q)
+            obj = self.tb_f.Tb_Wta()
         elif name == 't_wta':
             obj = self.tb_f.Tb_T_wta()
         elif name == 'stabilize_func':
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_Flogic(wres)
+            obj = self.tb_f.Tb_Flogic()
         elif name == 'stdp_casegen':
             obj = self.tb_f.Tb_Stdp_case_gen()
         elif name == 'fsm_convert':
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_Fsm_convert(wres)
+            obj = self.tb_f.Tb_Fsm_convert()
         elif name == 'fsm_synapse':
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_Fsm_synapse(wres)
+            obj = self.tb_f.Tb_Fsm_synapse()
         elif name == 'stdp':
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_Stdp(wres)
+            obj = self.tb_f.Tb_Stdp()
         elif name == 'pac':
-            neurons = self._param_query('neurons', 4)
-            theta = self._param_query('theta', 13)
-            obj = self.tb_f.Tb_Pac(ip_size=neurons, thres=theta)
+            obj = self.tb_f.Tb_Pac()
         elif name == 'neuron_body':
-            neurons = self._param_query('neurons', 4)
-            theta = self._param_query('theta', 13)
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_Neuronbody(ip_size=neurons, thres=theta, wres=wres)
+            obj = self.tb_f.Tb_Neuronbody()
         elif name == 'neuron_rnl':
-            neurons = self._param_query('neurons', 4)
-            theta = self._param_query('theta', 13)
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_NeuronRNL(ip_size=neurons, thres=theta, wres=wres)
+            #obj = self.tb_f.Tb_NeuronRNL()
+            pass
         elif name == 'segment':
-            ip_size_dist = self._param_query('ip_size_dist', 16)
-            ip_size_prox = self._param_query('ip_size_prox', 1)
-            theta = self._param_query('theta', 13)
-            wres = self._param_query('wres', 3)
-            obj = self.tb_f.Tb_Segment(ip_size_dist=ip_size_dist, ip_size_prox=ip_size_prox, wres_dist=wres, wres_prox=wres, thres=theta)
+            obj = self.tb_f.Tb_Segment()
         else:
             raise ValueError(f"Unknown testbench name: {name}")
         return obj
