@@ -47,12 +47,9 @@ def MNIST_multi_column(inputsize=3, rfsize=3, stride=3, nprev=2, num_neuron=1, n
     # Generate brv random variables
     rvcapture, rvsearch, rvbackoff, rvmin, rvF = gen_brv(wave=wave, ucapture=ucapture, usearch=usearch, ubackoff=ubackoff, umin=umin, wres=wres)
     
-    # Hard-coded PyTorch config
+    # Initialze PyTorch model
     layer = TNNColumnLayer(inputsize=inputsize, rfsize=rfsize, stride=stride, nprev=nprev, neurons=num_neuron, theta=thres,\
     timeres=tres, wres=wres, ntype="rnl", ramp=1, w_init="zero", k=1, stoch="low", reward_en=0)
-    
-    layer_output = []
-    layer_weights_out = []
     
     f = open("tnn_mdls/tests/MNIST_multi_column", "w")
     f.write('# Init: \n')

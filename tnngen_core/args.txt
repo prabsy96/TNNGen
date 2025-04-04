@@ -61,14 +61,14 @@ umin            = 128             # STDP's "min" Bernoulli random variable proba
 # TNNSyn-specific parameters
 ltype           = TNN             # Layer type (TNN or CV)
 col_cnt         = 1               # Column Count
-neuron_cnt      = 10               # Neuron Count
-dend_cnt        = 1              # Dendrite Count
+neuron_cnt      = 10              # Neuron Count
+dend_cnt        = 1               # Dendrite Count
 segment_cnt     = 1               # Segment
 p_dist          = 18              # Distal
 p_prox          = 1               # Proximal
-wres_dist	    = 3
-wres_prox	    = 1
-threshold	    = 6
+wres_dist	= 3
+wres_prox	= 1
+threshold	= 6
 
 ### Frequency
 flow            = sim             # Hardware process flow

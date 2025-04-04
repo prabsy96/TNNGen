@@ -23,6 +23,8 @@ class Model:
             pass
         elif (layer.layer_type == "Simple"):
             pass
+        elif (layer.layer_type == "Place_Cell"):
+            pass
         else:
             raise ValueError("layer_type: '" + layer.layer_type + "' does not exist!")
         
@@ -34,6 +36,8 @@ class Model:
             self.layers.append(self.check_params(layer.Kernel_Layer(len(self.layers))))
         elif (layer.layer_type == "Simple"):
             self.layers.append(self.check_params(layer.Simple_Layer(len(self.layers))))
+        elif (layer.layer_type == "Place_Cell"):
+            self.layers.append(self.check_params(layer.Place_Cell(len(self.layers))))
         
 
     def check_params(self, layer):
@@ -48,7 +52,7 @@ class Model:
         prev_out_size = prev_params['OUT_WIDTH'].value
 
         if (in_size != prev_out_size):
-            raise ValueError("Incompatible input width")
+            raise ValueError("Incompatible input width", in_size, prev_out_size)
         else:
             return layer
         
@@ -100,7 +104,9 @@ class Model:
                     last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), last_out_width.value)
                     layer_ports.append(last_out)
                 else:
-                    layer_ports.append(model_ports['model_output'])
+                    for key in model_ports:
+                        if ((key).startswith('model_output')):
+                            layer_ports.append(model_ports[key])
             else:
                 # distal input is last layer's output
                 layer_ports.append(last_out)
@@ -116,7 +122,9 @@ class Model:
                     last_out = self.model.Wire('out_'+str(i)+'_in_'+str(i+1), last_out_width.value)
                     layer_ports.append(last_out)
                 else:
-                    layer_ports.append(model_ports['model_output'])
+                    for key in model_ports:
+                        if ((key).startswith('model_output')):
+                            layer_ports.append(model_ports[key])
 
             self.model.Instance(layer, 'layer_inst_'+str(i), params=layer_params,
                         ports = layer_ports)
@@ -172,5 +180,5 @@ class Model:
                     port = ports[key]
                     port_name = port.name
                     if (isinstance(port, core.vtypes.Output)):
-                        port.name = 'model_output'
+                        port.name = 'model_output_'+str(port_name)
                         self.model.add_object(port)

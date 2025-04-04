@@ -11,8 +11,9 @@ import numpy as np
 import os
 
 class TNN_Functions():
-    def __init__(self, layer_id=None, tnn7_en=False):
+    def __init__(self, layer_id=None, tnn7_en=False, layer_type=None):
         self.layer_id = layer_id
+        self.layer_type = layer_type
         self.tnn7_en = tnn7_en
 
     # inhibit operator
@@ -590,7 +591,7 @@ assign out = out_reg;
     # Neuron body module
     def Neuronbody(self, ip_size=16, thres=13, wres=3):
     
-        m = Module('L'+self.layer_id+'_neuron_body')
+        m = Module('L'+self.layer_id+'_neuron_body_'+str(ip_size))
     
         in_size_v = m.Parameter('INPUT_SIZE', ip_size)
         thres_v = m.Parameter('THRESHOLD', thres)
@@ -665,7 +666,7 @@ assign out = out_reg;
 
     def segment(self, ip_size_dist=16, ip_size_prox=1, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('L'+self.layer_id+'_segment')
+        m = Module('L'+self.layer_id+'_segment_'+str(ip_size_dist))
         # parameters
         in_size_dist = m.Parameter('INP_DIST', ip_size_dist)
         in_size_prox = m.Parameter('INP_PROX', ip_size_prox)
@@ -906,7 +907,7 @@ assign out = out_reg;
     
     # Minicolumn
     def Minicolumn(self, num_neurons=10, num_dend=1, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
-        m = Module('L'+self.layer_id+'_minicolumn')
+        m = Module('L'+self.layer_id+'_minicolumn_'+str(num_neurons))
         num_neurons = m.Parameter('NUM_NEURONS', int(num_neurons))
         num_dend = m.Parameter('NUM_DEND', int(num_dend))
         p_dist = m.Parameter('P_DIST', int(p_dist))
@@ -929,8 +930,13 @@ assign out = out_reg;
         output_spikes = m.Output('output_spikes', num_neurons.value)
 
         # input_spikes_dist
-        input_spikes_dist_width = p_dist.value
-        input_spikes_dist = m.Input('input_spikes_dist', num_neurons.value*input_spikes_dist_width)
+        input_spikes_dist_width = 0
+        if(self.layer_type=="Place_Cell"):
+            input_spikes_dist_width = p_dist.value
+            input_spikes_dist = m.Input('input_spikes_dist', input_spikes_dist_width+(num_neurons.value-1))
+        else:
+            input_spikes_dist_width = p_dist.value
+            input_spikes_dist = m.Input('input_spikes_dist', num_neurons.value*input_spikes_dist_width)
 
         # input_spikes_prox
         input_spikes_prox_width = num_dend.value*p_prox.value
@@ -1001,11 +1007,23 @@ assign out = out_reg;
         ##################
         # Instantiations #
         ##################
-        neuron, _ = self.Neuron(num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
+        neuron_params = []
+        if(self.layer_type=="Place_Cell"):
+            neuron, _ = self.Neuron(num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
+            neuron_params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value]
+        else:
+            neuron, _ = self.Neuron(num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
+            neuron_params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value]
+
         for n in range(num_neurons.value):
             neuron_ports = [clk, grst, rstb, prewta_spikes[n]]
+
             # input_spikes_dist
-            neuron_ports.append(input_spikes_dist.slice((n+1)*input_spikes_dist_width-1, n*input_spikes_dist_width))
+            if(self.layer_type=="Place_Cell"):
+                neuron_ports.append(Cat(input_spikes_dist[(p_dist.value-1)+n], input_spikes_dist.slice((p_dist.value-1)-1, 0)))
+            else:
+                neuron_ports.append(input_spikes_dist.slice((n+1)*input_spikes_dist_width-1, n*input_spikes_dist_width))
+
             # input_spikes_prox
             neuron_ports.append(input_spikes_prox)
             # w_init_dist
@@ -1037,8 +1055,7 @@ assign out = out_reg;
             # F_brv_prox
             neuron_ports.append(F_brv_prox.slice((n+1)*F_brv_prox_width-1, n*F_brv_prox_width))
             
-            m.Instance(neuron, str('L')+self.layer_id+'_neuron_inst_'+str(n), params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
-                       ports = neuron_ports)
+            m.Instance(neuron, str('L')+self.layer_id+'_neuron_inst_'+str(n), params=neuron_params, ports = neuron_ports)
             
         t_wta, _ = self.t_wta(num_neurons.value)
         m.Instance(t_wta, 'l1', params=[num_neurons.value], ports=[prewta_spikes, clk, grst, rstb, output_spikes])
@@ -1047,7 +1064,7 @@ assign out = out_reg;
     
     def Neuron(self, num_dend=1, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('L'+self.layer_id+'_neuron')
+        m = Module('L'+self.layer_id+'_neuron_'+str(p_dist))
         num_dend = m.Parameter('NUM_DEND', int(num_dend))
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
@@ -1069,7 +1086,7 @@ assign out = out_reg;
         # input_spike_dist (shared across all dendrites)
         input_spike_dist = m.Input('input_spikes_dist', p_dist.value)
 
-        # input_spike_dist (different for each dendrite)
+        # input_spike_prox (different for each dendrite)
         input_spikes_prox_width = p_prox.value
         input_spikes_prox = m.Input('input_spikes_prox', num_dend.value*input_spikes_prox_width)
 
@@ -1162,6 +1179,7 @@ assign out = out_reg;
                        ports = dendrite_ports)
             
         
+        # add wta
         m.EmbeddedCode('assign output_spike = |dend_out;')
 
         return m, clk.name
@@ -1424,7 +1442,7 @@ assign out = out_reg;
 
     def Dendrite(self, p_dist=3, p_prox=1, q=2, wres_dist=3, wres_prox=3, thres=13):
 
-        m = Module('L'+self.layer_id+'_dendrite')
+        m = Module('L'+self.layer_id+'_dendrite_'+str(p_dist))
         p_dist = m.Parameter('P_DIST', int(p_dist))
         p_prox = m.Parameter('P_PROX', int(p_prox))
         q = m.Parameter('Q', int(q))
@@ -1589,6 +1607,7 @@ assign out = out_reg;
                     dec_prox[i][j]
                     ])
 
+        # move to neuron
         m.EmbeddedCode('assign output_spike = |li_spikes;')
 
         return m, clk.name
