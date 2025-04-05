@@ -113,6 +113,10 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # Default
             #myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
 
+            #--------------------------------------------#
+            # Multi-layer simple column MNIST benchmarks #
+            #--------------------------------------------#
+
             # Multi-layer full
             # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=2, inputsize=28, if_corner=True, tnn7_en=en_tnn7))
             # myModel.add(Layer(layer_type="Simple", num_col=676, num_neurons=12, p_dist=8, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
@@ -137,11 +141,23 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # L3 Voter
             myModel.add(Layer(layer_type="Simple", num_col=4, num_neurons=10, p_dist=32, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
 
+            #--------------------------------------------#
+            # Active dendrite MNIST benchmarks (CV)      #
+            #--------------------------------------------#
+
             # CV full
             #myModel.add(Layer(layer_type="CV", num_col=576, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=2, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
 
-            # CV reduce
+            # CV reduced size
             #myModel.add(Layer(layer_type="CV", num_col=24, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=2, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
+
+            #--------------------------------------------#
+            # Place cell benchmark #
+            #--------------------------------------------#
+
+            # Configure in layer.py
+            #myModel.add(Layer(layer_type="Place_Cell", tnn7_en=en_tnn7))
+
             
             myModel.summary()
             myModel.compile()
