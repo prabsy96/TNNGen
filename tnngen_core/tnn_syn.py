@@ -113,19 +113,34 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # Default
             #myModel.add(Layer(layer_type=lt, num_col=nc, num_neurons=nn, num_dend=nd, p_dist=pd, p_prox=pp, num_seg=ns, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
 
-            # Multi-layer
-            myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=2, inputsize=28, if_corner=True, tnn7_en=en_tnn7))
-            myModel.add(Layer(layer_type="Simple", num_col=676, num_neurons=12, p_dist=8, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # Multi-layer full
+            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=2, inputsize=28, if_corner=True, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=676, num_neurons=12, p_dist=8, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
             
-            myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=12, inputsize=26, if_corner=True, tnn7_en=en_tnn7))
-            myModel.add(Layer(layer_type="Simple", num_col=576, num_neurons=20, p_dist=48, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=12, inputsize=26, if_corner=True, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=576, num_neurons=20, p_dist=48, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
             
-            myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=20, inputsize=24, if_corner=True, tnn7_en=en_tnn7))
-            myModel.add(Layer(layer_type="Simple", num_col=484, num_neurons=32, p_dist=80, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
-            # L3 Voter
-            myModel.add(Layer(layer_type="Simple", num_col=484, num_neurons=10, p_dist=32, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=20, inputsize=24, if_corner=True, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=484, num_neurons=32, p_dist=80, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # L3 Voter
+            # myModel.add(Layer(layer_type="Simple", num_col=484, num_neurons=10, p_dist=32, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
 
-            # CV
+            # Multi-layer reduced size
+            myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=2, inputsize=8, if_corner=True, tnn7_en=en_tnn7))
+            myModel.add(Layer(layer_type="Simple", num_col=36, num_neurons=12, p_dist=8, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            
+            myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=12, inputsize=6, if_corner=True, tnn7_en=en_tnn7))
+            myModel.add(Layer(layer_type="Simple", num_col=16, num_neurons=20, p_dist=48, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            
+            myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=20, inputsize=4, if_corner=True, tnn7_en=en_tnn7))
+            myModel.add(Layer(layer_type="Simple", num_col=4, num_neurons=32, p_dist=80, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # L3 Voter
+            myModel.add(Layer(layer_type="Simple", num_col=4, num_neurons=10, p_dist=32, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+
+            # CV full
+            #myModel.add(Layer(layer_type="CV", num_col=576, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=2, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
+
+            # CV reduce
             #myModel.add(Layer(layer_type="CV", num_col=24, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=2, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
             
             myModel.summary()
