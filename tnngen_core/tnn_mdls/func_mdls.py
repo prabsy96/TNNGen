@@ -87,7 +87,8 @@ class TNN_Functions():
         cin = m.Input('cin')
         out = m.Output('out', res + 1)
         
-        out.assign(a+b+cin)
+        #out.assign(a+b+cin)
+        m.EmbeddedCode("assign out = {1'b0, a} + {1'b0, b} + {1'b0, cin};")
     
         # no clocks, combinational design
         return m, None
@@ -503,7 +504,7 @@ assign out = out_reg;
 
     # Parallel Accumulator
     def Pac(self, ip_size = 16, thres = 13):
-        m = Module('L'+self.layer_id+'_pac')
+        m = Module('L'+self.layer_id+'_pac_'+str(ip_size))
 
         INP = m.Parameter('INP', int(ip_size))
         THRESHOLD = m.Parameter('THRESHOLD', int(thres)) 
