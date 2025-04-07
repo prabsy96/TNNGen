@@ -11,7 +11,7 @@ import numpy as np
 import os
 
 class Layer():
-    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13, rfsize=None, stride=None, nprev=None, inputsize=None, if_corner=None, tnn7_en=False):
+    def __init__(self, layer_type=None, num_col=2, num_neurons=10, num_dend=16, p_dist=3, p_prox=1, num_seg=2, wres_dist=3, wres_prox=3, thres=13, rfsize=None, stride=None, nprev=None, inputsize=None, if_corner=None, prox_as_enable=False, tnn7_en=False):
         self.num_col = num_col
         self.num_neurons = num_neurons
         self.num_dend = num_dend
@@ -28,6 +28,7 @@ class Layer():
         self.nprev = nprev
         self.inputsize = inputsize
         self.if_corner = if_corner
+        self.prox_as_enable = prox_as_enable
         self.tnn7_en = tnn7_en
 
     def Place_Cell(self, layer_id=None):
@@ -499,56 +500,63 @@ class Layer():
         w_init_dist = m.Input('w_init_dist', num_col.value*w_init_dist_width)
 
         # w_init_prox
-        w_init_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value*wres_prox.value
-        w_init_prox = m.Input('w_init_prox', num_col.value*w_init_prox_width)
+        if (not(self.prox_as_enable)):
+            w_init_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value*wres_prox.value
+            w_init_prox = m.Input('w_init_prox', num_col.value*w_init_prox_width)
 
         # capture_brv_dist
         capture_brv_dist_width = num_neurons.value*num_dend.value*num_seg.value*p_dist.value
         capture_brv_dist = m.Input('capture_brv_dist', num_col.value*capture_brv_dist_width)
 
         # capture_brv_prox
-        capture_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
-        capture_brv_prox = m.Input('capture_brv_prox', num_col.value*capture_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            capture_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
+            capture_brv_prox = m.Input('capture_brv_prox', num_col.value*capture_brv_prox_width)
 
         # minus_brv_dist
         minus_brv_dist_width = num_neurons.value*num_dend.value*num_seg.value*p_dist.value
         minus_brv_dist = m.Input('minus_brv_dist', num_col.value*minus_brv_dist_width)
         
         # minus_brv_prox
-        minus_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
-        minus_brv_prox = m.Input('minus_brv_prox', num_col.value*minus_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            minus_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
+            minus_brv_prox = m.Input('minus_brv_prox', num_col.value*minus_brv_prox_width)
         
         # search_brv_dist
         search_brv_dist_width = num_neurons.value*num_dend.value*num_seg.value*p_dist.value
         search_brv_dist = m.Input('search_brv_dist', num_col.value*search_brv_dist_width)
         
         # search_brv_prox
-        search_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
-        search_brv_prox = m.Input('search_brv_prox', num_col.value*search_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            search_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
+            search_brv_prox = m.Input('search_brv_prox', num_col.value*search_brv_prox_width)
         
         # backoff_brv_dist
         backoff_brv_dist_width = num_neurons.value*num_dend.value*num_seg.value*p_dist.value
         backoff_brv_dist = m.Input('backoff_brv_dist', num_col.value*backoff_brv_dist_width)
         
         # backoff_brv_prox
-        backoff_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
-        backoff_brv_prox = m.Input('backoff_brv_prox', num_col.value*backoff_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            backoff_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
+            backoff_brv_prox = m.Input('backoff_brv_prox', num_col.value*backoff_brv_prox_width)
         
         # min_brv_dist
         min_brv_dist_width = num_neurons.value*num_dend.value*num_seg.value*p_dist.value
         min_brv_dist = m.Input('min_brv_dist', num_col.value*min_brv_dist_width)
         
         # min_brv_prox
-        min_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
-        min_brv_prox = m.Input('min_brv_prox', num_col.value*min_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            min_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*p_prox.value
+            min_brv_prox = m.Input('min_brv_prox', num_col.value*min_brv_prox_width)
         
         # F_brv_dist
         F_brv_dist_width = num_neurons.value*num_dend.value*num_seg.value*((1<<wres_dist.value)-3 + 1)
         F_brv_dist = m.Input('F_brv_dist', num_col.value*F_brv_dist_width)
         
         # F_brv_prox
-        F_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*((1<<wres_prox.value)-3 + 1)
-        F_brv_prox = m.Input('F_brv_prox', num_col.value*F_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            F_brv_prox_width = num_neurons.value*num_dend.value*num_seg.value*((1<<wres_prox.value)-3 + 1)
+            F_brv_prox = m.Input('F_brv_prox', num_col.value*F_brv_prox_width)
 
         # Output_spikes
         output_spikes = m.Output('layer_out', num_col.value*num_neurons.value)
@@ -556,7 +564,7 @@ class Layer():
         ##################
         # Instantiations #
         ##################
-        tnn_func = TNN_Functions(layer_id=self.layer_id, tnn7_en=self.tnn7_en, layer_type=self.layer_type)
+        tnn_func = TNN_Functions(layer_id=self.layer_id, tnn7_en=self.tnn7_en, layer_type=self.layer_type, prox_as_enable=self.prox_as_enable)
 
         comp_col, _ = tnn_func.CV_Group(num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for c in range(num_col.value):
@@ -568,31 +576,38 @@ class Layer():
             # w_init_dist
             col_ports.append(w_init_dist.slice((c+1)*w_init_dist_width-1, c*w_init_dist_width))
             # w_init_prox
-            col_ports.append(w_init_prox.slice((c+1)*w_init_prox_width-1, c*w_init_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(w_init_prox.slice((c+1)*w_init_prox_width-1, c*w_init_prox_width))
             # capture_brv_dist
             col_ports.append(capture_brv_dist.slice((c+1)*capture_brv_dist_width-1, c*capture_brv_dist_width))
             # capture_brv_prox
-            col_ports.append(capture_brv_prox.slice((c+1)*capture_brv_prox_width-1, c*capture_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(capture_brv_prox.slice((c+1)*capture_brv_prox_width-1, c*capture_brv_prox_width))
             # minus_brv_dist
             col_ports.append(minus_brv_dist.slice((c+1)*minus_brv_dist_width-1, c*minus_brv_dist_width))
             # minus_brv_prox
-            col_ports.append(minus_brv_prox.slice((c+1)*minus_brv_prox_width-1, c*minus_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(minus_brv_prox.slice((c+1)*minus_brv_prox_width-1, c*minus_brv_prox_width))
             # search_brv_dist
             col_ports.append(search_brv_dist.slice((c+1)*search_brv_dist_width-1, c*search_brv_dist_width))
             # search_brv_prox
-            col_ports.append(search_brv_prox.slice((c+1)*search_brv_prox_width-1, c*search_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(search_brv_prox.slice((c+1)*search_brv_prox_width-1, c*search_brv_prox_width))
             # backoff_brv_dist
             col_ports.append(backoff_brv_dist.slice((c+1)*backoff_brv_dist_width-1, c*backoff_brv_dist_width))
             # backoff_brv_prox
-            col_ports.append(backoff_brv_prox.slice((c+1)*backoff_brv_prox_width-1, c*backoff_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(backoff_brv_prox.slice((c+1)*backoff_brv_prox_width-1, c*backoff_brv_prox_width))
             # min_brv_dist
             col_ports.append(min_brv_dist.slice((c+1)*min_brv_dist_width-1, c*min_brv_dist_width))
             # min_brv_prox
-            col_ports.append(min_brv_prox.slice((c+1)*min_brv_prox_width-1, c*min_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(min_brv_prox.slice((c+1)*min_brv_prox_width-1, c*min_brv_prox_width))
             # F_brv_dist
             col_ports.append(F_brv_dist.slice((c+1)*F_brv_dist_width-1, c*F_brv_dist_width))
             # F_brv_prox
-            col_ports.append(F_brv_prox.slice((c+1)*F_brv_prox_width-1, c*F_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                col_ports.append(F_brv_prox.slice((c+1)*F_brv_prox_width-1, c*F_brv_prox_width))
 
             m.Instance(comp_col, 'L'+str(self.layer_id)+'_CV_group_'+str(c), params=[num_neurons.value, num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = col_ports)

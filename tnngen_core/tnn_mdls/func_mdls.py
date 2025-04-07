@@ -11,10 +11,11 @@ import numpy as np
 import os
 
 class TNN_Functions():
-    def __init__(self, layer_id=None, tnn7_en=False, layer_type=None):
+    def __init__(self, layer_id=None, tnn7_en=False, layer_type=None, prox_as_enable=False):
         self.layer_id = layer_id
         self.layer_type = layer_type
         self.tnn7_en = tnn7_en
+        self.prox_as_enable = prox_as_enable
 
     # inhibit operator
     def Less_equal(self):
@@ -679,9 +680,11 @@ assign out = out_reg;
         input_spikes_dist = m.Input('input_spikes_dist', in_size_dist.value)
         input_spikes_prox = m.Input('input_spikes_prox', in_size_prox.value)
         inc_dist = m.Input('inc_dist', in_size_dist.value)
-        inc_prox = m.Input('inc_prox', in_size_prox.value)
+        if (not(self.prox_as_enable)):
+            inc_prox = m.Input('inc_prox', in_size_prox.value)
         dec_dist = m.Input('dec_dist', in_size_dist.value)
-        dec_prox = m.Input('dec_prox', in_size_prox.value)
+        if (not(self.prox_as_enable)):
+            dec_prox = m.Input('dec_prox', in_size_prox.value)
         clk = m.Input('clk', 1)
         grst = m.Input('grst', 1)
         rstb = m.Input('rstb', 1)
@@ -692,43 +695,61 @@ assign out = out_reg;
         w_init_dist = m.Input('w_init_dist', in_size_dist.value*w_init_dist_width)
 
         # w_init_prox = []
-        w_init_prox_width = wres_prox.value
-        w_init_prox = m.Input('w_init_prox', in_size_prox.value*w_init_prox_width)
+        if (not(self.prox_as_enable)):
+            w_init_prox_width = wres_prox.value
+            w_init_prox = m.Input('w_init_prox', in_size_prox.value*w_init_prox_width)
 
         weights_dist = []
         for i in range(in_size_dist.value):
             weights_dist.append(m.Output('weights_dist_'+str(i), wres_dist.value))
 
-        weights_prox = []
-        for i in range(in_size_prox.value):
-            weights_prox.append(m.Output('weights_prox_'+str(i), wres_prox.value))
+        if (not(self.prox_as_enable)):
+            weights_prox = []
+            for i in range(in_size_prox.value):
+                weights_prox.append(m.Output('weights_prox_'+str(i), wres_prox.value))
 
         # wires/regs
         resp_func_dist = m.Wire('resp_func_dist', in_size_dist.value)
-        resp_func_prox = m.Wire('resp_func_prox', in_size_prox.value)
-
-        #
-        # input = input_spikes_dist and input_spikes_prox
+        if (not(self.prox_as_enable)):
+            resp_func_prox = m.Wire('resp_func_prox', in_size_prox.value)
             
         # submodules
-        # Distal: Synaptic weight + readout logic FSM
-        fsm_s_dist, fsm_clk_dist = self.Fsm_synapse(wres_dist.value)
-        for i in range(in_size_dist.value):
-            m.Instance(fsm_s_dist, 'syn_dist_'+str(i), params=None,
-                       ports=[input_spikes_dist[i], w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width), inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
+        if (not(self.prox_as_enable)):
+            # Distal: Synaptic weight + readout logic FSM
+            fsm_s_dist, fsm_clk_dist = self.Fsm_synapse(wres_dist.value)
+            for i in range(in_size_dist.value):
+                m.Instance(fsm_s_dist, 'syn_dist_'+str(i), params=None,
+                        ports=[input_spikes_dist[i], w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width), inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
 
-        # Proximal: Synaptic weight + readout logic FSM
-        fsm_s_prox, fsm_clk_prox = self.Fsm_synapse(wres_prox.value)
-        for i in range(in_size_prox.value):
-            m.Instance(fsm_s_prox, 'syn_prox_'+str(i), params=None,
-                       ports=[input_spikes_prox[i], w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width), inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
+            # Proximal: Synaptic weight + readout logic FSM
+            fsm_s_prox, fsm_clk_prox = self.Fsm_synapse(wres_prox.value)
+            for i in range(in_size_prox.value):
+                m.Instance(fsm_s_prox, 'syn_prox_'+str(i), params=None,
+                        ports=[input_spikes_prox[i], w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width), inc_prox[i], dec_prox[i], clk, grst, rstb, weights_prox[i], resp_func_prox[i]])
 
-        # Neuron body
-        soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
-        m.Instance(soma, 'soma', params=[in_size_dist.value+in_size_prox.value, thres.value, wres_dist.value],
-                  ports=[Cat(resp_func_prox,resp_func_dist), clk, grst, rstb, output_spike])
+            # Neuron body
+            soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value+in_size_prox.value, thres=thres.value, wres=wres_dist.value)
+            m.Instance(soma, 'soma', params=[in_size_dist.value+in_size_prox.value, thres.value, wres_dist.value],
+                    ports=[Cat(resp_func_prox,resp_func_dist), clk, grst, rstb, output_spike])
+        else:
+            # Proximal acting as enable
+            input_spikes = m.Wire("input_spikes", ip_size_dist)
+            m.EmbeddedCode("assign input_spikes = input_spikes_dist & {INP_DIST{input_spikes_prox}};")
+                
+            # submodules
+            # Distal: Synaptic weight + readout logic FSM
+            fsm_s_dist, fsm_clk_dist = self.Fsm_synapse(wres_dist.value)
+            for i in range(in_size_dist.value):
+                m.Instance(fsm_s_dist, 'syn_dist_'+str(i), params=None,
+                        ports=[input_spikes[i], w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width), inc_dist[i], dec_dist[i], clk, grst, rstb, weights_dist[i], resp_func_dist[i]])
+
+            # Neuron body
+            soma, soma_clk = self.Neuronbody(ip_size=in_size_dist.value, thres=thres.value, wres=wres_dist.value)
+            m.Instance(soma, 'soma', params=[in_size_dist, thres.value, wres_dist.value],
+                    ports=[resp_func_dist, clk, grst, rstb, output_spike])
 
         return m, ('clk')
+    
 
     def simple_neuron(self, ip_size=16, wres=3, thres=13):
 
@@ -1153,14 +1174,16 @@ assign out = out_reg;
         ##############
         # Wires/Regs #
         ##############
-        dend_out = m.Wire('dend_out', num_dend.value)
+        #dend_out = m.Wire('dend_out', num_dend.value)
+        dend_out_width = num_seg.value
+        dend_out = m.Wire('dend_out', num_dend.value*dend_out_width)
 
         ##################
         # Instantiations #
         ##################
         dendrite, _ = self.Dendrite(p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for i in range(num_dend.value):
-            dendrite_ports = [input_spike_dist, input_spikes_prox.slice((i+1)*input_spikes_prox_width-1, i*input_spikes_prox_width), clk, grst, rstb, dend_out[i]]
+            dendrite_ports = [input_spike_dist, input_spikes_prox.slice((i+1)*input_spikes_prox_width-1, i*input_spikes_prox_width), clk, grst, rstb, dend_out.slice((i+1)*dend_out_width-1, i*dend_out_width)]
             # Distal ports
             dendrite_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
             dendrite_ports.append(capture_brv_dist.slice((i+1)*capture_brv_dist_width-1, i*capture_brv_dist_width))
@@ -1183,8 +1206,25 @@ assign out = out_reg;
                        ports = dendrite_ports)
             
         
+        # Max dend_out
+        dend_out_max_width = num_dend.value
+        dend_out_max = m.Wire('dend_out_max', dend_out_max_width)
+
+        m.EmbeddedCode("""genvar i;
+                            generate
+                                for (i = 0; i < NUM_DEND; i = i + 1) begin : gen_max
+                                    assign dend_out_max[i] = |dend_out[(i+1)*NUM_SEG-1 : i*NUM_SEG];
+                                end
+                            endgenerate""")
+
         # TODO add wta
-        m.EmbeddedCode('assign output_spike = |dend_out;')
+        dend_out_wta = m.Wire('dend_out_wta', num_dend.value)
+        wta, _ = self.Wta(num_dend.value)
+        m.Instance(wta, str('L')+self.layer_id+'_neuron_wta', params = [num_dend.value], ports = [dend_out_max, clk, grst, rstb, dend_out_wta])
+
+
+        # final max for neuron output
+        m.EmbeddedCode('assign output_spike = |dend_out_wta;')
 
         return m, clk.name
     
@@ -1224,56 +1264,63 @@ assign out = out_reg;
         w_init_dist = m.Input('w_init_dist', num_neurons.value*w_init_dist_width) 
         
         # w_init_prox
-        w_init_prox_width = num_dend.value*num_seg.value*p_prox.value*wres_prox.value
-        w_init_prox = m.Input('w_init_prox', num_neurons.value*w_init_prox_width) 
+        if (not(self.prox_as_enable)):
+            w_init_prox_width = num_dend.value*num_seg.value*p_prox.value*wres_prox.value
+            w_init_prox = m.Input('w_init_prox', num_neurons.value*w_init_prox_width) 
 
         # capture_brv_dist
         capture_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
         capture_brv_dist = m.Input('capture_brv_dist', num_neurons.value*capture_brv_dist_width)
 
         # capture_brv_prox
-        capture_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
-        capture_brv_prox = m.Input('capture_brv_prox', num_neurons.value*capture_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            capture_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+            capture_brv_prox = m.Input('capture_brv_prox', num_neurons.value*capture_brv_prox_width)
 
         # minus_brv_dist
         minus_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
         minus_brv_dist = m.Input('minus_brv_dist', num_neurons.value*minus_brv_dist_width)
 
         # minus_brv_prox
-        minus_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
-        minus_brv_prox = m.Input('minus_brv_prox', num_neurons.value*minus_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            minus_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+            minus_brv_prox = m.Input('minus_brv_prox', num_neurons.value*minus_brv_prox_width)
 
         # search_brv_dist
         search_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
         search_brv_dist = m.Input('search_brv_dist', num_neurons.value*search_brv_dist_width)
 
         # search_brv_prox
-        search_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
-        search_brv_prox = m.Input('search_brv_prox', num_neurons.value*search_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            search_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+            search_brv_prox = m.Input('search_brv_prox', num_neurons.value*search_brv_prox_width)
 
         # backoff_brv_dist
         backoff_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
         backoff_brv_dist = m.Input('backoff_brv_dist', num_neurons.value*backoff_brv_dist_width)
 
         # backoff_brv_prox
-        backoff_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
-        backoff_brv_prox = m.Input('backoff_brv_prox', num_neurons.value*backoff_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            backoff_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+            backoff_brv_prox = m.Input('backoff_brv_prox', num_neurons.value*backoff_brv_prox_width)
 
         # min_brv_dist
         min_brv_dist_width = num_dend.value*num_seg.value*p_dist.value
         min_brv_dist = m.Input('min_brv_dist', num_neurons.value*min_brv_dist_width)
 
         # min_brv_prox
-        min_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
-        min_brv_prox = m.Input('min_brv_prox', num_neurons.value*min_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            min_brv_prox_width = num_dend.value*num_seg.value*p_prox.value
+            min_brv_prox = m.Input('min_brv_prox', num_neurons.value*min_brv_prox_width)
 
         # F_brv_dist
         F_brv_dist_width = num_dend.value*num_seg.value*((1<<wres_dist.value)-3 + 1)
         F_brv_dist = m.Input('F_brv_dist', num_neurons.value*F_brv_dist_width)
 
         # F_brv_prox
-        F_brv_prox_width = num_dend.value*num_seg.value*((1<<wres_prox.value)-3 + 1)
-        F_brv_prox = m.Input('F_brv_prox', num_neurons.value*F_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            F_brv_prox_width = num_dend.value*num_seg.value*((1<<wres_prox.value)-3 + 1)
+            F_brv_prox = m.Input('F_brv_prox', num_neurons.value*F_brv_prox_width)
 
 
         ##############
@@ -1292,31 +1339,38 @@ assign out = out_reg;
             # w_init_dist
             neuron_ports.append(w_init_dist.slice((n+1)*w_init_dist_width-1, n*w_init_dist_width))
             # w_init_prox
-            neuron_ports.append(w_init_prox.slice((n+1)*w_init_prox_width-1, n*w_init_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(w_init_prox.slice((n+1)*w_init_prox_width-1, n*w_init_prox_width))
             # capture_brv_dist
             neuron_ports.append(capture_brv_dist.slice((n+1)*capture_brv_dist_width-1, n*capture_brv_dist_width))
             # capture_brv_prox
-            neuron_ports.append(capture_brv_prox.slice((n+1)*capture_brv_prox_width-1, n*capture_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(capture_brv_prox.slice((n+1)*capture_brv_prox_width-1, n*capture_brv_prox_width))
             # minus_brv_dist
             neuron_ports.append(minus_brv_dist.slice((n+1)*minus_brv_dist_width-1, n*minus_brv_dist_width))
             # minus_brv_prox
-            neuron_ports.append(minus_brv_prox.slice((n+1)*minus_brv_prox_width-1, n*minus_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(minus_brv_prox.slice((n+1)*minus_brv_prox_width-1, n*minus_brv_prox_width))
             # search_brv_dist
             neuron_ports.append(search_brv_dist.slice((n+1)*search_brv_dist_width-1, n*search_brv_dist_width))
             # search_brv_prox
-            neuron_ports.append(search_brv_prox.slice((n+1)*search_brv_prox_width-1, n*search_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(search_brv_prox.slice((n+1)*search_brv_prox_width-1, n*search_brv_prox_width))
             # backoff_brv_dist
             neuron_ports.append(backoff_brv_dist.slice((n+1)*backoff_brv_dist_width-1, n*backoff_brv_dist_width))
             # backoff_brv_prox
-            neuron_ports.append(backoff_brv_prox.slice((n+1)*backoff_brv_prox_width-1, n*backoff_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(backoff_brv_prox.slice((n+1)*backoff_brv_prox_width-1, n*backoff_brv_prox_width))
             # min_brv_dist
             neuron_ports.append(min_brv_dist.slice((n+1)*min_brv_dist_width-1, n*min_brv_dist_width))
             # min_brv_prox
-            neuron_ports.append(min_brv_prox.slice((n+1)*min_brv_prox_width-1, n*min_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(min_brv_prox.slice((n+1)*min_brv_prox_width-1, n*min_brv_prox_width))
             # F_brv_dist
             neuron_ports.append(F_brv_dist.slice((n+1)*F_brv_dist_width-1, n*F_brv_dist_width))
             # F_brv_prox
-            neuron_ports.append(F_brv_prox.slice((n+1)*F_brv_prox_width-1, n*F_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                neuron_ports.append(F_brv_prox.slice((n+1)*F_brv_prox_width-1, n*F_brv_prox_width))
             
             m.Instance(neuron, str('L')+self.layer_id+'_CV_unit_inst_'+str(n), params=[num_dend.value, p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
                        ports = neuron_ports)
@@ -1356,68 +1410,76 @@ assign out = out_reg;
         w_init_dist = m.Input('w_init_dist', num_dend.value*w_init_dist_width)
 
         # w_init_prox
-        w_init_prox_width = num_seg.value*p_prox.value*wres_prox.value
-        w_init_prox = m.Input('w_init_prox', num_dend.value*w_init_prox_width)
+        if (not(self.prox_as_enable)):
+            w_init_prox_width = num_seg.value*p_prox.value*wres_prox.value
+            w_init_prox = m.Input('w_init_prox', num_dend.value*w_init_prox_width)
 
         # capture_brv_dist
         capture_brv_dist_width = num_seg.value*p_dist.value
         capture_brv_dist = m.Input('capture_brv_dist', num_dend.value*capture_brv_dist_width)
 
         # capture_brv_prox
-        capture_brv_prox_width = num_seg.value*p_prox.value
-        capture_brv_prox = m.Input('capture_brv_prox', num_dend.value*capture_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            capture_brv_prox_width = num_seg.value*p_prox.value
+            capture_brv_prox = m.Input('capture_brv_prox', num_dend.value*capture_brv_prox_width)
 
         # minus_brv_dist
         minus_brv_dist_width = num_seg.value*p_dist.value
         minus_brv_dist = m.Input('minus_brv_dist', num_dend.value*minus_brv_dist_width)
 
         # minus_brv_prox
-        minus_brv_prox_width = num_seg.value*p_prox.value
-        minus_brv_prox = m.Input('minus_brv_prox', num_dend.value*minus_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            minus_brv_prox_width = num_seg.value*p_prox.value
+            minus_brv_prox = m.Input('minus_brv_prox', num_dend.value*minus_brv_prox_width)
 
         # search_brv_dist
         search_brv_dist_width = num_seg.value*p_dist.value
         search_brv_dist = m.Input('search_brv_dist', num_dend.value*search_brv_dist_width)
 
         # search_brv_prox
-        search_brv_prox_width = num_seg.value*p_prox.value
-        search_brv_prox = m.Input('search_brv_prox', num_dend.value*search_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            search_brv_prox_width = num_seg.value*p_prox.value
+            search_brv_prox = m.Input('search_brv_prox', num_dend.value*search_brv_prox_width)
 
         # backoff_brv_dist
         backoff_brv_dist_width = num_seg.value*p_dist.value
         backoff_brv_dist = m.Input('backoff_brv_dist', num_dend.value*backoff_brv_dist_width)
 
         # backoff_brv_prox
-        backoff_brv_prox_width = num_seg.value*p_prox.value
-        backoff_brv_prox = m.Input('backoff_brv_prox', num_dend.value*backoff_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            backoff_brv_prox_width = num_seg.value*p_prox.value
+            backoff_brv_prox = m.Input('backoff_brv_prox', num_dend.value*backoff_brv_prox_width)
 
         # min_brv_dist
         min_brv_dist_width = num_seg.value*p_dist.value
         min_brv_dist = m.Input('min_brv_dist', num_dend.value*min_brv_dist_width)
 
         # min_brv_prox
-        min_brv_prox_width = num_seg.value*p_prox.value
-        min_brv_prox = m.Input('min_brv_prox', num_dend.value*min_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            min_brv_prox_width = num_seg.value*p_prox.value
+            min_brv_prox = m.Input('min_brv_prox', num_dend.value*min_brv_prox_width)
 
         # F_brv_dist
         F_brv_dist_width = num_seg.value*((1<<wres_dist.value)-3 + 1)
         F_brv_dist = m.Input('F_brv_dist', num_dend.value*F_brv_dist_width)
 
         # F_brv_prox
-        F_brv_prox_width = num_seg.value*((1<<wres_prox.value)-3 + 1)
-        F_brv_prox = m.Input('F_brv_prox', num_dend.value*F_brv_prox_width)
+        if (not(self.prox_as_enable)):
+            F_brv_prox_width = num_seg.value*((1<<wres_prox.value)-3 + 1)
+            F_brv_prox = m.Input('F_brv_prox', num_dend.value*F_brv_prox_width)
 
         ##############
         # Wires/Regs #
         ##############
-        dend_out = m.Wire('dend_out', num_dend.value)
+        dend_out_width = num_seg.value
+        dend_out = m.Wire('dend_out', num_dend.value*dend_out_width)
 
         ##################
         # Instantiations #
         ##################
         dendrite, _ = self.Dendrite(p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value)
         for i in range(num_dend.value):
-            dendrite_ports = [input_spike_dist, input_spikes_prox, clk, grst, rstb, dend_out[i]]
+            dendrite_ports = [input_spike_dist, input_spikes_prox, clk, grst, rstb, dend_out.slice((i+1)*dend_out_width-1, i*dend_out_width)]
             # Distal ports
             dendrite_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
             dendrite_ports.append(capture_brv_dist.slice((i+1)*capture_brv_dist_width-1, i*capture_brv_dist_width))
@@ -1428,21 +1490,22 @@ assign out = out_reg;
             dendrite_ports.append(F_brv_dist.slice((i+1)*F_brv_dist_width-1, i*F_brv_dist_width))
             
             # Proximal ports
-            dendrite_ports.append(w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width))
-            dendrite_ports.append(capture_brv_prox.slice((i+1)*capture_brv_prox_width-1, i*capture_brv_prox_width))
-            dendrite_ports.append(minus_brv_prox.slice((i+1)*minus_brv_prox_width-1, i*minus_brv_prox_width))
-            dendrite_ports.append(search_brv_prox.slice((i+1)*search_brv_prox_width-1, i*search_brv_prox_width))
-            dendrite_ports.append(backoff_brv_prox.slice((i+1)*backoff_brv_prox_width-1, i*backoff_brv_prox_width))
-            dendrite_ports.append(min_brv_prox.slice((i+1)*min_brv_prox_width-1, i*min_brv_prox_width))
-            dendrite_ports.append(F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width))
+            if (not(self.prox_as_enable)):
+                dendrite_ports.append(w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width))
+                dendrite_ports.append(capture_brv_prox.slice((i+1)*capture_brv_prox_width-1, i*capture_brv_prox_width))
+                dendrite_ports.append(minus_brv_prox.slice((i+1)*minus_brv_prox_width-1, i*minus_brv_prox_width))
+                dendrite_ports.append(search_brv_prox.slice((i+1)*search_brv_prox_width-1, i*search_brv_prox_width))
+                dendrite_ports.append(backoff_brv_prox.slice((i+1)*backoff_brv_prox_width-1, i*backoff_brv_prox_width))
+                dendrite_ports.append(min_brv_prox.slice((i+1)*min_brv_prox_width-1, i*min_brv_prox_width))
+                dendrite_ports.append(F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width))
 
             m.Instance(dendrite, str('L')+self.layer_id+'_dend_inst_'+str(i), params=[p_dist.value, p_prox.value, num_seg.value, wres_dist.value, wres_prox.value, threshold.value],
-                       ports = dendrite_ports)
-            
+                    ports = dendrite_ports)
         
         m.EmbeddedCode('assign output_spike = |dend_out;')
 
         return m, clk.name
+    
 
     def Dendrite(self, p_dist=3, p_prox=1, q=2, wres_dist=3, wres_prox=3, thres=13):
 
@@ -1466,11 +1529,12 @@ assign out = out_reg;
         grst = m.Input('grst')
         rstb = m.Input('rstb')
         # Output_spike
-        out_spike = m.Output('output_spike')
+        out_spike = m.Output('output_spike', q.value)
 
         # STDP
         w_init_dist, capture_brv_dist, minus_brv_dist, search_brv_dist, backoff_brv_dist, min_brv_dist, F_brv_dist = [], [], [], [], [], [], []
-        w_init_prox, capture_brv_prox, minus_brv_prox, search_brv_prox, backoff_brv_prox, min_brv_prox, F_brv_prox = [], [], [], [], [], [], []
+        if (not(self.prox_as_enable)):
+            w_init_prox, capture_brv_prox, minus_brv_prox, search_brv_prox, backoff_brv_prox, min_brv_prox, F_brv_prox = [], [], [], [], [], [], []
 
         # STDP_dist
         w_init_dist_width = p_dist.value*wres_dist.value
@@ -1490,21 +1554,22 @@ assign out = out_reg;
         F_brv_dist = m.Input('F_brv_dist', q.value*F_brv_dist_width)
 
         # STDP_prox
-        w_init_prox_width = p_prox.value*wres_prox.value
-        w_init_prox = m.Input('w_init_prox', q.value*w_init_prox_width)
+        if (not(self.prox_as_enable)):
+            w_init_prox_width = p_prox.value*wres_prox.value
+            w_init_prox = m.Input('w_init_prox', q.value*w_init_prox_width)
 
-        capture_brv_prox_width = p_prox.value
-        capture_brv_prox = m.Input('capture_brv_prox', q.value*capture_brv_prox_width)
-        minus_brv_prox_width = p_prox.value
-        minus_brv_prox = m.Input('minus_brv_prox', q.value*minus_brv_prox_width)
-        search_brv_prox_width = p_prox.value
-        search_brv_prox = m.Input('search_brv_prox', q.value*search_brv_prox_width)
-        backoff_brv_prox_width = p_prox.value
-        backoff_brv_prox = m.Input('backoff_brv_prox', q.value*backoff_brv_prox_width)
-        min_brv_prox_width = p_prox.value
-        min_brv_prox = m.Input('min_brv_prox', q.value*min_brv_prox_width)
-        F_brv_prox_width = ((1<<wres_prox.value)-3 + 1)
-        F_brv_prox = m.Input('F_brv_prox', q.value*F_brv_prox_width)
+            capture_brv_prox_width = p_prox.value
+            capture_brv_prox = m.Input('capture_brv_prox', q.value*capture_brv_prox_width)
+            minus_brv_prox_width = p_prox.value
+            minus_brv_prox = m.Input('minus_brv_prox', q.value*minus_brv_prox_width)
+            search_brv_prox_width = p_prox.value
+            search_brv_prox = m.Input('search_brv_prox', q.value*search_brv_prox_width)
+            backoff_brv_prox_width = p_prox.value
+            backoff_brv_prox = m.Input('backoff_brv_prox', q.value*backoff_brv_prox_width)
+            min_brv_prox_width = p_prox.value
+            min_brv_prox = m.Input('min_brv_prox', q.value*min_brv_prox_width)
+            F_brv_prox_width = ((1<<wres_prox.value)-3 + 1)
+            F_brv_prox = m.Input('F_brv_prox', q.value*F_brv_prox_width)
 
         ##############
         # Wires/Regs #
@@ -1524,12 +1589,13 @@ assign out = out_reg;
                 weights_dist.append(m.Wire('weights_dist_'+str(i)+'_'+str(j), wres_dist.value))
 
         # prox wires
-        inc_prox, dec_prox, weights_prox = [], [], []
-        for i in range(q.value):
-            inc_prox.append(m.Wire('inc_prox_'+str(i), p_prox.value))
-            dec_prox.append(m.Wire('dec_prox_'+str(i), p_prox.value))
-            for j in range(p_prox.value):
-                weights_prox.append(m.Wire('weights_prox_'+str(i)+'_'+str(j), wres_prox.value))
+        if (not(self.prox_as_enable)):
+            inc_prox, dec_prox, weights_prox = [], [], []
+            for i in range(q.value):
+                inc_prox.append(m.Wire('inc_prox_'+str(i), p_prox.value))
+                dec_prox.append(m.Wire('dec_prox_'+str(i), p_prox.value))
+                for j in range(p_prox.value):
+                    weights_prox.append(m.Wire('weights_prox_'+str(i)+'_'+str(j), wres_prox.value))
 
         ##################
         # Instantiations #
@@ -1541,22 +1607,33 @@ assign out = out_reg;
             m.Instance(pulse_dist, 'pe_in_dist_'+str(i), ports = [input_spikes_dist[i], clk, grst, rstb, ein_dist[i]])
 
         # edge_input_gen_prox
-        pulse_prox, pulse_clk_prox = self.Pulse2edge()
-        for i in range(p_prox.value):
-            m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [input_spikes_prox[i], clk, grst, rstb, ein_prox[i]])
+        if (not(self.prox_as_enable)):
+            pulse_prox, pulse_clk_prox = self.Pulse2edge()
+            for i in range(p_prox.value):
+                m.Instance(pulse_prox, 'pe_in_prox_'+str(i), ports = [input_spikes_prox[i], clk, grst, rstb, ein_prox[i]])
 
         # segment
-        n_seg, _ = self.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value)
-        for i in range(q.value):
-            segment_ports = [input_spikes_dist, input_spikes_prox, inc_dist[i], inc_prox[i], dec_dist[i], dec_prox[i], clk, grst, rstb, ec_spikes[i]]
-            segment_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
-            segment_ports.append(w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width))
-            for j in range(p_dist.value):
-                segment_ports.append(weights_dist[i*p_dist.value+j])
-            for j in range(p_prox.value):
-                segment_ports.append(weights_prox[i*p_prox.value+j])   
-            m.Instance(n_seg, str('L')+self.layer_id+'_ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
-                       ports = segment_ports)
+        if (not(self.prox_as_enable)):
+            n_seg, _ = self.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value)
+            for i in range(q.value):
+                segment_ports = [input_spikes_dist, input_spikes_prox, inc_dist[i], inc_prox[i], dec_dist[i], dec_prox[i], clk, grst, rstb, ec_spikes[i]]
+                segment_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
+                segment_ports.append(w_init_prox.slice((i+1)*w_init_prox_width-1, i*w_init_prox_width))
+                for j in range(p_dist.value):
+                    segment_ports.append(weights_dist[i*p_dist.value+j])
+                for j in range(p_prox.value):
+                    segment_ports.append(weights_prox[i*p_prox.value+j])   
+                m.Instance(n_seg, str('L')+self.layer_id+'_ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
+                        ports = segment_ports)
+        else:
+            n_seg, _ = self.segment(p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value)
+            for i in range(q.value):
+                segment_ports = [input_spikes_dist, input_spikes_prox, inc_dist[i], dec_dist[i], clk, grst, rstb, ec_spikes[i]]
+                segment_ports.append(w_init_dist.slice((i+1)*w_init_dist_width-1, i*w_init_dist_width))
+                for j in range(p_dist.value):
+                    segment_ports.append(weights_dist[i*p_dist.value+j]) 
+                m.Instance(n_seg, str('L')+self.layer_id+'_ec_'+str(i), params = [p_dist.value, p_prox.value, wres_dist.value, wres_prox.value, thres.value],
+                        ports = segment_ports)
 
         # WTA
         wta, _ = self.Wta(q.value)
@@ -1590,29 +1667,31 @@ assign out = out_reg;
                     ])
 
         # stdp_prox
-        stdp_prox, _ = self.Stdp(wres_prox.value)
-        for i in range(q.value):
-            for j in range(p_prox.value):
-                m.Instance(stdp_prox, str('L')+self.layer_id+'_stdp_prox_'+str(i)+'_'+str(j), params = [wres_prox.value],
-                    ports = [
-                    weights_prox[i*p_prox.value+j],
-                    ein_prox[j],
-                    eout[i],
-                    capture_brv_prox[i*p_prox.value+j],
-                    minus_brv_prox[i*p_prox.value+j],
-                    search_brv_prox[i*p_prox.value+j],
-                    backoff_brv_prox[i*p_prox.value+j],
-                    min_brv_prox[i*p_prox.value+j],
-                    F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width),
-                    clk,
-                    grst,
-                    rstb,
-                    inc_prox[i][j],
-                    dec_prox[i][j]
-                    ])
+        if (not(self.prox_as_enable)):
+            stdp_prox, _ = self.Stdp(wres_prox.value)
+            for i in range(q.value):
+                for j in range(p_prox.value):
+                    m.Instance(stdp_prox, str('L')+self.layer_id+'_stdp_prox_'+str(i)+'_'+str(j), params = [wres_prox.value],
+                        ports = [
+                        weights_prox[i*p_prox.value+j],
+                        ein_prox[j],
+                        eout[i],
+                        capture_brv_prox[i*p_prox.value+j],
+                        minus_brv_prox[i*p_prox.value+j],
+                        search_brv_prox[i*p_prox.value+j],
+                        backoff_brv_prox[i*p_prox.value+j],
+                        min_brv_prox[i*p_prox.value+j],
+                        F_brv_prox.slice((i+1)*F_brv_prox_width-1, i*F_brv_prox_width),
+                        clk,
+                        grst,
+                        rstb,
+                        inc_prox[i][j],
+                        dec_prox[i][j]
+                        ])
 
         # move to neuron
-        m.EmbeddedCode('assign output_spike = |li_spikes;')
+        #m.EmbeddedCode('assign output_spike = |li_spikes;')
+        m.EmbeddedCode('assign output_spike = li_spikes;')
 
         return m, clk.name
 

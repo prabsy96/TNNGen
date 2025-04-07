@@ -154,12 +154,12 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # CV full
             # model_name = f"model_CV_MNIST_full"
             # myModel = Model(model_name)
-            # myModel.add(Layer(layer_type="CV", num_col=576, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=24, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="CV", num_col=576, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=24, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7, prox_as_enable=True))
 
             # CV reduced size
             # model_name = f"model_CV_MNIST_reduced"
             # myModel = Model(model_name)
-            #myModel.add(Layer(layer_type="CV", num_col=2, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=24, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
+            #myModel.add(Layer(layer_type="CV", num_col=2, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=24, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7, prox_as_enable=True))
 
             #--------------------------------------------#
             # Place cell benchmark #
@@ -170,10 +170,11 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # myModel = Model(model_name)
             # myModel.add(Layer(layer_type="Place_Cell", tnn7_en=en_tnn7))
 
-
             #--------------------------------------------#
             # UCR benchmark                              #
             #--------------------------------------------#
+            # model_name = f"model_UCR"
+            # myModel = Model(model_name)
             # # 65x2
             # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=2, p_dist=65, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
             # # 96x2
@@ -195,7 +196,7 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             #--------------------------------------------#
             model_name = f"model_spike_sorting"
             myModel = Model(model_name)
-            myModel.add(Layer(layer_type="CV", num_col=1, num_neurons=1, num_dend=1, p_dist=34, p_prox=1, num_seg=13, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            myModel.add(Layer(layer_type="CV", num_col=1, num_neurons=1, num_dend=1, p_dist=34, p_prox=1, num_seg=13, wres_dist=wd, thres=th, tnn7_en=en_tnn7, prox_as_enable=True))
 
             
             myModel.summary()
