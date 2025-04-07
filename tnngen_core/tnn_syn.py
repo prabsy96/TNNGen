@@ -136,16 +136,16 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # model_name = f"model_multi_layer_MNIST_reduced"
             # myModel = Model(model_name)
 
-            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=2, inputsize=8, if_corner=True, tnn7_en=en_tnn7))
-            # myModel.add(Layer(layer_type="Simple", num_col=36, num_neurons=12, p_dist=8, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=2, inputsize=7, if_corner=True, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=25, num_neurons=12, p_dist=8, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
             
-            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=12, inputsize=6, if_corner=True, tnn7_en=en_tnn7))
-            # myModel.add(Layer(layer_type="Simple", num_col=16, num_neurons=20, p_dist=48, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=12, inputsize=5, if_corner=True, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=9, num_neurons=20, p_dist=48, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
             
-            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=20, inputsize=4, if_corner=True, tnn7_en=en_tnn7))
-            # myModel.add(Layer(layer_type="Simple", num_col=4, num_neurons=32, p_dist=80, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Kernel", rfsize=3, stride=1, nprev=20, inputsize=3, if_corner=True, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=32, p_dist=80, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
             # # L3 Voter
-            # myModel.add(Layer(layer_type="Simple", num_col=4, num_neurons=10, p_dist=32, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=10, p_dist=32, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
 
             #--------------------------------------------#
             # Active dendrite MNIST benchmarks (CV)      #
@@ -154,21 +154,48 @@ def tnn_syn(module_name, submodule_name, layer_name, args):
             # CV full
             # model_name = f"model_CV_MNIST_full"
             # myModel = Model(model_name)
-            #myModel.add(Layer(layer_type="CV", num_col=576, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=2, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
+            # myModel.add(Layer(layer_type="CV", num_col=576, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=24, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
 
             # CV reduced size
             # model_name = f"model_CV_MNIST_reduced"
             # myModel = Model(model_name)
-            #myModel.add(Layer(layer_type="CV", num_col=24, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=2, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
+            #myModel.add(Layer(layer_type="CV", num_col=2, num_neurons=10, num_dend=1, p_dist=18, p_prox=1, num_seg=24, wres_dist=wd, wres_prox=wp, thres=th, tnn7_en=en_tnn7))
 
             #--------------------------------------------#
             # Place cell benchmark #
             #--------------------------------------------#
 
             # Configure in layer.py
-            model_name = f"model_place_cell"
+            # model_name = f"model_place_cell"
+            # myModel = Model(model_name)
+            # myModel.add(Layer(layer_type="Place_Cell", tnn7_en=en_tnn7))
+
+
+            #--------------------------------------------#
+            # UCR benchmark                              #
+            #--------------------------------------------#
+            # # 65x2
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=2, p_dist=65, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # 96x2
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=2, p_dist=96, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # 152x2
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=2, p_dist=152, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # 343x2
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=2, p_dist=343, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # 637x2
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=2, p_dist=637, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # 470x5
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=5, p_dist=470, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+            # # 270x25
+            # myModel.add(Layer(layer_type="Simple", num_col=1, num_neurons=25, p_dist=270, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
+
+
+            #--------------------------------------------#
+            # Spike sorting                              #
+            #--------------------------------------------#
+            model_name = f"model_spike_sorting"
             myModel = Model(model_name)
-            myModel.add(Layer(layer_type="Place_Cell", tnn7_en=en_tnn7))
+            myModel.add(Layer(layer_type="CV", num_col=1, num_neurons=1, num_dend=1, p_dist=34, p_prox=1, num_seg=13, wres_dist=wd, thres=th, tnn7_en=en_tnn7))
 
             
             myModel.summary()

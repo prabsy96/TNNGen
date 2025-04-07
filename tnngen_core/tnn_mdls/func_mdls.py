@@ -706,6 +706,9 @@ assign out = out_reg;
         # wires/regs
         resp_func_dist = m.Wire('resp_func_dist', in_size_dist.value)
         resp_func_prox = m.Wire('resp_func_prox', in_size_prox.value)
+
+        #
+        # input = input_spikes_dist and input_spikes_prox
             
         # submodules
         # Distal: Synaptic weight + readout logic FSM
@@ -1180,7 +1183,7 @@ assign out = out_reg;
                        ports = dendrite_ports)
             
         
-        # add wta
+        # TODO add wta
         m.EmbeddedCode('assign output_spike = |dend_out;')
 
         return m, clk.name

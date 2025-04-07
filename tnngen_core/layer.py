@@ -49,14 +49,25 @@ class Layer():
         # x_y_width = 30
         # head_width = 10
 
-        x_width = 7
-        y_width = 7
+        # Full
+        # x_width = 30
+        # y_width = 30
+        # eId_width = 40
+        # tail_width = 10
+        # head_width = 10
+        # wres = 3
+        # threshold = 13
+        # num_seg = 16
+
+        # Reduced
+        x_width = 3
+        y_width = 3
         eId_width = 4
-        tail_width = 10
-        head_width = 10
+        tail_width = 5
+        head_width = 5
         wres = 3
         threshold = 13
-        num_seg = 2
+        num_seg = 16
 
         x_width_p = m.Parameter('X_WIDTH', x_width)
         y_width_p = m.Parameter('Y_WIDTH', y_width)
