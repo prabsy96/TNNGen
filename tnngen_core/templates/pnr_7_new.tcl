@@ -98,7 +98,7 @@ setAnalysisMode -analysisType onChipVariation
 # puts "Floorplan is $fpxdim by $fpydim"
 # puts "Total area is [expr $fpxdim * $fpydim ] square um"
 # puts "[expr $fpydim / $cellheight] standard cell rows tall"
-floorPlan -keepShape 0.80
+floorPlan -keepShape 0.60
 
 # Innovus is not putting tracks on the bottom cell row. That causes problems
 # since it won't route to them on proper tracks.

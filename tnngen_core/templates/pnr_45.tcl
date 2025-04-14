@@ -50,7 +50,7 @@ puts "====================================================="
 # floorPlan -r 1.0 0.70 4.0 4.0 4.0 4.0
 # puts "Floorplan is $fpxdim by $fpydim"
 # puts "Total area is [expr $fpxdim * $fpydim ] square um"
-floorPlan -keepShape 0.80
+floorPlan -keepShape 0.60
 
 globalNetConnect VDD -type pgpin -pin VDD -inst * -verbose
 globalNetConnect VSS -type pgpin -pin VSS -inst * -verbose
